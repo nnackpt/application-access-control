@@ -1,0 +1,572 @@
+import React, { useEffect, useState } from "react"
+import { X, Plus, Eye, Edit } from "lucide-react"
+
+// Mock API functions (replace with actual axios calls)
+const mockAPI = {
+  getApplications: () => Promise.resolve([
+    {
+      appCode: "APP_ATH_04",
+      name: "COPNLAT",
+      title: "COP NON_LAT",
+      desc: "COP NON_LAT Description",
+      active: true,
+      baseUrl: "https://example.com",
+      loginUrl: "https://example.com/login",
+      createdBy: "phakin.thongla-ar",
+      createdDatetime: "2025-06-11T10:30:00",
+      updatedBy: "phakin.thongla-ar",
+      updatedDatetime: "2025-06-12T14:20:00"
+    }
+  ]),
+  createApplication: (data) => Promise.resolve(data),
+  updateApplication: (data) => Promise.resolve(data)
+}
+
+interface Application {
+  appCode: string
+  name: string
+  title: string
+  desc?: string
+  baseUrl?: string
+  loginUrl?: string
+  active: boolean
+  createdBy?: string
+  createdDatetime?: string
+  updatedBy?: string
+  updatedDatetime?: string
+}
+
+const initForm: Application = {
+  appCode: '',
+  name: '',
+  title: '',
+  desc: '',
+  baseUrl: '',
+  loginUrl: '',
+  active: true,
+  createdBy: '',
+  createdDatetime: '',
+  updatedBy: ''
+}
+
+function ApplicationModal({ 
+  isOpen, 
+  onClose, 
+  onSuccess, 
+  editData = null 
+}: { 
+  isOpen: boolean
+  onClose: () => void
+  onSuccess: () => void
+  editData?: Application | null
+}) {
+  const [form, setForm] = useState<Application>(initForm)
+  const [errors, setErrors] = useState<{[key: string]: string}>({})
+
+  useEffect(() => {
+    if (editData) {
+      setForm(editData)
+    } else {
+      setForm(initForm)
+    }
+    setErrors({})
+  }, [editData, isOpen])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target
+    const checked = (e.target as HTMLInputElement).checked
+    
+    setForm(prev => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }))
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }))
+    }
+  }
+
+  const validateForm = () => {
+    const newErrors: {[key: string]: string} = {}
+    
+    if (!form.appCode.trim()) newErrors.appCode = 'APP Code is required'
+    if (!form.name.trim()) newErrors.name = 'Name is required'
+    if (!form.title.trim()) newErrors.title = 'Title is required'
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = async () => {
+    
+    if (!validateForm()) return
+
+    try {
+      const submitData = {
+        ...form,
+        createdBy: form.createdBy || 'phakin.thongla-ar',
+        createdDatetime: form.createdDatetime || new Date().toISOString(),
+        updatedBy: 'phakin.thongla-ar'
+      }
+
+      if (editData) {
+        await mockAPI.updateApplication(submitData)
+      } else {
+        await mockAPI.createApplication(submitData)
+      }
+      
+      onSuccess()
+      onClose()
+    } catch (error) {
+      console.error('Error submitting form:', error)
+    }
+  }
+
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-blue-600 text-white p-6 rounded-t-xl flex justify-between items-center">
+          <h2 className="text-xl font-semibold">
+            {editData ? 'Edit Application' : 'Create New Application'}
+          </h2>
+          <button 
+            onClick={onClose}
+            className="text-white hover:text-blue-200 transition-colors"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* APP Code */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                APP Code <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="appCode"
+                value={form.appCode}
+                onChange={handleChange}
+                placeholder="e.g., APP_ATH_TEST"
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.appCode ? 'border-red-500' : 'border-gray-300'
+                }`}
+                disabled={!!editData}
+              />
+              {errors.appCode && <p className="text-red-500 text-sm mt-1">{errors.appCode}</p>}
+            </div>
+
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="e.g., TEST"
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.name ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+            </div>
+
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Title <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                placeholder="e.g., TEST API"
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.title ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
+            </div>
+
+            {/* Base URL */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Base URL
+              </label>
+              <input
+                type="url"
+                name="baseUrl"
+                value={form.baseUrl || ''}
+                onChange={handleChange}
+                placeholder="https://example.com"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            {/* Login URL */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Login URL
+              </label>
+              <input
+                type="url"
+                name="loginUrl"
+                value={form.loginUrl || ''}
+                onChange={handleChange}
+                placeholder="https://example.com/login"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            {/* Created By */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Created By
+              </label>
+              <input
+                type="text"
+                name="createdBy"
+                value={form.createdBy || ''}
+                onChange={handleChange}
+                placeholder="phakin.thongla-ar"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            {/* Description */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Description
+              </label>
+              <textarea
+                name="desc"
+                value={form.desc || ''}
+                onChange={handleChange}
+                placeholder="e.g., TEST From RBAC API"
+                rows={3}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            {/* Active Status */}
+            <div className="md:col-span-2">
+              <label className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  name="active"
+                  checked={form.active}
+                  onChange={handleChange}
+                  className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">Active</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-4 mt-8 pt-6 border-t">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {editData ? 'Update' : 'Create'} Application
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ViewModal({ 
+  isOpen, 
+  onClose, 
+  data 
+}: { 
+  isOpen: boolean
+  onClose: () => void
+  data: Application | null
+}) {
+  if (!isOpen || !data) return null
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '-'
+    return new Date(dateString).toLocaleString('th-TH')
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-blue-600 text-white p-6 rounded-t-xl flex justify-between items-center">
+          <h2 className="text-xl font-semibold">Application Details</h2>
+          <button 
+            onClick={onClose}
+            className="text-white hover:text-blue-200 transition-colors"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">APP Code</label>
+              <p className="text-lg font-semibold text-gray-900">{data.appCode}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Name</label>
+              <p className="text-lg text-gray-900">{data.name}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Title</label>
+              <p className="text-lg text-gray-900">{data.title}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Status</label>
+              <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
+                data.active 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-red-100 text-red-800'
+              }`}>
+                {data.active ? 'Active' : 'Inactive'}
+              </span>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Base URL</label>
+              <p className="text-gray-900">{data.baseUrl || '-'}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Login URL</label>
+              <p className="text-gray-900">{data.loginUrl || '-'}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Created By</label>
+              <p className="text-gray-900">{data.createdBy || '-'}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Created Date</label>
+              <p className="text-gray-900">{formatDate(data.createdDatetime)}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Updated By</label>
+              <p className="text-gray-900">{data.updatedBy || '-'}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Updated Date</label>
+              <p className="text-gray-900">{formatDate(data.updatedDatetime)}</p>
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-600 mb-1">Description</label>
+              <p className="text-gray-900">{data.desc || '-'}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ApplicationTable({ refreshSignal }: { refreshSignal: number }) {
+  const [data, setData] = useState<Application[]>([])
+  const [loading, setLoading] = useState(false)
+  const [viewData, setViewData] = useState<Application | null>(null)
+  const [editData, setEditData] = useState<Application | null>(null)
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      try {
+        const response = await mockAPI.getApplications()
+        setData(response)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchData()
+  }, [refreshSignal])
+
+  const handleView = (app: Application) => {
+    setViewData(app)
+    setIsViewModalOpen(true)
+  }
+
+  const handleEdit = (app: Application) => {
+    setEditData(app)
+    setIsEditModalOpen(true)
+  }
+
+  const handleEditSuccess = () => {
+    // Trigger refresh
+    setEditData(null)
+    setIsEditModalOpen(false)
+    // You would call your refresh function here
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-blue-600">Loading...</div>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-blue-600 text-white">
+              <tr>
+                {[
+                  'APP Code', 'Name', 'Title', 'Description', 'Active', 
+                  'Base URL', 'Login URL', 'Created By', 'Created Date', 
+                  'Updated By', 'Updated Date', 'Actions'
+                ].map(header => (
+                  <th key={header} className="px-4 py-3 text-left text-sm font-semibold whitespace-nowrap">
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((app, index) => (
+                <tr key={index} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">
+                  <td className="px-4 py-3 font-medium text-blue-600">{app.appCode}</td>
+                  <td className="px-4 py-3">{app.name}</td>
+                  <td className="px-4 py-3">{app.title}</td>
+                  <td className="px-4 py-3 max-w-xs truncate" title={app.desc}>
+                    {app.desc || '-'}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                      app.active 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {app.active ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 max-w-xs truncate" title={app.baseUrl}>
+                    {app.baseUrl || '-'}
+                  </td>
+                  <td className="px-4 py-3 max-w-xs truncate" title={app.loginUrl}>
+                    {app.loginUrl || '-'}
+                  </td>
+                  <td className="px-4 py-3">{app.createdBy || '-'}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {app.createdDatetime ? new Date(app.createdDatetime).toLocaleDateString('th-TH') : '-'}
+                  </td>
+                  <td className="px-4 py-3">{app.updatedBy || '-'}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {app.updatedDatetime ? new Date(app.updatedDatetime).toLocaleDateString('th-TH') : '-'}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleView(app)}
+                        className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
+                        title="View Details"
+                      >
+                        <Eye size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleEdit(app)}
+                        className="p-1 text-green-600 hover:text-green-800 hover:bg-green-100 rounded transition-colors"
+                        title="Edit"
+                      >
+                        <Edit size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        {data.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            No applications found
+          </div>
+        )}
+      </div>
+
+      <ViewModal 
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        data={viewData}
+      />
+
+      <ApplicationModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSuccess={handleEditSuccess}
+        editData={editData}
+      />
+    </>
+  )
+}
+
+export default function ApplicationsPage() {
+  const [refresh, setRefresh] = useState(0)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+
+  const handleCreateSuccess = () => {
+    setRefresh(prev => prev + 1)
+    setIsCreateModalOpen(false)
+  }
+
+  return (
+    <main className="min-h-screen bg-gray-50">
+      <div className="p-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Application Management</h1>
+              <p className="text-gray-600 mt-2">Manage your applications and their configurations</p>
+            </div>
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
+            >
+              <Plus size={20} />
+              <span>Create New Application</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Table */}
+        <ApplicationTable refreshSignal={refresh} />
+
+        {/* Create Modal */}
+        <ApplicationModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSuccess={handleCreateSuccess}
+        />
+      </div>
+    </main>
+  )
+}
