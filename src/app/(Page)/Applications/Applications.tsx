@@ -116,7 +116,7 @@ export default function Applications() {
             <div className="flex space-x-3">
               <button
                 onClick={handleRefresh}
-                className="flex items-center space-x-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
+                className="flex items-center space-x-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
                 disabled={loading}
               >
                 <RefreshCcw size={16} className={loading ? 'animate-spin' : ''} />
@@ -124,7 +124,7 @@ export default function Applications() {
               </button>
               <button
                 onClick={() => setIsCreateModalOpen(true)}
-                className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-3 rounded-lg hover:bg-[#004080] transition-colors shadow-lg"
+                className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-3 rounded-lg hover:bg-[#004080] transition-colors shadow-lg cursor-pointer"
               >
                 <Plus size={20} />
                 <span>Create New Application</span>
