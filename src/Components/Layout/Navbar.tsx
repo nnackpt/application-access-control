@@ -20,7 +20,7 @@ interface DropdownMenuProps {
 
 // Components
 const Logo = () => (
-  <Link href="/" className="flex items-center cursor-pointer scale-105 transition-transform duration-200">
+  <Link href="/" className="flex items-center cursor-pointer hover:scale-105 transition-transform duration-200">
     <img 
       src="/autoliv_logo.png" 
       alt="Autoliv" 
@@ -46,9 +46,15 @@ const MobileTitle = () => (
 );
 
 const UserInfo = () => (
-  <div className="flex items-center space-x-2 min-w-fit">
-    <UserIcon className="w-5 h-5 text-gray-700" />
-    <span className="text-sm text-gray-700">User</span>
+  <div className="flex items-center space-x-3 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2.5 shadow-lg border border-white/20 hover:bg-white transition-all duration-300 group">
+    <div className="p-1.5 bg-gradient-to-br from-[#005496] to-[#003d73] rounded-full shadow-sm group-hover:shadow-md transition-shadow duration-300">
+      <UserIcon className="w-4 h-4 text-white" />
+    </div>
+    <div className="flex flex-col">
+      <span className="text-sm font-semibold text-[#005496] leading-tight">User</span>
+      <span className="text-xs text-gray-500 leading-tight">phakin.thongla-ar</span>
+    </div>
+    <div className="w-2 h-2 bg-green-400 rounded-full shadow-sm animate-pulse"></div>
   </div>
 );
 
@@ -63,12 +69,16 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
     <div className="relative">
       <button
         onClick={onToggle}
-        className="flex items-center space-x-1 px-2 sm:px-3 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-200 rounded transition-colors duration-200"
+        className={`flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 border ${
+          isOpen 
+            ? 'bg-[#005496] text-white border-[#005496] shadow-lg scale-105' 
+            : 'text-[#005496] bg-white/80 border-white/40 hover:bg-[#005496] hover:text-white hover:border-[#005496] hover:shadow-md hover:scale-105'
+        } backdrop-blur-sm`}
       >
-        <span>{label}</span>
+        <span className="whitespace-nowrap">{label}</span>
         <ChevronDownIcon 
-          className={`w-4 h-4 transition-transform duration-200 ${
-            isOpen ? 'rotate-180' : 'rotate-0'
+          className={`w-4 h-4 transition-all duration-300 ${
+            isOpen ? 'rotate-180 scale-110' : 'rotate-0'
           }`} 
         />
       </button>
@@ -77,22 +87,27 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 z-10" 
+            className="fixed inset-0 z-10 bg-black/5 backdrop-blur-[1px]" 
             onClick={onClose}
           />
           
           {/* Dropdown Menu */}
-          <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-20 min-w-max">
-            {items.map((item, index) => (
-              <Link
-                key={index}
-                href={item.href}
-                onClick={onClose}
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-md last:rounded-b-md transition-colors duration-150"
-              >
-                {item.label}
-              </Link>
-            ))}
+          <div className="absolute top-full right-0 mt-2 bg-white/95 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl z-20 min-w-max overflow-hidden animate-in slide-in-from-top-2 duration-200">
+            <div className="p-1">
+              {items.map((item, index) => (
+                <Link
+                  key={index}
+                  href={item.href}
+                  onClick={onClose}
+                  className="block px-4 py-3 text-sm text-[#005496] hover:bg-gradient-to-r hover:from-[#005496] hover:to-[#003d73] hover:text-white rounded-lg transition-all duration-200 font-medium hover:shadow-md hover:scale-[1.02] transform"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-[#005496] rounded-full opacity-60"></div>
+                    <span>{item.label}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
         </>
       )}
@@ -138,23 +153,23 @@ export default function Navbar() {
       key: 'rbac',
       label: 'RBAC',
       items: [
-        { label: "Application's Roles", href: '/RBAC/AppRoles' },
-        { label: "Application's Functions", href: '/RBAC/AppFunctions' },
-        { label: "Application's Role Base Accessed Control (RBAC)", href: '/RBAC/AppRBAC' }
+        { label: "Application's Roles", href: '/AppsRoles' },
+        { label: "Application's Functions", href: '/AppsFunctions' },
+        { label: "Application's Role Base Accessed Control (RBAC)", href: '#' }
       ]
     },
     {
       key: 'users',
       label: 'Users Authorized',
       items: [
-        { label: "Application's Users", href: '/Users' }
+        { label: "Application's Users", href: '#' }
       ]
     },
     {
       key: 'report',
       label: 'Report',
       items: [
-        { label: 'Authorized User', href: '/Report/AppAuthUser' }
+        { label: 'Authorized User', href: '#' }
       ]
     }
   ];
@@ -171,15 +186,15 @@ export default function Navbar() {
       </header>
       
       {/* Bottom Navbar - Desktop Only */}
-      <nav className="hidden md:block bg-[#C1CBD3] px-2 lg:px-4">
-        <div className="flex justify-between items-center min-h-[50px] py-2">
+      <nav className="hidden md:block bg-gradient-to-r from-[#C1CBD3] to-[#B5C3CC] px-2 lg:px-4 shadow-inner">
+        <div className="flex justify-between items-center min-h-[60px] py-3">
           {/* User Info */}
           <div className="order-2 lg:order-1 w-full lg:w-auto flex justify-center lg:justify-start mt-2 lg:mt-0">
             <UserInfo />
           </div>
 
           {/* Menu Items */}
-          <div className="order-1 lg:order-2 flex flex-wrap justify-center space-x-1 sm:space-x-2 lg:space-x-4">
+          <div className="order-1 lg:order-2 flex flex-wrap justify-center space-x-2 lg:space-x-3">
             {menuData.map((menu) => (
               <DropdownMenu
                 key={menu.key}
