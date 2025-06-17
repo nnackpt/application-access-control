@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+body {
+    padding-bottom: 32px;
+}
+
+/* #Home {
+    padding-bottom: 0 !important;
+} */
