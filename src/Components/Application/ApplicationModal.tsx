@@ -133,15 +133,15 @@ export default function ApplicationModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"  onClick={(e) => e.stopPropagation()}>
         <div className="sticky top-0 bg-[#005496] text-white p-6 rounded-t-xl flex justify-between items-center">
           <h2 className="text-xl font-semibold">
             {editData ? 'Edit Application' : 'Create New Application'}
           </h2>
           <button 
             onClick={onClose}
-            className="text-white hover:text-blue-200 transition-colors"
+            className="text-white hover:text-blue-200 transition-colors cursor-pointer"
             disabled={loading}
           >
             <X size={24} />
@@ -271,7 +271,7 @@ export default function ApplicationModal({
                 onChange={handleChange}
                 placeholder="e.g., Application description"
                 rows={3}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496]"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] resize-none"
                 disabled={loading}
               />
             </div>
@@ -284,7 +284,7 @@ export default function ApplicationModal({
                   name="active"
                   checked={form.active}
                   onChange={handleChange}
-                  className="w-5 h-5 text-[#005496] border-gray-300 rounded focus:ring-2 focus:ring-[#005496]"
+                  className="w-5 h-5 text-[#005496] border-gray-300 rounded focus:ring-2 focus:ring-[#005496] cursor-pointer"
                   disabled={loading}
                 />
                 <span className="text-sm font-medium text-gray-700">Active</span>
@@ -296,7 +296,7 @@ export default function ApplicationModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="cursor-pointer px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               disabled={loading}
             >
               Cancel
@@ -304,7 +304,7 @@ export default function ApplicationModal({
             <button
               type="button"
               onClick={handleSubmit}
-              className="px-6 py-3 bg-[#005496] text-white rounded-lg hover:bg-[#004080] transition-colors disabled:bg-gray-400"
+              className="cursor-pointer px-6 py-3 bg-[#005496] text-white rounded-lg hover:bg-[#004080] transition-colors disabled:bg-gray-400"
               disabled={loading}
             >
               {loading ? 'Saving...' : (editData ? 'Update' : 'Create')} Application
