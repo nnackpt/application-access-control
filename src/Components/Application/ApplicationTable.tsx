@@ -3,7 +3,7 @@ import { Eye, Edit, Trash2, ChevronDown, ChevronUp } from "lucide-react"
 import { Application } from "@/types/Application"
 import { applicationApi } from "@/services/applicationApi"
 import ApplicationModal from "./ApplicationModal"
-import ViewModal from "./ViewModal"
+import ViewModal from "./ApplicationViewModal"
 
 interface ApplicationTableProps {
   refreshSignal: number
