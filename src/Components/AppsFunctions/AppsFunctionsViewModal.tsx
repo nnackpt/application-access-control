@@ -71,7 +71,7 @@ export default function ViewModal({
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-600 mb-1">APP Code</label>
-                            <p className="text-lg text-gray-900">{appCode || '-'}</p>
+                            <p className="text-lg font-semibold text-[#005496]">{appCode || '-'}</p>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-600 mb-1">Name</label>

@@ -1,16 +1,28 @@
 import { AppsfunctionsApi } from "@/services/AppsfunctionsApi"
 import { AppsFunctions } from "@/types/AppsFunctions"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import AppsFunctionsModal from "./AppsFunctionsModal"
 import ViewModal from "./AppsFunctionsViewModal"
 import { ChevronDown, ChevronUp, Edit, Eye, Trash2 } from "lucide-react"
+import { get } from "http"
 
 interface AppsFunctionsTableProps {
     refreshSignal: number
     onRefresh: () => void
+    searchTerm: string
 }
 
-export default function AppsFunctionsTable({ refreshSignal, onRefresh }: AppsFunctionsTableProps) {
+// ฟังก์ชันสำหรับดึงค่าจาก object ที่อาจมีชื่อ property ต่างกัน
+const getValue = (obj: any, possibleKeys: string[]) => {
+    for (const key of possibleKeys) {
+        if (obj[key] !== undefined && obj[key] !== null) {
+            return obj[key]
+        }
+    }
+    return null
+}
+
+export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTerm }: AppsFunctionsTableProps) {
     const [data, setData] = useState<AppsFunctions[]>([])
     const [loading, setLoading] = useState(false)
     const [viewData, setViewData] = useState<AppsFunctions | null>(null)
@@ -19,6 +31,39 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh }: AppsFun
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
     const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+    const [currentPage, setCurrentPage] = useState(1)
+    const [rowsPerPage, setRowsPerPage] = useState(10)
+
+    const getPaginatedData = () => {
+        const startIndex = (currentPage - 1) * rowsPerPage
+        const endIndex = startIndex + rowsPerPage
+        return rowsPerPage === 0 ? filteredData : filteredData.slice(startIndex, endIndex)
+    }
+
+    const getTotalPages = () => {
+        return rowsPerPage === 0 ? 1 : Math.ceil(filteredData.length / rowsPerPage)
+    }
+
+    const getDisplayInfo = () => {
+        if (filteredData.length === 0) return "Showing 0 of 0 Records"
+
+        if (rowsPerPage === 0) {
+            return `Showing 1 to ${filteredData.length} of ${filteredData.length} Records`
+        }
+
+        const startIndex = (currentPage - 1) * rowsPerPage + 1
+        const endIndex = Math.min(currentPage * rowsPerPage, filteredData.length)
+        return `Showing 1 to ${filteredData.length} of ${filteredData.length} Records`
+    }
+
+    const handleRowsPerPageChange = (value: number) => {
+        setRowsPerPage(value)
+        setCurrentPage(1)
+    }
+
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [searchTerm])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -27,7 +72,14 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh }: AppsFun
                 const response = await AppsfunctionsApi.getAppsFunctions()
                 console.log('API Response:', response)
                 console.log('First item:', response[0])
-                setData(response)
+
+                const sortedResponse = [...response].sort((a, b) => {
+                    const appCodeA = getValue(a, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE']) || ''
+                    const appCodeB = getValue(b, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE']) || ''
+                    return appCodeA.localeCompare(appCodeB)
+                })
+
+                setData(sortedResponse)
             } catch (error) {
                 console.error('Error fetching data:', error)
             } finally {
@@ -83,15 +135,28 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh }: AppsFun
         })
     }
 
-    // ฟังก์ชันสำหรับดึงค่าจาก object ที่อาจมีชื่อ property ต่างกัน
-    const getValue = (obj: any, possibleKeys: string[]) => {
-        for (const key of possibleKeys) {
-            if (obj[key] !== undefined && obj[key] !== null) {
-                return obj[key]
-            }
-        }
-        return null
-    }
+    const filteredData = data.filter(appFunc => {
+        if (!searchTerm) return true
+
+        const searchLower = searchTerm.toLowerCase()
+        const appCode = getValue(appFunc, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE']) || ''
+        const funcCode = getValue(appFunc, ['funC_CODE', 'funcCode', 'func_code', 'FuncCode', 'FUNC_CODE', 'code', 'id']) || ''
+        const name = getValue(appFunc, ['name', 'Name', 'func_name', 'funcName']) || ''
+        const desc = getValue(appFunc, ['desc', 'description', 'Description', 'func_desc', 'funcDesc']) || ''
+        const funcUrl = getValue(appFunc, ['funC_URL', 'funcUrl', 'func_url', 'FuncUrl', 'FUNC_URL', 'url']) || ''
+        const createdBy = getValue(appFunc, ['createD_BY', 'createdBy', 'created_by', 'CreatedBy', 'CREATED_BY', 'creator']) || ''
+        const updatedBy = getValue(appFunc, ['updateD_BY', 'updatedBy', 'updated_by', 'UpdatedBy', 'UPDATED_BY', 'modifier']) || ''
+
+        return (
+            appCode.toLowerCase().includes(searchLower) ||
+            funcCode.toLowerCase().includes(searchLower) ||
+            name.toLowerCase().includes(searchLower) ||
+            desc.toLowerCase().includes(searchLower) ||
+            funcUrl.toLowerCase().includes(searchLower) ||
+            createdBy.toLowerCase().includes(searchLower) ||
+            updatedBy.toLowerCase().includes(searchLower)
+        )
+    })
 
     const formatDateTime = (dateString?: string) => {
         if (!dateString) return '-'
@@ -108,6 +173,27 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh }: AppsFun
         }
     }
 
+    const wordWrap = (text: string, maxLength: number) => {
+        if (!text) return '-'
+        let result = ''
+        let currentLength = 0
+        for (let i = 0; i < text.length; i++) {
+            result += text[i]
+            currentLength++;
+            if (currentLength >= maxLength && text[i] !== ' ' && text[i] !== '-' && text[i] !== '_' && text[i] !== '/') {
+                if (i < text.length - 1) {
+                    result += '\n'
+                    currentLength = 0
+                }
+            } else if ((text[i] === ' ' || text[i] === '-' || text[i] === '_' || text[i] === '/') && i < text.length - 1) {
+                result += '\n'
+                currentLength = 9
+            }
+        }
+
+        return result
+    }
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
@@ -118,6 +204,84 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh }: AppsFun
 
     return (
         <>
+            <div className="bg-white rounded-lg p-4 mb-4 shadow-sm border border-gray-200">
+                <div className="flex justify-between items-center">
+                    <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2">
+                            <span className="text-sm text-gray-600">Display</span>
+                            <select
+                                value={rowsPerPage}
+                                onChange={(e) => handleRowsPerPageChange(Number(e.target.value))}
+                                className="border border-gray-300 rounded px-3 py-1 text-sm focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none"
+                            >
+                                <option value={10}>10</option>
+                                <option value={20}>20</option>
+                                <option value={30}>30</option>
+                                <option value={40}>40</option>
+                                <option value={50}>50</option>
+                                <option value={0}>ALL</option>
+                            </select>
+                            <span className="text-sm text-gray-600">Records</span>
+                        </div>
+                        <div className="text-sm text-gray-600">
+                            {getDisplayInfo()}
+                        </div>
+                    </div>
+
+                    {/* Pageination Btn */}
+                    {rowsPerPage > 0 && getTotalPages() > 1 && (
+                        <div className="flex items-center space-x-2">
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                                className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                            >
+                                Previous
+                            </button>
+
+                            <div className="flex space-x-1">
+                                {Array.from({ length: getTotalPages() }, (_, i) => i + 1)
+                                    .filter(page => {
+                                        return page === 1 || page === getTotalPages() ||
+                                            Math.abs(page - currentPage) <= 1
+                                    })
+                                    .map((page, index, array) => {
+                                        const prevPage = array[index - 1]
+                                        const showDots = prevPage && page - prevPage > 1
+
+                                        return (
+                                            <React.Fragment key={page}>
+                                                {showDots && (
+                                                    <span className="px-2 py-1 text-gray-400">...</span>
+                                                )}
+                                                <button
+                                                    onClick={() => setCurrentPage(page)}
+                                                    className={`px-3 py-1 border rounded text-sm ${
+                                                        currentPage === page
+                                                            ? 'bg-[#005495] text-white border-[#005496]'
+                                                            : 'border-gray-300 hover:bg-gray-50'
+                                                    }`}
+                                                >
+                                                    {page}
+                                                </button>
+                                            </React.Fragment>
+                                        )
+                                    })
+                                }
+                            </div>
+
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, getTotalPages()))}
+                                disabled={currentPage === getTotalPages()}
+                                className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 {/* Desktop View */}
                 <div className="hidden xl:block">
@@ -126,7 +290,7 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh }: AppsFun
                             <thead className="bg-[#005496] text-white">
                                 <tr>
                                     {[
-                                        'FUNC Code', 'APP Code', 'Name', 'Description', 'Active',
+                                        'APP Code','FUNC Code', 'Name', 'Description', 'Active',
                                         'Function URL', 'Created By', 'Created Date',
                                         'Updated By', 'Updated Date', 'Actions'
                                     ].map(header => (
@@ -138,9 +302,9 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh }: AppsFun
                             </thead>
                             <tbody>
                                 {/* Table rows */}
-                                {data.map((appFunc, index) => {
-                                    const funcCode = getValue(appFunc, ['funC_CODE', 'funcCode', 'func_code', 'FuncCode', 'FUNC_CODE', 'code', 'id'])
+                                {getPaginatedData().map((appFunc, index) => {
                                     const appCode = getValue(appFunc, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE'])
+                                    const funcCode = getValue(appFunc, ['funC_CODE', 'funcCode', 'func_code', 'FuncCode', 'FUNC_CODE', 'code', 'id'])
                                     const name = getValue(appFunc, ['name', 'Name', 'func_name', 'funcName'])
                                     const desc = getValue(appFunc, ['desc', 'description', 'Description', 'func_desc', 'funcDesc'])
                                     const active = getValue(appFunc, ['active', 'Active', 'is_active', 'isActive', 'status'])
@@ -152,12 +316,12 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh }: AppsFun
 
                                     return (
                                         <tr key={`${funcCode || index}-${index}`} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">
+                                            <td className="px-3 py-3 font-medium text-[#005496] text-sm">{appCode || '-'}</td>
                                             <td className="px-3 py-3 font-medium text-[#005496] text-sm">{funcCode || '-'}</td>
-                                            <td className="px-3 py-3 text-sm">{appCode || '-'}</td>
-                                            <td className="px-3 py-3 font-medium text-sm">{name || '-'}</td>
-                                            <td className="px-3 py-3 text-sm max-w-[150px]">
-                                                <div className="truncate" title={desc || ''}>
-                                                    {desc || '-'}
+                                            <td className="px-3 py-3 text-sm whitespace-break-spaces">{name || '-'}</td>
+                                            <td className="px-3 py-3 text-sm">
+                                                <div className="whitespace-pre-wrap" title={desc || ''}>
+                                                    {wordWrap(desc, 100)}
                                                 </div>
                                             </td>
                                             <td className="px-3 py-3">
@@ -176,7 +340,7 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh }: AppsFun
                                                             href={funcUrl}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="text-[#005496] hover:underline truncate block"
+                                                            className="text-[#005496] hover:underline truncate block whitespace-pre"
                                                             title={funcUrl}
                                                         >
                                                             {funcUrl.length > 15 ? `${funcUrl.substring(0, 15)}...` : funcUrl}
@@ -223,7 +387,7 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh }: AppsFun
                                                         {deleteLoading === funcCode ? (
                                                             <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-red-600"></div>
                                                         ) : (
-                                                            <Trash2 size={24} />
+                                                            <Trash2 size={14} />
                                                         )}
                                                     </button>
                                                 </div>
@@ -239,9 +403,9 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh }: AppsFun
                 {/* Mobile & Tablet View - Card Layout */}
                 <div className="xl:hidden">
                     {/* Card layout rendering */}
-                    {data.map((appFunc, index) => {
-                        const funcCode = getValue(appFunc, ['funC_CODE', 'funcCode', 'func_code', 'FuncCode', 'FUNC_CODE', 'code', 'id'])
+                    {getPaginatedData().map((appFunc, index) => {
                         const appCode = getValue(appFunc, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE'])
+                        const funcCode = getValue(appFunc, ['funC_CODE', 'funcCode', 'func_code', 'FuncCode', 'FUNC_CODE', 'code', 'id'])
                         const name = getValue(appFunc, ['name', 'Name', 'func_name', 'funcName'])
                         const desc = getValue(appFunc, ['desc', 'description', 'Description', 'func_desc', 'funcDesc'])
                         const active = getValue(appFunc, ['active', 'Active', 'is_active', 'isActive', 'status'])
@@ -259,10 +423,10 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh }: AppsFun
                                 <div className="flex justify-between items-start mb-3">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center space-x-2 mb-2">
+                                            <span className="text-sm text-gray-600">({appCode || '-'})</span>
                                             <span className="text-sm font-semibold text-[#005496] bg-blue-50 px-2 py-1 rounded">
                                                 {funcCode || '-'}
                                             </span>
-                                            <span className="text-sm text-gray-600">({appCode || '-'})</span>
                                             <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
                                                 active
                                                     ? 'bg-green-100 text-green-800'
@@ -375,12 +539,12 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh }: AppsFun
                     })}
                 </div>
 
-                {data.length === 0 && !loading && (
+                {filteredData.length === 0 && !loading && (
                     <div className="text-center py-12 text-gray-500">
                         <div className="text-gray-400 mb-2">
                             <Eye size={48} className="mx-auto" />
                         </div>
-                        <p>No functions found</p>
+                        <p>{searchTerm ? `No functions found matching "${searchTerm}"` : 'No functions found'}</p>
                     </div>
                 )}
             </div>

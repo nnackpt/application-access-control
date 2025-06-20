@@ -130,7 +130,14 @@ export default function AppsFunctionsModal({
     if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4" onClick={onClose}>
+        <div 
+            className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4" 
+            onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                    onClose()
+                }
+            }}
+        >
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation}>
                 <div className="sticky top-0 bg-[#005496] text-white p-6 rounded-t-xl flex justify-between items-center">
                     <h2 className="text-xl font-semibold">
@@ -163,9 +170,9 @@ export default function AppsFunctionsModal({
                                     disabled={loading || loadingApps}
                                 >
                                     <option value="">Select APP Code</option>
-                                    {applications.map((app) => (
-                                        <option key={app.appCode} value={app.appCode}>
-                                            {app.appCode} - {app.name}
+                                    {applications.map((app, index) => (
+                                        <option key={`${app.title}-${index}`} value={app.title}>
+                                            {app.title}
                                         </option>
                                     ))}
                                 </select>
@@ -322,7 +329,7 @@ export default function AppsFunctionsModal({
                         </button>
                         <button
                             type="button"
-                            onCanPlay={handleSubmit}
+                            onClick={handleSubmit}
                             className="cursor-pointer px-6 py-3 bg-[#005496] text-white rounded-lg hover:bg-[#004080] transition-colors disabled:bg-gray-400"
                             disabled={loading}
                         >
