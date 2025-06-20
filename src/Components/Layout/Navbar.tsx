@@ -92,7 +92,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
           />
           
           {/* Dropdown Menu */}
-          <div className="absolute top-full right-0 mt-2 bg-white/95 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl z-20 min-w-max overflow-hidden animate-in slide-in-from-top-2 duration-200">
+          <div className="absolute top-full left-0 mt-2 bg-white/95 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl z-20 min-w-max overflow-hidden animate-in slide-in-from-top-2 duration-200">
             <div className="p-1">
               {items.map((item, index) => (
                 <Link
@@ -188,13 +188,8 @@ export default function Navbar() {
       {/* Bottom Navbar - Desktop Only */}
       <nav className="hidden md:block bg-gradient-to-r from-[#C1CBD3] to-[#B5C3CC] px-2 lg:px-4 shadow-inner">
         <div className="flex justify-between items-center min-h-[60px] py-3">
-          {/* User Info */}
-          <div className="order-2 lg:order-1 w-full lg:w-auto flex justify-center lg:justify-start mt-2 lg:mt-0">
-            <UserInfo />
-          </div>
-
           {/* Menu Items */}
-          <div className="order-1 lg:order-2 flex flex-wrap justify-center space-x-2 lg:space-x-3">
+          <div className="order-1 lg:order-1 flex flex-wrap justify-center space-x-2 lg:space-x-3">
             {menuData.map((menu) => (
               <DropdownMenu
                 key={menu.key}
@@ -205,6 +200,11 @@ export default function Navbar() {
                 onClose={() => handleMenuClose(menu.key)}
               />
             ))}
+          </div>
+
+          {/* User Info */}
+          <div className="order-2 lg:order-2 w-full lg:w-auto flex justify-center lg:justify-start mt-2 lg:mt-0">
+            <UserInfo />
           </div>
         </div>
       </nav>
