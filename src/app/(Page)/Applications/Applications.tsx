@@ -152,7 +152,7 @@ export default function Applications() {
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Active</p>
+                <p className="text-sm font-medium text-gray-600">Active Applications</p>
                 <p className="text-2xl font-bold text-green-600">
                   {loading ? '...' : activeApplications}
                 </p>
@@ -166,7 +166,7 @@ export default function Applications() {
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Inactive</p>
+                <p className="text-sm font-medium text-gray-600">Inactive Applications</p>
                 <p className="text-2xl font-bold text-red-600">
                   {loading ? '...' : inactiveApplications}
                 </p>
