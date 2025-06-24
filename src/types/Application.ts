@@ -1,5 +1,6 @@
 export interface Application {
-    appCode: string
+    APP_Code: string
+    apP_CODE: string
     name: string
     title: string
     desc?: string
