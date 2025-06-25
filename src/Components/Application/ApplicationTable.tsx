@@ -2,15 +2,18 @@ import React, { useEffect, useState } from "react"
 import { Eye, Edit, Trash2, ChevronDown, ChevronUp } from "lucide-react"
 import { Application } from "@/types/Application"
 import { applicationApi } from "@/services/applicationApi"
-import ApplicationModal from "./ApplicationModal"
 import ViewModal from "./ApplicationViewModal"
+import ApplicationEditModal from "./ApplicationEditModal"
+import DeleteConfirmModal from "../UI/DeleteConfirmModal"
+import toast, { Toaster } from "react-hot-toast"
 
 interface ApplicationTableProps {
   refreshSignal: number
   onRefresh: () => void
+  searchTerm: string
 }
 
-export default function ApplicationTable({ refreshSignal, onRefresh }: ApplicationTableProps) {
+export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm }: ApplicationTableProps) {
   const [data, setData] = useState<Application[]>([])
   const [loading, setLoading] = useState(false)
   const [viewData, setViewData] = useState<Application | null>(null)
@@ -19,6 +22,51 @@ export default function ApplicationTable({ refreshSignal, onRefresh }: Applicati
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+  const [currentPage, setCurrentPage] = useState(1)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [deleteModal, setDeleteModal] = useState<{app: Application|null, open: boolean}>({app: null, open: false})
+  const [deleteSuccess, setDeleteSuccess] = useState(false)
+
+  // ฟังก์ชันสำหรับดึงค่าจาก object ที่อาจมีชื่อ property ต่างกัน
+  const getValue = (obj: any, possibleKeys: string[]) => {
+    for (const key of possibleKeys) {
+      if (obj[key] !== undefined && obj[key] !== null) {
+        return obj[key]
+      }
+    }
+    return null
+  }
+
+  const getPaginatedData = () => {
+    const startIndex = (currentPage - 1) * rowsPerPage
+    const endIndex = startIndex + rowsPerPage
+    return rowsPerPage === 0 ? filteredData : filteredData.slice(startIndex, endIndex)
+  }
+
+  const getTotalPages = () => {
+    return rowsPerPage === 0 ? 1 : Math.ceil(filteredData.length / rowsPerPage)
+  }
+
+  const getDisplayInfo = () => {
+    if (filteredData.length === 0) return "Showing 0 of 0 Records"
+
+    if (rowsPerPage === 0) {
+      return `Showing 1 to ${filteredData.length} of ${filteredData.length} Records`
+    }
+
+    const startIndex = (currentPage - 1) * rowsPerPage + 1
+    const endIndex = Math.min(currentPage * rowsPerPage, filteredData.length)
+    return `Showing ${startIndex} to ${endIndex} of ${filteredData.length} Records`
+  }
+
+  const handleRowsPerPageChange = (value: number) => {
+    setRowsPerPage(value)
+    setCurrentPage(1)
+  }
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,7 +75,14 @@ export default function ApplicationTable({ refreshSignal, onRefresh }: Applicati
         const response = await applicationApi.getApplications()
         console.log('API Response:', response)
         console.log('First item:', response[0])
-        setData(response)
+        
+        const sortedResponse = [...response].sort((a, b) => {
+          const appCodeA = getValue(a, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE']) || ''
+          const appCodeB = getValue(b, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE']) || ''
+          return appCodeA.localeCompare(appCodeB)
+        })
+        
+        setData(sortedResponse)
       } catch (error) {
         console.error('Error fetching data:', error)
       } finally {
@@ -49,16 +104,28 @@ export default function ApplicationTable({ refreshSignal, onRefresh }: Applicati
   }
 
   const handleDelete = async (app: Application) => {
-    const appCode = getValue(app, ['appCode', 'apP_CODE', 'app_code', 'AppCode', 'APP_CODE', 'code', 'id'])
-    if (!confirm(`Are you sure you want to delete application "${app.name}"?`)) {
+    setDeleteModal({app, open: true})
+  }
+
+  const confirmDelete = async () => {
+    if (!deleteModal.app) return
+    const app = deleteModal.app
+    const appCode = getValue(app, ['appCode', 'app_code', 'AppCode', 'APP_CODE', 'APP_Code', 'apP_CODE', 'code', 'id']) || ''
+    if (!appCode) {
+      toast.error('Invalid application code')
       return
     }
-
     setDeleteLoading(appCode)
     try {
+      console.log('appCode for delete:', appCode)
       await applicationApi.deleteApplication(appCode)
+      setDeleteModal({ app: null, open: false })
+      toast.success('Successfully Delete!')
+      setDeleteSuccess(true)
       onRefresh()
+      setTimeout(() => setDeleteSuccess(false), 2000)
     } catch (error) {
+      toast.error("This didn't work.")
       console.error('Error deleting application:', error)
     } finally {
       setDeleteLoading(null)
@@ -83,24 +150,31 @@ export default function ApplicationTable({ refreshSignal, onRefresh }: Applicati
     })
   }
 
-  // ฟังก์ชันสำหรับดึงค่าจาก object ที่อาจมีชื่อ property ต่างกัน
-  const getValue = (obj: any, possibleKeys: string[]) => {
-    for (const key of possibleKeys) {
-      if (obj[key] !== undefined && obj[key] !== null) {
-        return obj[key]
-      }
-    }
-    return null
-  }
+  const filteredData = data.filter(app => {
+    const appCode = getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE']) || ''
+    const name = getValue(app, ['name', 'Name', 'app_name', 'appName']) || ''
+    const title = getValue(app, ['title', 'Title', 'app_title', 'appTitle']) || ''
+    const desc = getValue(app, ['desc', 'description', 'Description', 'app_desc', 'appDesc']) || ''
+    const baseUrl = getValue(app, ['basE_URL', 'baseUrl', 'base_url', 'BaseUrl', 'BASE_URL', 'url']) || ''
+    const loginUrl = getValue(app, ['logiN_URL', 'loginUrl', 'login_url', 'LoginUrl', 'LOGIN_URL']) || ''
+    const createdBy = getValue(app, ['createD_BY', 'createdBy', 'created_by', 'CreatedBy', 'CREATED_BY', 'creator']) || ''
+    const updatedBy = getValue(app, ['updateD_BY', 'updatedBy', 'updated_by', 'UpdatedBy', 'UPDATED_BY', 'modifier']) || ''
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '-'
-    try {
-      return new Date(dateString).toLocaleDateString('th-TH')
-    } catch {
-      return '-'
-    }
-  }
+    const matchesSearchTerm = searchTerm.toLowerCase()
+
+    const textMatches = (
+      appCode.toLowerCase().includes(matchesSearchTerm) ||
+      name.toLowerCase().includes(matchesSearchTerm) ||
+      title.toLowerCase().includes(matchesSearchTerm) ||
+      desc.toLowerCase().includes(matchesSearchTerm) ||
+      baseUrl.toLowerCase().includes(matchesSearchTerm) ||
+      loginUrl.toLowerCase().includes(matchesSearchTerm) ||
+      createdBy.toLowerCase().includes(matchesSearchTerm) ||
+      updatedBy.toLowerCase().includes(matchesSearchTerm)
+    )
+
+    return textMatches
+  })
 
   const formatDateTime = (dateString?: string) => {
     if (!dateString) return '-'
@@ -127,6 +201,87 @@ export default function ApplicationTable({ refreshSignal, onRefresh }: Applicati
 
   return (
     <>
+    <Toaster
+      position="bottom-center"
+      reverseOrder={false}
+    />
+      <div className="bg-white rounded-lg p-4 mb-4 shadow-sm border border-gray-200">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-600">Display</span>
+              <select
+                value={rowsPerPage}
+                onChange={(e) => handleRowsPerPageChange(Number(e.target.value))}
+                className="border border-gray-300 rounded px-3 py-1 text-sm focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none"
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+                <option value={0}>ALL</option>
+              </select>
+              <span className="text-sm text-gray-600">Records</span>
+            </div>
+            <div className="text-sm text-gray-600">
+              {getDisplayInfo()}
+            </div>
+          </div>
+
+          {/* Pagination Buttons */}
+          {rowsPerPage > 0 && getTotalPages() > 1 && (
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              >
+                Previous
+              </button>
+
+              <div className="flex space-x-1">
+                {Array.from({ length: getTotalPages() }, (_, i) => i + 1)
+                  .filter(page => {
+                    return page === 1 || page === getTotalPages() ||
+                      Math.abs(page - currentPage) <= 1
+                  })
+                  .map((page, index, array) => {
+                    const prevPage = array[index - 1]
+                    const showDots = prevPage && page - prevPage > 1
+
+                    return (
+                      <React.Fragment key={page}>
+                        {showDots && (
+                          <span className="px-2 py-1 text-gray-400">...</span>
+                        )}
+                        <button
+                          onClick={() => setCurrentPage(page)}
+                          className={`px-3 py-1 border rounded text-sm ${
+                            currentPage === page
+                              ? 'bg-[#005495] text-white border-[#005496]'
+                              : 'border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      </React.Fragment>
+                    )
+                  })
+                }
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, getTotalPages()))}
+                disabled={currentPage === getTotalPages()}
+                className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="bg-white rounded-xl shadow-lg overflow-hidden">
         {/* Desktop View */}
         <div className="hidden xl:block">
@@ -146,7 +301,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh }: Applicati
                 </tr>
               </thead>
               <tbody>
-                {data.map((app, index) => {
+                {getPaginatedData().map((app, index) => {
                   const appCode = getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE', 'code', 'id'])
                   const name = getValue(app, ['name', 'Name', 'app_name', 'appName'])
                   const title = getValue(app, ['title', 'Title', 'app_title', 'appTitle'])
@@ -165,7 +320,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh }: Applicati
                       <td className="px-3 py-3 font-medium text-sm">{name || '-'}</td>
                       <td className="px-3 py-3 text-sm">{title || '-'}</td>
                       <td className="px-3 py-3 text-sm max-w-[150px]">
-                        <div className="truncate" title={desc || ''}>
+                        <div className="whitespace-pre-wrap" title={desc || ''}>
                           {desc || '-'}
                         </div>
                       </td>
@@ -180,15 +335,21 @@ export default function ApplicationTable({ refreshSignal, onRefresh }: Applicati
                       </td>
                       <td className="px-3 py-3 text-sm max-w-[120px]">
                         {baseUrl ? (
-                          <a 
-                            href={baseUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#005496] hover:underline truncate block"
-                            title={baseUrl}
-                          >
-                            {baseUrl.length > 15 ? `${baseUrl.substring(0, 15)}...` : baseUrl}
-                          </a>
+                          baseUrl.startsWith('http://') || baseUrl.startsWith('https://') ? (
+                            <a 
+                              href={baseUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#005496] hover:underline truncate block"
+                              title={baseUrl}
+                            >
+                              {baseUrl.length > 15 ? `${baseUrl.substring(0, 15)}...` : baseUrl}
+                            </a>
+                          ) : (
+                            <div className="truncate" title={baseUrl}>
+                              {baseUrl.length > 15 ? `${baseUrl.substring(0, 15)}...` : baseUrl}
+                            </div>
+                          )
                         ) : (
                           '-'
                         )}
@@ -196,20 +357,20 @@ export default function ApplicationTable({ refreshSignal, onRefresh }: Applicati
                       <td className="px-3 py-3 text-sm max-w-[120px]">
                         {loginUrl ? (
                           loginUrl.startsWith('http://') || loginUrl.startsWith('https://') ? (
-                          <a
-                            href={loginUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#005496] hover:underline truncate block"
-                            title={loginUrl}
-                          >
-                            {loginUrl.length > 15 ? `${loginUrl.substring(0, 15)}...` : loginUrl}
-                          </a>
-                        ) : (
-                          <div className="truncate" title={loginUrl}>
-                            {loginUrl.length > 15 ? `${loginUrl.substring(0, 15)}...` : loginUrl}
-                          </div>
-                        )
+                            <a
+                              href={loginUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#005496] hover:underline truncate block"
+                              title={loginUrl}
+                            >
+                              {loginUrl.length > 15 ? `${loginUrl.substring(0, 15)}...` : loginUrl}
+                            </a>
+                          ) : (
+                            <div className="truncate" title={loginUrl}>
+                              {loginUrl.length > 15 ? `${loginUrl.substring(0, 15)}...` : loginUrl}
+                            </div>
+                          )
                         ) : (
                           '-'
                         )}
@@ -262,7 +423,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh }: Applicati
 
         {/* Mobile & Tablet View - Card Layout */}
         <div className="xl:hidden">
-          {data.map((app, index) => {
+          {getPaginatedData().map((app, index) => {
             const appCode = getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE', 'code', 'id'])
             const name = getValue(app, ['name', 'Name', 'app_name', 'appName'])
             const title = getValue(app, ['title', 'Title', 'app_title', 'appTitle'])
@@ -351,14 +512,18 @@ export default function ApplicationTable({ refreshSignal, onRefresh }: Applicati
                         <span className="font-medium text-gray-600">Base URL:</span>
                         <div className="mt-1">
                           {baseUrl ? (
-                            <a 
-                              href={baseUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-[#005496] hover:underline break-all"
-                            >
-                              {baseUrl}
-                            </a>
+                            baseUrl.startsWith('http://') || baseUrl.startsWith('https://') ? (
+                              <a 
+                                href={baseUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#005496] hover:underline break-all"
+                              >
+                                {baseUrl}
+                              </a>
+                            ) : (
+                              <span className="text-gray-900 break-all">{baseUrl}</span>
+                            )
                           ) : (
                             <span className="text-gray-500">-</span>
                           )}
@@ -416,12 +581,12 @@ export default function ApplicationTable({ refreshSignal, onRefresh }: Applicati
           })}
         </div>
         
-        {data.length === 0 && !loading && (
+        {filteredData.length === 0 && !loading && (
           <div className="text-center py-12 text-gray-500">
             <div className="text-gray-400 mb-2">
               <Eye size={48} className="mx-auto" />
             </div>
-            <p>No applications found</p>
+            <p>{searchTerm ? `No applications found matching your criteria` : 'No applications found'}</p>
           </div>
         )}
       </div>
@@ -432,12 +597,27 @@ export default function ApplicationTable({ refreshSignal, onRefresh }: Applicati
         data={viewData}
       />
 
-      <ApplicationModal
+      <ApplicationEditModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSuccess={handleEditSuccess}
-        editData={editData}
+        editData={editData!}
       />
+
+      <DeleteConfirmModal
+        isOpen={deleteModal.open}
+        onClose={() => setDeleteModal({app: null, open: false})}
+        onConfirm={confirmDelete}
+        appName={deleteModal.app ? getValue(deleteModal.app, ['title', 'TITLE', 'Title', 'appName']) || '' : ''}
+        loading={!!deleteLoading}
+      />
+
+      {deleteSuccess && (
+        <Toaster
+          position="bottom-center"
+          reverseOrder={false}
+        />
+      )}
     </>
   )
 }
