@@ -16,7 +16,10 @@ class AppsFunctionsApiService {
             throw new Error(`HTTP Error! status: ${response.status}`)
         }
 
-        return response.json()
+        if (response.status === 204) return null
+        const text = await response.text()
+        if (!text) return null
+        return JSON.parse(text)
     }
 
     async getAppsFunctions(): Promise<AppsFunctions[]> {
