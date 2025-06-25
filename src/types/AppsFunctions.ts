@@ -1,9 +1,9 @@
 export interface AppsFunctions {
-    funcCode: string
-    appCode: string
+    funC_CODE: string
+    apP_CODE: string
     name: string
     desc?: string
-    funcUrl?: string
+    funC_URL?: string
     active?: boolean
     createdBy?: string
     createdDatetime?: string
