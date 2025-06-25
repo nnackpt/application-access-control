@@ -1,17 +1,21 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Plus, RefreshCcw, Settings } from "lucide-react"
+import { Download, Plus, Search, Settings } from "lucide-react"
 import ApplicationTable from "@/Components/Application/ApplicationTable"
-import ApplicationModal from "@/Components/Application/ApplicationModal"
 import { applicationApi } from "@/services/applicationApi"
 import { Application } from "@/types/Application"
+import ApplicationCreateModal from "@/Components/Application/ApplicationCreateModal"
+import ApplicationEditModal from "@/Components/Application/ApplicationEditModal"
 
 export default function Applications() {
   const [refresh, setRefresh] = useState(0)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editData, setEditData] = useState<Application | null>(null)
   const [applications, setApplications] = useState<Application[]>([])
   const [loading, setLoading] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
 
   // ฟังก์ชันสำหรับดึงค่าจาก object ที่อาจมีชื่อ property ต่างกัน
   const getValue = (obj: any, possibleKeys: string[]) => {
@@ -21,6 +25,49 @@ export default function Applications() {
       }
     }
     return null
+  }
+
+  // const handleOpenCreate = () => setIsCreateModalOpen(true)
+  // const handleOpenEdit = (app: Application) => {
+  //   setEditData(app)
+  //   setIsEditModalOpen(true)
+  // }
+
+  const handleExport = () => {
+    try {
+        const exportData = applications.map(app => ({
+            'APP Code': getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE']) || '',
+            'Name': getValue(app, ['name', 'Name', 'func_name', 'funcName']) || '',
+            'Title': getValue(app, ['title', 'TITLE']) || '',
+            'Description': getValue(app, ['desc', 'description', 'Description', 'func_desc', 'funcDesc']) || '',
+            'Active': getValue(app, ['active', 'Active', 'is_active', 'isActive', 'status']) ? 'Yes' : 'No',
+            'Base URL': getValue(app, ['base_URL', 'baseUrl', 'baseURL', 'base_url', 'BaseURL', 'BASE_URL']) || '',
+            'Login URL': getValue(app, ['login_URL', 'loginURL', 'login_url', 'LoginURL', 'LOGIN_URL', 'loginUrl']) || '',
+            'Created By': getValue(app, ['createD_BY', 'createdBy', 'created_by', 'CreatedBy', 'CREATED_BY', 'creator']) || '',
+            'Created Date': getValue(app, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date']) || '',
+            'Updated By': getValue(app, ['updateD_BY', 'updatedBy', 'updated_by', 'UpdatedBy', 'UPDATED_BY', 'modifier']) || '',
+            'Updated Date': getValue(app, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date']) || ''
+        }))
+
+        const headers = Object.keys(exportData[0] || {})
+        const csvContent = [
+            headers.join(','),
+            ...exportData.map(row => headers.map(header => `"${row[header]}"`).join(','))
+        ].join('\n')
+
+        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+        const link = document.createElement('a')
+        const url = URL.createObjectURL(blob)
+        link.setAttribute('href', url)
+        link.setAttribute('download', `Application_${new Date().toISOString().split('T')[0]}.csv`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+    } catch (error) {
+        console.error('Error exporting data:', error)
+        alert('Error exporting data. Please try again')
+    }
   }
 
   // ดึงข้อมูลสำหรับ stats
@@ -93,42 +140,47 @@ export default function Applications() {
       <div className="p-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex justify-between items-start">
-            <div>
-              <div className="flex items-center space-x-3 mb-2">
-                <div className="p-2 bg-[#005496] rounded-lg">
-                  <Settings className="text-white" size={24} />
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <div className="flex space-x-3">
+
+                <div className="bg-[#005496] rounded-lg shadow-lg p-[3px]"> {/* ชั้นที่ 1: สีน้ำเงินเข้ม #005496 (ด้านหลังสุด) */}
+                    <div className="bg-[#FBFCFD] rounded-lg p-[3px]"> {/* ชั้นที่ 2: สีขาว #FBFCFD (ชั้นกลาง) */}
+                        <div className="bg-[#009EE3] text-white px-4 py-2 rounded-lg flex items-center justify-center"> {/* ชั้นที่ 3: สีน้ำเงิน #009EE3 (ชั้นบนสุดพร้อมข้อความ) */}
+                            <span>Applications List</span>
+                        </div>
+                    </div>
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900">Application Management</h1>
-              </div>
-              <p className="text-gray-600">Manage your applications and their configurations</p>
-              <div className="mt-4 flex space-x-4 text-sm text-gray-500">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-green-100 border border-green-300 rounded-full"></div>
-                  <span>Active Applications</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-red-100 border border-red-300 rounded-full"></div>
-                  <span>Inactive Applications</span>
-                </div>
+
+                <button
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg hover:bg-[#004080] transition-colors shadow-lg cursor-pointer"
+                >
+                    <Plus size={20} />
+                    <span>Create New Application's</span>
+                </button>
+
+                <button
+                    onClick={handleExport}
+                    className="flex items-center space-x-2 bg-gray-400 hover:bg-gray-500 text-white px-6 py-3 rounded-lg transition-colors shadow-lg cursor-pointer"
+                >
+                    <Download size={20} />
+                    <span>Export Application's</span>
+                </button>
               </div>
             </div>
-            <div className="flex space-x-3">
-              <button
-                onClick={handleRefresh}
-                className="flex items-center space-x-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
-                disabled={loading}
-              >
-                <RefreshCcw size={16} className={loading ? 'animate-spin' : ''} />
-                <span>Refresh</span>
-              </button>
-              <button
-                onClick={() => setIsCreateModalOpen(true)}
-                className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-3 rounded-lg hover:bg-[#004080] transition-colors shadow-lg cursor-pointer"
-              >
-                <Plus size={20} />
-                <span>Create New Application</span>
-              </button>
+
+            <div className="flex ites-center space-x-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                <input 
+                  type="text" 
+                  placeholder="Search Applications..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"  
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -196,13 +248,20 @@ export default function Applications() {
         <ApplicationTable 
           refreshSignal={refresh} 
           onRefresh={handleRefresh}
+          searchTerm={searchTerm}
         />
 
-        {/* Create Modal */}
-        <ApplicationModal
+        {/* Create/Edit Modal */}
+        <ApplicationCreateModal
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
-          onSuccess={handleCreateSuccess}
+          onSuccess={handleCreateSuccess} 
+        />
+        <ApplicationEditModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          onSuccess={handleRefresh}
+          editData={editData!} 
         />
       </div>
     </main>
