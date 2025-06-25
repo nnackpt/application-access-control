@@ -1,18 +1,27 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Plus, RefreshCcw, Code, Calculator, Search, Download } from "lucide-react"
+import { Plus, Calculator, Search, Download, ChevronDown } from "lucide-react"
 import AppsFunctionsTable from "@/Components/AppsFunctions/AppsFunctionsTable"
-import AppsFunctionsModal from "@/Components/AppsFunctions/AppsFunctionsModal"
 import { AppsfunctionsApi } from "@/services/AppsfunctionsApi"
-import { AppsFunctions } from "@/types/AppsFunctions"
+import type { AppsFunctions } from "@/types/AppsFunctions"
+import { applicationApi } from "@/services/applicationApi"
+import { Application } from "@/types/Application"
+import AppsFunctionsCreateModal from "@/Components/AppsFunctions/AppsFunctionsCreateModal"
+import AppsFunctionsEditModal from "@/Components/AppsFunctions/AppsFunctionsEditModal"
 
 export default function AppsFunctions() {
   const [refresh, setRefresh] = useState(0)
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editFunction, setEditFunction] = useState<AppsFunctions | null>(null)
   const [appsFunctions, setAppsFunctions] = useState<AppsFunctions[]>([])
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
+  const [selectedAppTitle, setSelectedAppTitle] = useState("all")
+  const [applicationTitle, setApplicationTitle] = useState<Record<string, string>>({})
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editData, setEditData] = useState<AppsFunctions | null>(null)
 
   // ฟังก์ชันสำหรับดึงค่าจาก object ที่อาจมีชื่อ property ต่างกัน
   const getValue = (obj: any, possibleKeys: string[]) => {
@@ -42,7 +51,7 @@ export default function AppsFunctions() {
         const headers = Object.keys(exportData[0] || {})
         const csvContent = [
             headers.join(','),
-            ...exportData.map(row => headers.map(header => `"${row[header]}"`).join(','))
+            ...exportData.map(row => headers.map(header => `"${(row as Record<string, any>)[header]}"`).join(','))
         ].join('\n')
 
         const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
@@ -60,30 +69,60 @@ export default function AppsFunctions() {
     }
   }
 
+  const handleOpenCreateModal = () => {
+    setEditFunction(null)
+    setIsModalOpen(true)
+  }
+
+  const handleEditFunction = (func: AppsFunctions) => {
+    setEditFunction(func)
+    setIsModalOpen(true)
+  }
+
+  const handleModalClose = () => {
+    setIsModalOpen(false)
+    setEditFunction(null)
+  }
+
+  const handleSuccess = () => {
+    setIsModalOpen(false)
+    setEditFunction(null)
+    handleRefresh()
+  }
+
   // ดึงข้อมูลสำหรับ stats
   useEffect(() => {
-    const fetchAppsFunctions = async () => {
+    const fetchAppsAndFunctions = async () => {
       setLoading(true)
       try {
-        const response = await AppsfunctionsApi.getAppsFunctions()
-        setAppsFunctions(response)
+        const [functionsResponse, applicationsResponse] = await Promise.all([
+          AppsfunctionsApi.getAppsFunctions(),
+          applicationApi.getApplications()
+        ])
+        setAppsFunctions(functionsResponse)
+
+        const TitlesMap: Record<string, string> = {}
+        applicationsResponse.forEach((app: Application) => {
+          const appCode = getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE', 'code', 'id'])
+          const appTitle = getValue(app, ['title', 'TITLE'])
+          if (appCode && appTitle) {
+            TitlesMap[appCode] = appTitle
+          }
+        })
+        setApplicationTitle(TitlesMap)
+
       } catch (error) {
-        console.error('Error fetching apps functions:', error)
+        console.error('Error fetching data:', error)
       } finally {
         setLoading(false)
       }
     }
     
-    fetchAppsFunctions()
+    fetchAppsAndFunctions()
   }, [refresh])
 
   const handleRefresh = () => {
     setRefresh(prev => prev + 1)
-  }
-
-  const handleCreateSuccess = () => {
-    setIsCreateModalOpen(false)
-    handleRefresh()
   }
 
   // คำนวณ stats จากข้อมูล apps functions
@@ -95,9 +134,20 @@ export default function AppsFunctions() {
   const inactiveFunctions = totalFunctions - activeFunctions
 
   // นับจำนวน unique applications
-  const uniqueApplications = new Set(appsFunctions.map(func => {
+  const uniqueAppTitles = Array.from(new Set(appsFunctions.map(func => {
     return getValue(func, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE'])
-  }).filter(Boolean)).size
+  }).filter(Boolean))) as (string | number)[]
+
+  const sortedAppTitles = uniqueAppTitles.sort((a, b) => {
+    const numA = parseFloat(String(a))
+    const numB = parseFloat(String(b))
+    
+    if (!isNaN(numA) && !isNaN(numB)) {
+      return numA - numB
+    } else {
+      return String(a).localeCompare(String(b))
+    }
+  })
 
   // หาวันที่ updated ล่าสุด
   const getLastUpdated = () => {
@@ -137,14 +187,22 @@ export default function AppsFunctions() {
         <div className="mb-8">
             <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-4">
-
                     <div className="flex space-x-3">
+
+                        <div className="bg-[#005496] rounded-lg shadow-lg p-[3px]"> {/* ชั้นที่ 1: สีน้ำเงินเข้ม #005496 (ด้านหลังสุด) */}
+                            <div className="bg-[#FBFCFD] rounded-lg p-[3px]"> {/* ชั้นที่ 2: สีขาว #FBFCFD (ชั้นกลาง) */}
+                                <div className="bg-[#009EE3] text-white px-4 py-2 rounded-lg flex items-center justify-center"> {/* ชั้นที่ 3: สีน้ำเงิน #009EE3 (ชั้นบนสุดพร้อมข้อความ) */}
+                                    <span>Application's Function's</span>
+                                </div>
+                            </div>
+                        </div>
+                          
                         <button
                             onClick={() => setIsCreateModalOpen(true)}
                             className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg hover:bg-[#004080] transition-colors shadow-lg cursor-pointer"
                         >
                             <Plus size={20} />
-                            <span>Create New Function</span>
+                            <span>Create New Application's Function</span>
                         </button>
 
                         <button
@@ -152,17 +210,34 @@ export default function AppsFunctions() {
                             className="flex items-center space-x-2 bg-gray-400 hover:bg-gray-500 text-white px-6 py-3 rounded-lg transition-colors shadow-lg cursor-pointer"
                         >
                             <Download size={20} />
-                            <span>Export Excel</span>
+                            <span>Export Application's Function</span>
                         </button>
                     </div>
                 </div>
 
                 <div className="flex items-center space-x-3">
+                  <div className="relative">
+                    {/* Select for Application Title */}
+                    <select
+                        value={selectedAppTitle}
+                        onChange={(e) => setSelectedAppTitle(e.target.value)}
+                        className="cursor-pointer border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-[#005496] focus:border-[#005496] appearance-none outline-none"
+                    >
+                        <option value="all">All Applications</option>
+                        {sortedAppTitles.map(appCode => (
+                            <option key={appCode} value={appCode.toString()}>
+                                {applicationTitle[appCode.toString()] || `Unknown App (${appCode})`}
+                            </option>
+                        ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                  </div>
+
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                         <input 
                             type="text" 
-                            placeholder="Search functions..."
+                            placeholder="Search Functions..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"     
@@ -236,13 +311,22 @@ export default function AppsFunctions() {
           refreshSignal={refresh} 
           onRefresh={handleRefresh}
           searchTerm={searchTerm}
+          selectedTitle={selectedAppTitle}
         />
 
         {/* Create Modal */}
-        <AppsFunctionsModal
+        <AppsFunctionsCreateModal
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
-          onSuccess={handleCreateSuccess}
+          onSuccess={handleRefresh}
+        />
+
+        {/* Edit Modal */}
+        <AppsFunctionsEditModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          onSuccess={handleRefresh} 
+          editData={editData!}
         />
       </div>
     </main>

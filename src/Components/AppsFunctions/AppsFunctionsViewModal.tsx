@@ -27,7 +27,7 @@ export default function ViewModal({
     const appCode = getValue(data, ['apP_CODE', 'APP_CODE'])
     const name = getValue(data, ['name', 'Name', 'NAME'])
     const desc = getValue(data, ['desc', 'DESC'])
-    const funcUrl = getValue(data, ['funC_URL', 'FUNC_URL'])
+    const funC_URL = getValue(data, ['funC_URL', 'FUNC_URL'])
     const active = getValue(data, ['active', 'Active', 'ACTIVE'])
     const createdBy = getValue(data, ['createD_BY', 'CREATED_BY'])
     const createdDatetime = getValue(data, ['createD_DATETIME', 'CREATED_DATETIME'])
@@ -89,7 +89,11 @@ export default function ViewModal({
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-600 mb-1">Functions URL</label>
-                            <p className="text-gray-900 break-all">{funcUrl || '-'}</p>
+                            {funC_URL && typeof funC_URL === 'string' && (funC_URL.startsWith('http://') || funC_URL.startsWith('https://')) ? (
+                                <a href={funC_URL} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{funC_URL}</a>
+                            ) : (
+                                <p className="text-gray-900 break-all">{funC_URL || '-'}</p>
+                            )}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-600 mb-1">Created By</label>
