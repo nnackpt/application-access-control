@@ -93,11 +93,19 @@ export default function ViewModal({
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Base URL</label>
-              <p className="text-gray-900 break-all">{baseUrl || '-'}</p>
+              {baseUrl && typeof baseUrl === 'string' && (baseUrl.startsWith('http://') || baseUrl.startsWith('https://')) ? (
+                <a href={baseUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{baseUrl}</a>
+              ) : (
+                <p className="text-gray-900 break-all">{baseUrl || '-'}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Login URL</label>
-              <p className="text-gray-900 break-all">{loginUrl || '-'}</p>
+              {loginUrl && typeof loginUrl === 'string' && (loginUrl.startsWith('http://') || loginUrl.startsWith('https://')) ? (
+                <a href={loginUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{loginUrl}</a>
+              ) : (
+                <p className="text-gray-900 break-all">{loginUrl || '-'}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Created By</label>

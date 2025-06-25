@@ -9,12 +9,12 @@ const initForm: Application = {
   name: '',
   title: '',
   desc: '',
-  baseUrl: '',
-  loginUrl: '',
+  basE_URL: '',
+  logiN_URL: '',
   active: true,
-  createdBy: '',
-  createdDatetime: '',
-  updatedBy: ''
+  createD_BY: '',
+  createD_DATETIME: '',
+  updateD_BY: ''
 }
 
 function getBangkokISOString() {
@@ -66,10 +66,10 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
         name: form.name,
         title: form.title,
         desc: form.desc,
-        basE_URL: form.baseUrl,
-        logiN_URL: form.loginUrl,
+        basE_URL: form.basE_URL,
+        logiN_URL: form.logiN_URL,
         active: form.active,
-        createD_BY: form.createdBy || 'system',
+        createD_BY: form.createD_BY || 'system',
         createD_DATETIME: getBangkokISOString(),
         updateD_BY: '',
       }
@@ -190,17 +190,17 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
               <div className="relative">
                 <input
                   type="url"
-                  name="baseUrl"
-                  value={form.baseUrl || ''}
+                  name="basE_URL"
+                  value={form.basE_URL || ''}
                   onChange={handleChange}
                   // placeholder="https://example.com"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496]"
                   disabled={loading}
                 />
-                {form.baseUrl && (
+                {form.basE_URL && (
                   <button
                     type="button"
-                    onClick={() => setForm(prev => ({ ...prev, baseUrl: '' }))}
+                    onClick={() => setForm(prev => ({ ...prev, basE_URL: '' }))}
                     className="cursor-pointer absolute inset-y-0 right-0 flex items-center pr-3 text-red-400 hover:text-red-600"
                     disabled={loading}
                   >
@@ -215,17 +215,17 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
               <div className="relative">
                 <input
                   type="url"
-                  name="loginUrl"
-                  value={form.loginUrl || ''}
+                  name="logiN_URL"
+                  value={form.logiN_URL || ''}
                   onChange={handleChange}
                   // placeholder="https://example.com/login"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496]"
                   disabled={loading}
                 />
-                {form.loginUrl && (
+                {form.logiN_URL && (
                   <button
                     type="button"
-                    onClick={() => setForm(prev => ({ ...prev, loginUrl: '' }))}
+                    onClick={() => setForm(prev => ({ ...prev, logiN_URL: '' }))}
                     className="cursor-pointer absolute inset-y-0 right-0 flex items-center pr-3 text-red-400 hover:text-red-600"
                     disabled={loading}
                   >
@@ -254,17 +254,17 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
               <div className="relative">
                 <input
                   type="text"
-                  name="createdBy"
-                  value={form.createdBy || ''}
+                  name="createD_BY"
+                  value={form.createD_BY || ''}
                   onChange={handleChange}
                   // placeholder="system"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496]"
                   disabled={loading}
                 />
-                {form.createdBy && (
+                {form.createD_BY && (
                     <button
                       type="button"
-                      onClick={() => setForm(prev => ({ ...prev, createdBy: '' }))}
+                      onClick={() => setForm(prev => ({ ...prev, createD_BY: '' }))}
                       className="cursor-pointer absolute inset-y-0 right-0 flex items-center pr-3 text-red-400 hover:text-red-600"
                       disabled={loading}
                     >
