@@ -3,12 +3,13 @@ import { Trash2, X } from "lucide-react"
 import { Application } from "@/types/Application"
 import { applicationApi } from "@/services/applicationApi"
 import toast from "react-hot-toast"
+import getBangkokISOString from "@/Utils/getBangkokISOString"
 
-function getBangkokISOString() {
-  const now = new Date()
-  const bangkok = new Date(now.getTime() + (7 * 60 * 60 * 1000))
-  return bangkok.toISOString().slice(0, 19)
-}
+// function getBangkokISOString() {
+//   const now = new Date()
+//   const bangkok = new Date(now.getTime() + (7 * 60 * 60 * 1000))
+//   return bangkok.toISOString().slice(0, 19)
+// }
 
 const initForm: Application = {
   // APP_Code: '',

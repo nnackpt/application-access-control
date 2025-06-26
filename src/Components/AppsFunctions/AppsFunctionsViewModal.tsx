@@ -1,4 +1,5 @@
 import { AppsFunctions } from "@/types/AppsFunctions"
+import getValue from "@/Utils/getValue"
 import { X } from "lucide-react"
 
 interface ViewModelProps {
@@ -14,14 +15,14 @@ export default function ViewModal({
 }: ViewModelProps) {
     if (!isOpen || !data) return null
 
-    const getValue = (obj: any, possibleKeys: string[]) => {
-        for (const key of possibleKeys) {
-            if (obj[key] !== undefined && obj[key] !== null) {
-                return obj[key]
-            }
-        }
-        return null
-    }
+    // const getValue = (obj: any, possibleKeys: string[]) => {
+    //     for (const key of possibleKeys) {
+    //         if (obj[key] !== undefined && obj[key] !== null) {
+    //             return obj[key]
+    //         }
+    //     }
+    //     return null
+    // }
 
     const funcCode = getValue(data, ['funC_CODE', 'FUNC_CODE'])
     const appCode = getValue(data, ['apP_CODE', 'APP_CODE'])

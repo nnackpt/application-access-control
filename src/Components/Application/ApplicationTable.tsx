@@ -6,6 +6,9 @@ import ViewModal from "./ApplicationViewModal"
 import ApplicationEditModal from "./ApplicationEditModal"
 import DeleteConfirmModal from "../UI/DeleteConfirmModal"
 import toast, { Toaster } from "react-hot-toast"
+import getValue from "@/Utils/getValue"
+import formatDateTime from "@/Utils/formatDateTime"
+import Pagination from "../UI/Pagination"
 
 interface ApplicationTableProps {
   refreshSignal: number
@@ -26,16 +29,6 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [deleteModal, setDeleteModal] = useState<{app: Application|null, open: boolean}>({app: null, open: false})
   const [deleteSuccess, setDeleteSuccess] = useState(false)
-
-  // ฟังก์ชันสำหรับดึงค่าจาก object ที่อาจมีชื่อ property ต่างกัน
-  const getValue = (obj: any, possibleKeys: string[]) => {
-    for (const key of possibleKeys) {
-      if (obj[key] !== undefined && obj[key] !== null) {
-        return obj[key]
-      }
-    }
-    return null
-  }
 
   const getPaginatedData = () => {
     const startIndex = (currentPage - 1) * rowsPerPage
@@ -176,21 +169,6 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
     return textMatches
   })
 
-  const formatDateTime = (dateString?: string) => {
-    if (!dateString) return '-'
-    try {
-      return new Date(dateString).toLocaleString('th-TH', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    } catch {
-      return '-'
-    }
-  }
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -230,54 +208,11 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
 
           {/* Pagination Buttons */}
           {rowsPerPage > 0 && getTotalPages() > 1 && (
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-              >
-                Previous
-              </button>
-
-              <div className="flex space-x-1">
-                {Array.from({ length: getTotalPages() }, (_, i) => i + 1)
-                  .filter(page => {
-                    return page === 1 || page === getTotalPages() ||
-                      Math.abs(page - currentPage) <= 1
-                  })
-                  .map((page, index, array) => {
-                    const prevPage = array[index - 1]
-                    const showDots = prevPage && page - prevPage > 1
-
-                    return (
-                      <React.Fragment key={page}>
-                        {showDots && (
-                          <span className="px-2 py-1 text-gray-400">...</span>
-                        )}
-                        <button
-                          onClick={() => setCurrentPage(page)}
-                          className={`px-3 py-1 border rounded text-sm ${
-                            currentPage === page
-                              ? 'bg-[#005495] text-white border-[#005496]'
-                              : 'border-gray-300 hover:bg-gray-50'
-                          }`}
-                        >
-                          {page}
-                        </button>
-                      </React.Fragment>
-                    )
-                  })
-                }
-              </div>
-
-              <button
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, getTotalPages()))}
-                disabled={currentPage === getTotalPages()}
-                className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-              >
-                Next
-              </button>
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={getTotalPages()}
+              onPageChange={setCurrentPage}
+            />
           )}
         </div>
       </div>

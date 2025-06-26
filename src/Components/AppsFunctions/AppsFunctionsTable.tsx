@@ -6,6 +6,9 @@ import { ChevronDown, ChevronUp, Edit, Eye, Trash2 } from "lucide-react"
 import toast, { Toaster } from "react-hot-toast"
 import AppsFunctionsEditModal from "./AppsFunctionsEditModal"
 import DeleteConfirmModal from "../UI/DeleteConfirmModal"
+import getValue from "@/Utils/getValue"
+import formatDateTime from "@/Utils/formatDateTime"
+import Pagination from "../UI/Pagination"
 
 interface AppsFunctionsTableProps {
     refreshSignal: number
@@ -15,14 +18,14 @@ interface AppsFunctionsTableProps {
 }
 
 // ฟังก์ชันสำหรับดึงค่าจาก object ที่อาจมีชื่อ property ต่างกัน
-const getValue = (obj: any, possibleKeys: string[]) => {
-    for (const key of possibleKeys) {
-        if (obj[key] !== undefined && obj[key] !== null) {
-            return obj[key]
-        }
-    }
-    return null
-}
+// const getValue = (obj: any, possibleKeys: string[]) => {
+//     for (const key of possibleKeys) {
+//         if (obj[key] !== undefined && obj[key] !== null) {
+//             return obj[key]
+//         }
+//     }
+//     return null
+// }
 
 export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTerm, selectedTitle }: AppsFunctionsTableProps) {
     const [data, setData] = useState<AppsFunctions[]>([])
@@ -175,41 +178,20 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
         return appCodeMatches && textMatches
     })
 
-    const formatDateTime = (dateString?: string) => {
-        if (!dateString) return '-'
-        try {
-            return new Date(dateString).toLocaleString('th-TH', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-            })
-        } catch {
-            return '-'
-        }
-    }
-
-    const wordWrap = (text: string, maxLength: number) => {
-        if (!text) return '-'
-        let result = ''
-        let currentLength = 0
-        for (let i = 0; i < text.length; i++) {
-            result += text[i]
-            currentLength++;
-            if (currentLength >= maxLength && text[i] !== ' ' && text[i] !== '-' && text[i] !== '_' && text[i] !== '/') {
-                if (i < text.length - 1) {
-                    result += '\n'
-                    currentLength = 0
-                }
-            } else if ((text[i] === ' ' || text[i] === '-' || text[i] === '_' || text[i] === '/') && i < text.length - 1) {
-                result += '\n'
-                currentLength = 9
-            }
-        }
-
-        return result
-    }
+    // const formatDateTime = (dateString?: string) => {
+    //     if (!dateString) return '-'
+    //     try {
+    //         return new Date(dateString).toLocaleString('th-TH', {
+    //             year: 'numeric',
+    //             month: '2-digit',
+    //             day: '2-digit',
+    //             hour: '2-digit',
+    //             minute: '2-digit'
+    //         })
+    //     } catch {
+    //         return '-'
+    //     }
+    // }
 
     if (loading) {
         return (
@@ -250,54 +232,11 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
 
                     {/* Pageination Btn */}
                     {rowsPerPage > 0 && getTotalPages() > 1 && (
-                        <div className="flex items-center space-x-2">
-                            <button
-                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                disabled={currentPage === 1}
-                                className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                            >
-                                Previous
-                            </button>
-
-                            <div className="flex space-x-1">
-                                {Array.from({ length: getTotalPages() }, (_, i) => i + 1)
-                                    .filter(page => {
-                                        return page === 1 || page === getTotalPages() ||
-                                            Math.abs(page - currentPage) <= 1
-                                    })
-                                    .map((page, index, array) => {
-                                        const prevPage = array[index - 1]
-                                        const showDots = prevPage && page - prevPage > 1
-
-                                        return (
-                                            <React.Fragment key={page}>
-                                                {showDots && (
-                                                    <span className="px-2 py-1 text-gray-400">...</span>
-                                                )}
-                                                <button
-                                                    onClick={() => setCurrentPage(page)}
-                                                    className={`px-3 py-1 border rounded text-sm ${
-                                                        currentPage === page
-                                                            ? 'bg-[#005495] text-white border-[#005496]'
-                                                            : 'border-gray-300 hover:bg-gray-50'
-                                                    }`}
-                                                >
-                                                    {page}
-                                                </button>
-                                            </React.Fragment>
-                                        )
-                                    })
-                                }
-                            </div>
-
-                            <button
-                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, getTotalPages()))}
-                                disabled={currentPage === getTotalPages()}
-                                className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                            >
-                                Next
-                            </button>
-                        </div>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={getTotalPages()}
+                        onPageChange={setCurrentPage}
+                    />
                     )}
                 </div>
             </div>

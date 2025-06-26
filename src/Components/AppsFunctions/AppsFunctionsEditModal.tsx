@@ -1,16 +1,9 @@
 import { AppsfunctionsApi } from "@/services/AppsfunctionsApi";
 import { AppsFunctions } from "@/types/AppsFunctions";
+import getBangkokISOString from "@/Utils/getBangkokISOString";
 import { Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
-function getBangkokISOString() {
-  const now = new Date();
-  // ลบ offset ปัจจุบัน แล้วบวก 7 ชั่วโมง
-  const utc = now.getTime() - (now.getTimezoneOffset() * 60000);
-  const bangkok = new Date(utc + (7 * 60 * 60 * 1000));
-  return bangkok.toISOString().slice(0, 19);
-}
 
 export default function AppsFunctionsEditModal({
     isOpen,
@@ -65,6 +58,7 @@ export default function AppsFunctionsEditModal({
                 updateD_BY: 'system',
                 updateD_DATETIME: getBangkokISOString(),
             };
+            // console.log('submitData:', submitData)
             await AppsfunctionsApi.updateAppsFunctions(form.funC_CODE, submitData);
             toast.success('Successfully updated!');
             onSuccess();

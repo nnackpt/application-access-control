@@ -1,6 +1,7 @@
 import React from "react"
 import { X } from "lucide-react"
 import { Application } from "@/types/Application"
+import getValue from "@/Utils/getValue"
 
 interface ViewModalProps {
   isOpen: boolean
@@ -16,14 +17,14 @@ export default function ViewModal({
   if (!isOpen || !data) return null
 
   // ฟังก์ชันสำหรับดึงค่าจาก object ที่อาจมีชื่อ property ต่างกัน
-  const getValue = (obj: any, possibleKeys: string[]) => {
-    for (const key of possibleKeys) {
-      if (obj[key] !== undefined && obj[key] !== null) {
-        return obj[key]
-      }
-    }
-    return null
-  }
+  // const getValue = (obj: any, possibleKeys: string[]) => {
+  //   for (const key of possibleKeys) {
+  //     if (obj[key] !== undefined && obj[key] !== null) {
+  //       return obj[key]
+  //     }
+  //   }
+  //   return null
+  // }
 
   // ดึงข้อมูลจาก data object โดยรองรับ property names ที่แตกต่างกัน
   const appCode = getValue(data, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE', 'code', 'id'])

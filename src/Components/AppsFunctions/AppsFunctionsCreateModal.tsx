@@ -2,6 +2,7 @@ import { applicationApi } from "@/services/applicationApi";
 import { AppsfunctionsApi } from "@/services/AppsfunctionsApi";
 import { Application } from "@/types/Application";
 import { AppsFunctions } from "@/types/AppsFunctions";
+import getBangkokISOString from "@/Utils/getBangkokISOString";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -17,12 +18,6 @@ const initForm: AppsFunctions = {
     createdDatetime: '',
     updatedBy: ''
 };
-
-function getBangkokISOString() {
-  const now = new Date()
-  const bangkok = new Date(now.getTime() + (7 * 60 * 60 * 1000))
-  return bangkok.toISOString().slice(0, 19)
-}
 
 export default function AppsFunctionsCreateModal({
     isOpen,
