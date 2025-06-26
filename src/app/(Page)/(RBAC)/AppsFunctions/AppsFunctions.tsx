@@ -9,6 +9,7 @@ import { applicationApi } from "@/services/applicationApi"
 import { Application } from "@/types/Application"
 import AppsFunctionsCreateModal from "@/Components/AppsFunctions/AppsFunctionsCreateModal"
 import AppsFunctionsEditModal from "@/Components/AppsFunctions/AppsFunctionsEditModal"
+import getValue from "@/Utils/getValue"
 
 export default function AppsFunctions() {
   const [refresh, setRefresh] = useState(0)
@@ -22,16 +23,6 @@ export default function AppsFunctions() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editData, setEditData] = useState<AppsFunctions | null>(null)
-
-  // ฟังก์ชันสำหรับดึงค่าจาก object ที่อาจมีชื่อ property ต่างกัน
-  const getValue = (obj: any, possibleKeys: string[]) => {
-    for (const key of possibleKeys) {
-      if (obj[key] !== undefined && obj[key] !== null) {
-        return obj[key]
-      }
-    }
-    return null
-  }
 
   const handleExport = () => {
     try {

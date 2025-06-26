@@ -7,6 +7,7 @@ import { applicationApi } from "@/services/applicationApi"
 import { Application } from "@/types/Application"
 import ApplicationCreateModal from "@/Components/Application/ApplicationCreateModal"
 import ApplicationEditModal from "@/Components/Application/ApplicationEditModal"
+import getValue from "@/Utils/getValue"
 
 export default function Applications() {
   const [refresh, setRefresh] = useState(0)
@@ -17,28 +18,12 @@ export default function Applications() {
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
 
-  // ฟังก์ชันสำหรับดึงค่าจาก object ที่อาจมีชื่อ property ต่างกัน
-  const getValue = (obj: any, possibleKeys: string[]) => {
-    for (const key of possibleKeys) {
-      if (obj[key] !== undefined && obj[key] !== null) {
-        return obj[key]
-      }
-    }
-    return null
-  }
-
-  // const handleOpenCreate = () => setIsCreateModalOpen(true)
-  // const handleOpenEdit = (app: Application) => {
-  //   setEditData(app)
-  //   setIsEditModalOpen(true)
-  // }
-
   const handleExport = () => {
     try {
         const exportData = applications.map(app => ({
             'APP Code': getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE']) || '',
             'Name': getValue(app, ['name', 'Name', 'func_name', 'funcName']) || '',
-            'Title': getValue(app, ['title', 'TITLE']) || '',
+            'Title': getValue(app, ['title', 'TITLE', 'Title']) || '',
             'Description': getValue(app, ['desc', 'description', 'Description', 'func_desc', 'funcDesc']) || '',
             'Active': getValue(app, ['active', 'Active', 'is_active', 'isActive', 'status']) ? 'Yes' : 'No',
             'Base URL': getValue(app, ['base_URL', 'baseUrl', 'baseURL', 'base_url', 'BaseURL', 'BASE_URL']) || '',
@@ -50,9 +35,9 @@ export default function Applications() {
         }))
 
         const headers = Object.keys(exportData[0] || {})
-        const csvContent = [
-            headers.join(','),
-            ...exportData.map(row => headers.map(header => `"${row[header]}"`).join(','))
+        const csvContent = [ // @ts-ignore
+            headers.map(header => `"${header}"`).join(','),
+            ...exportData.map(row => headers.map(header => `"${row[header as keyof typeof row]}"`).join(','))
         ].join('\n')
 
         const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
