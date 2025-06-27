@@ -17,11 +17,11 @@ const initForm: Application = {
   updateD_BY: ''
 }
 
-function getBangkokISOString() {
-  const now = new Date()
-  const bangkok = new Date(now.getTime() + (7 * 60 * 60 * 1000))
-  return bangkok.toISOString().slice(0, 19)
-}
+// function getBangkokISOString() {
+//   const now = new Date()
+//   const bangkok = new Date(now.getTime() + (7 * 60 * 60 * 1000))
+//   return bangkok.toISOString().slice(0, 19)
+// }
 
 export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
   isOpen: boolean
@@ -70,7 +70,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
         logiN_URL: form.logiN_URL,
         active: form.active,
         createD_BY: form.createD_BY || 'system',
-        createD_DATETIME: getBangkokISOString(),
+        createD_DATETIME: new Date().toISOString().slice(0, 19), // Use current time in ISO format
         updateD_BY: '',
       }
       await applicationApi.createApplication(submitData)

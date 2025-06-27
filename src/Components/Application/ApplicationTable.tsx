@@ -322,28 +322,28 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
                         <div className="flex space-x-1">
                           <button
                             onClick={() => handleView(app)}
-                            className="cursor-pointer p-2 text-[#005496] hover:text-[#004080] hover:bg-blue-100 rounded-lg transition-colors"
+                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transition-colors transform hover:scale-110 transition-transform duration-200"
                             title="View Details"
                           >
-                            <Eye size={14} />
+                            <Eye size={16} />
                           </button>
                           <button
                             onClick={() => handleEdit(app)}
-                            className="cursor-pointer p-2 text-green-600 hover:text-green-800 hover:bg-green-100 rounded-lg transition-colors"
+                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-green-600 hover:border-green-800 hover:bg-blue-50 hover:text-green-800 transition-colors transform hover:scale-110 transition-transform duration-200"
                             title="Edit"
                           >
-                            <Edit size={14} />
+                            <Edit size={16} />
                           </button>
                           <button
                             onClick={() => handleDelete(app)}
-                            className="cursor-pointer p-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50"
+                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-red-600 hover:border-red-800 hover:bg-blue-50 hover:text-red-800 transition-colors disabled:opacity-50 transform hover:scale-110 transition-transform duration-200"
                             title="Delete"
                             disabled={deleteLoading === appCode}
                           >
                             {deleteLoading === appCode ? (
                               <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-red-600"></div>
                             ) : (
-                              <Trash2 size={14} />
+                              <Trash2 size={16} />
                             )}
                           </button>
                         </div>
@@ -410,14 +410,14 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
                     onClick={() => handleView(app)}
                     className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 text-[#005496] hover:text-[#004080] hover:bg-blue-100 rounded-lg transition-colors text-sm"
                   >
-                    <Eye size={14} />
+                    <Eye size={20} />
                     <span>View</span>
                   </button>
                   <button
                     onClick={() => handleEdit(app)}
                     className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 text-green-600 hover:text-green-800 hover:bg-green-100 rounded-lg transition-colors text-sm"
                   >
-                    <Edit size={14} />
+                    <Edit size={20} />
                     <span>Edit</span>
                   </button>
                   <button
@@ -428,7 +428,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
                     {deleteLoading === appCode ? (
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
                     ) : (
-                      <Trash2 size={14} />
+                      <Trash2 size={20} />
                     )}
                     <span>Delete</span>
                   </button>
