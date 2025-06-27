@@ -17,16 +17,6 @@ interface AppsFunctionsTableProps {
     selectedTitle: string 
 }
 
-// ฟังก์ชันสำหรับดึงค่าจาก object ที่อาจมีชื่อ property ต่างกัน
-// const getValue = (obj: any, possibleKeys: string[]) => {
-//     for (const key of possibleKeys) {
-//         if (obj[key] !== undefined && obj[key] !== null) {
-//             return obj[key]
-//         }
-//     }
-//     return null
-// }
-
 export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTerm, selectedTitle }: AppsFunctionsTableProps) {
     const [data, setData] = useState<AppsFunctions[]>([])
     const [loading, setLoading] = useState(false)
@@ -178,21 +168,6 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
         return appCodeMatches && textMatches
     })
 
-    // const formatDateTime = (dateString?: string) => {
-    //     if (!dateString) return '-'
-    //     try {
-    //         return new Date(dateString).toLocaleString('th-TH', {
-    //             year: 'numeric',
-    //             month: '2-digit',
-    //             day: '2-digit',
-    //             hour: '2-digit',
-    //             minute: '2-digit'
-    //         })
-    //     } catch {
-    //         return '-'
-    //     }
-    // }
-
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
@@ -327,28 +302,28 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
                                                 <div className="flex space-x-1">
                                                     <button
                                                         onClick={() => handleView(appFunc)}
-                                                        className="cursor-pointer p-2 text-[#005496] hover:text-[#004080] hover:bg-blue-100 rounded-lg transition-colors"
+                                                        className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transition-colors transform hover:scale-110 transition-transform duration-200"
                                                         title="View Details"
                                                     >
-                                                        <Eye size={14} />
+                                                        <Eye size={16} />
                                                     </button>
                                                     <button
                                                         onClick={() => handleEdit(appFunc)}
-                                                        className="cursor-pointer p-2 text-green-600 hover:text-green-800 hover:bg-green-100 rounded-lg transition-colors"
+                                                        className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-green-600 hover:border-green-800 hover:bg-blue-50 hover:text-green-800 transition-colors transform hover:scale-110 transition-transform duration-200"
                                                         title="Edit"
                                                     >
-                                                        <Edit size={14} />
+                                                        <Edit size={16} />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDelete(appFunc)}
-                                                        className="cursor-pointer p-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50"
+                                                        className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-red-600 hover:border-red-800 hover:bg-blue-50 hover:text-red-800 transition-colors disabled:opacity-50 transform hover:scale-110 transition-transform duration-200"
                                                         title="Delete"
                                                         disabled={deleteLoading === funcCode}
                                                     >
                                                         {deleteLoading === funcCode ? (
                                                             <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-red-600"></div>
                                                         ) : (
-                                                            <Trash2 size={14} />
+                                                            <Trash2 size={16} />
                                                         )}
                                                     </button>
                                                 </div>
