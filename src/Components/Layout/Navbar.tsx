@@ -48,18 +48,59 @@ const MobileTitle = () => (
   </div>
 );
 
-const UserInfo = () => (
-  <div className="flex items-center space-x-3 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2.5 shadow-lg border border-white/20 hover:bg-white transition-all duration-300 group">
-    <div className="p-1.5 bg-gradient-to-br from-[#005496] to-[#003d73] rounded-full shadow-sm group-hover:shadow-md transition-shadow duration-300">
-      <UserIcon className="w-4 h-4 text-white" />
+// const UserInfo = () => (
+//   <div className="flex items-center space-x-3 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2.5 shadow-lg border border-white/20 hover:bg-white transition-all duration-300 group">
+//     <div className="p-1.5 bg-gradient-to-br from-[#005496] to-[#003d73] rounded-full shadow-sm group-hover:shadow-md transition-shadow duration-300">
+//       <UserIcon className="w-4 h-4 text-white" />
+//     </div>
+//     <div className="flex flex-col">
+//       <span className="text-sm font-semibold text-[#005496] leading-tight">User</span>
+//       <span className="text-xs text-gray-500 leading-tight">phakin.thongla-ar</span>
+//     </div>
+//     <div className="w-2 h-2 bg-green-400 rounded-full shadow-sm animate-pulse"></div>
+//   </div>
+// );
+
+const UserInfo = () => {
+  const [user, setUser] = React.useState<{ UserName: string } | null>(null)
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("https://10.83.51.52:5070/api/UserInfo/current", {
+          credentials: "include",
+        })
+        if (res.ok) {
+          const data = await res.json();
+          console.log("UserInfo API result:", data)
+          setUser(data);
+        } else {
+          setUser(null);
+        }
+      } catch (e) {
+        setUser(null);
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchUser()
+  }, [])
+
+  return (
+    <div className="flex items-center space-x-3 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2.5 shadow-lg border border-white/20 hover:bg-white transition-all duration-300 group">
+      <div className="p-1.5 bg-gradient-to-br from-[#005496] to-[#003d73] rounded-full shadow-sm group-hover:shadow-md transition-shadow duration-300">
+        <UserIcon className="w-4 h-4 text-white" />
+      </div>
+      <div className="flex flex-col">
+        <span className="text-sm font-semibold text-[#005496] leading-tight">
+          {loading ? "Loading..." : user?.UserName || "User"}
+        </span>
+      </div>
+      <div className="w-2 h-2 bg-green-400 rounded-full shadow-sm animate-pulse"></div>
     </div>
-    <div className="flex flex-col">
-      <span className="text-sm font-semibold text-[#005496] leading-tight">User</span>
-      <span className="text-xs text-gray-500 leading-tight">phakin.thongla-ar</span>
-    </div>
-    <div className="w-2 h-2 bg-green-400 rounded-full shadow-sm animate-pulse"></div>
-  </div>
-);
+  )
+}
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({ 
   label, 
