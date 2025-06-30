@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Trash2, X } from "lucide-react"
 import { Application } from "@/types/Application"
 import { applicationApi } from "@/services/applicationApi"
@@ -32,6 +32,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
   const [errors, setErrors] = useState<{[key: string]: string}>({})
   const [loading, setLoading] = useState(false)
   const [appCodeInput, setAppCodeInput] = useState('')
+  const [userName, setUserName] = useState<string>("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -71,7 +72,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
         active: form.active,
         createD_BY: form.createD_BY || 'system',
         createD_DATETIME: new Date().toISOString().slice(0, 19), // Use current time in ISO format
-        updateD_BY: '',
+        updateD_BY: form.updateD_BY || form.createD_BY || 'system',
       }
       await applicationApi.createApplication(submitData)
       toast.success("Successfully created!")
@@ -84,6 +85,33 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+      if (isOpen) {
+          fetch("http://10.83.51.52:5070/api/UserInfo/current", { credentials: "include" })
+          .then(res => res.ok ? res.json() : null)
+          .then(data => {
+              const userName = data?.userName || "system";
+              setUserName(userName)
+              setForm({
+                  ...initForm,
+                  createD_BY: userName,
+                  updateD_BY: userName
+              })
+              setErrors({})
+          })
+          .catch(() => {
+              setUserName("system")
+              setForm({
+                  ...initForm,
+                  createD_BY: "system",
+                  updateD_BY: "system"
+              })
+              setErrors({})
+          })
+      }
+      
+  }, [isOpen]);
 
   if (!isOpen) return null
 
@@ -249,30 +277,33 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
               </select>
             </div>
             {/* Created By */}
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Created By</label>
               <div className="relative">
                 <input
                   type="text"
                   name="createD_BY"
                   value={form.createD_BY || ''}
-                  onChange={handleChange}
-                  // placeholder="system"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496]"
-                  disabled={loading}
+                  readOnly
+                  className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
+                  tabIndex={-1}
                 />
-                {form.createD_BY && (
-                    <button
-                      type="button"
-                      onClick={() => setForm(prev => ({ ...prev, createD_BY: '' }))}
-                      className="cursor-pointer absolute inset-y-0 right-0 flex items-center pr-3 text-red-400 hover:text-red-600"
-                      disabled={loading}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  )}
               </div>
-            </div>
+            </div> */}
+            {/* Updated By */}
+            {/* <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Updated By</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="updateD_BY"
+                  value={form.updateD_BY || ''}
+                  readOnly
+                  className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
+                  tabIndex={-1}
+                />
+              </div>
+            </div> */}
             {/* Description */}
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>

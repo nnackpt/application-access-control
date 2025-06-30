@@ -33,6 +33,7 @@ export default function AppsFunctionsCreateModal({
     const [loading, setLoading] = useState(false);
     const [applications, setApplications] = useState<Application[]>([]);
     const [loadingApps, setLoadingApps] = useState(false);
+    const [userName, setUserName] = useState<string>("");
 
     useEffect(() => {
         if (isOpen) {
@@ -49,6 +50,31 @@ export default function AppsFunctionsCreateModal({
             };
             fetchApplications();
         }
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (isOpen) {
+            fetch("http://10.83.51.52:5070/api/UserInfo/current", { credentials: "include" })
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                const userName = data?.UserName || "system";
+                setUserName(userName)
+                setForm({
+                    ...initForm,
+                    createdBy: userName
+                })
+                setErrors({})
+            })
+            .catch(() => {
+                setUserName("system")
+                setForm({
+                    ...initForm,
+                    createdBy: "system"
+                })
+                setErrors({})
+            })
+        }
+        
     }, [isOpen]);
 
     useEffect(() => {
@@ -84,7 +110,7 @@ export default function AppsFunctionsCreateModal({
                 apP_CODE: form.apP_CODE,
                 name: form.name,
                 desc: form.desc,
-                funcUrl: form.funC_URL,
+                funC_URL: form.funC_URL,
                 active: form.active,
                 createD_BY: form.createdBy || 'system',
                 createD_DATETIME: getBangkokISOString(),
@@ -168,7 +194,7 @@ export default function AppsFunctionsCreateModal({
                             <label className="block text-sm font-medium text-gray-700 mb-2">Function URL</label>
                             <input
                                 type="text"
-                                name="funcUrl"
+                                name="funC_URL"
                                 value={form.funC_URL || ''}
                                 onChange={handleChange}
                                 // placeholder="/api/users"
@@ -191,7 +217,7 @@ export default function AppsFunctionsCreateModal({
                             </select>
                         </div>
                         {/* Created By */}
-                        <div>
+                        {/* <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Created By</label>
                             <input
                                 type="text"
@@ -200,9 +226,9 @@ export default function AppsFunctionsCreateModal({
                                 onChange={handleChange}
                                 // placeholder="system"
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496]"
-                                disabled={loading}
+                                disabled={true}
                             />
-                        </div>
+                        </div> */}
                         {/* Description */}
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>

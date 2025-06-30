@@ -62,13 +62,13 @@ const MobileTitle = () => (
 // );
 
 const UserInfo = () => {
-  const [user, setUser] = React.useState<{ UserName: string } | null>(null)
+  const [user, setUser] = React.useState<{ userName: string } | null>(null)
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("https://10.83.51.52:5070/api/UserInfo/current", {
+        const res = await fetch("http://10.83.51.52:5070/api/UserInfo/current", {
           credentials: "include",
         })
         if (res.ok) {
@@ -94,7 +94,7 @@ const UserInfo = () => {
       </div>
       <div className="flex flex-col">
         <span className="text-sm font-semibold text-[#005496] leading-tight">
-          {loading ? "Loading..." : user?.UserName || "User"}
+          {loading ? "Loading..." : user?.userName || "User"}
         </span>
       </div>
       <div className="w-2 h-2 bg-green-400 rounded-full shadow-sm animate-pulse"></div>
