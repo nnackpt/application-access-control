@@ -1,8 +1,8 @@
-import { AppsFunctions } from "@/types/AppsFunctions"
+import { AppsRoles } from "@/types/AppsRoles"
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5070'
 
-class AppsFunctionsApiService {
+class AppsRolesApiService {
     private async fetchApi(url: string, options: RequestInit = {}) {
         const response = await fetch(`${API_BASE_URL}${url}`, {
             headers: {
@@ -23,29 +23,29 @@ class AppsFunctionsApiService {
         return JSON.parse(text)
     }
 
-    async getAppsFunctions(): Promise<AppsFunctions[]> {
-        return this.fetchApi('/api/CmAppFunctions')
+    async getAppsRoles(): Promise<AppsRoles[]> {
+        return this.fetchApi('/api/CmAppRoles')
     }
 
-    async createAppsFunctions(data: AppsFunctions): Promise<AppsFunctions> {
-        return this.fetchApi('/api/CmAppFunctions', {
+    async createAppsRoles(data: AppsRoles): Promise<AppsRoles> {
+        return this.fetchApi('/api/CmAppRoles', {
             method: 'POST',
             body: JSON.stringify(data),
         })
     }
 
-    async updateAppsFunctions(funcCode: string, data: AppsFunctions): Promise<AppsFunctions> {
-        return this.fetchApi(`/api/CmAppFunctions/${funcCode}`, {
+    async updateAppsRoles(rolE_CODE: string, data: AppsRoles): Promise<AppsRoles> {
+        return this.fetchApi(`/api/CmAppRoles/${rolE_CODE}`, {
             method: 'PUT',
             body: JSON.stringify(data),
         })
     }
 
-    async deleteAppsFunctions(funcCode: string): Promise<void> {
-        return this.fetchApi(`/api/CmAppFunctions/${funcCode}`, {
+    async deleteAppsRoles(rolE_CODE: string): Promise<void> {
+        return this.fetchApi(`/api/CmAppRoles/${rolE_CODE}`, {
             method: 'DELETE',
         })
     }
 }
 
-export const AppsFunctionsApi = new AppsFunctionsApiService()
+export const AppsRolesApi = new AppsRolesApiService()
