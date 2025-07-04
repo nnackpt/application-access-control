@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react"
 import { Download, Plus, Search, Settings } from "lucide-react"
 import ApplicationTable from "@/Components/Application/ApplicationTable"
-import { applicationApi } from "@/services/applicationApi"
+import { applicationApi } from "@/services/ApplicationApi"
 import { Application } from "@/types/Application"
 import ApplicationCreateModal from "@/Components/Application/ApplicationCreateModal"
 import ApplicationEditModal from "@/Components/Application/ApplicationEditModal"
