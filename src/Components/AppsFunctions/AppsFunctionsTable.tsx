@@ -1,4 +1,4 @@
-import { AppsfunctionsApi } from "@/services/AppsfunctionsApi"
+import { AppsFunctionsApi } from "@/services/AppsFunctionsApi"
 import { AppsFunctions } from "@/types/AppsFunctions"
 import React, { useEffect, useState } from "react"
 import ViewModal from "./AppsFunctionsViewModal"
@@ -66,7 +66,7 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
         const fetchData = async () => {
             setLoading(true)
             try {
-                const response = await AppsfunctionsApi.getAppsFunctions()
+                const response = await AppsFunctionsApi.getAppsFunctions()
                 console.log('API Response:', response)
                 console.log('First item:', response[0])
 
@@ -112,7 +112,7 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
         setDeleteLoading(funcCode)
         try {
             console.log('Deleting function with code:', funcCode)
-            await AppsfunctionsApi.deleteAppsFunctions(funcCode)
+            await AppsFunctionsApi.deleteAppsFunctions(funcCode)
             setDeleteModal({ appFunc: null, open: false })
             toast.success('Function deleted successfully')
             setDeleteSuccess(true)

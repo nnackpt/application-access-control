@@ -1,8 +1,9 @@
-import { applicationApi } from "@/services/applicationApi";
-import { AppsfunctionsApi } from "@/services/AppsfunctionsApi";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import { applicationApi } from "@/services/ApplicationApi";
+import { AppsFunctionsApi } from "@/services/AppsFunctionsApi";
 import { Application } from "@/types/Application";
 import { AppsFunctions } from "@/types/AppsFunctions";
-import getBangkokISOString from "@/Utils/getBangkokISOString";
+// import getBangkokISOString from "@/Utils/getBangkokISOString";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -33,7 +34,7 @@ export default function AppsFunctionsCreateModal({
     const [loading, setLoading] = useState(false);
     const [applications, setApplications] = useState<Application[]>([]);
     const [loadingApps, setLoadingApps] = useState(false);
-    const [userName, setUserName] = useState<string>("");
+    const { userName } = useCurrentUser();
 
     useEffect(() => {
         if (isOpen) {
@@ -50,31 +51,6 @@ export default function AppsFunctionsCreateModal({
             };
             fetchApplications();
         }
-    }, [isOpen]);
-
-    useEffect(() => {
-        if (isOpen) {
-            fetch("http://10.83.51.52:5070/api/UserInfo/current", { credentials: "include" })
-            .then(res => res.ok ? res.json() : null)
-            .then(data => {
-                const userName = data?.UserName || "system";
-                setUserName(userName)
-                setForm({
-                    ...initForm,
-                    createdBy: userName
-                })
-                setErrors({})
-            })
-            .catch(() => {
-                setUserName("system")
-                setForm({
-                    ...initForm,
-                    createdBy: "system"
-                })
-                setErrors({})
-            })
-        }
-        
     }, [isOpen]);
 
     useEffect(() => {
@@ -113,10 +89,10 @@ export default function AppsFunctionsCreateModal({
                 funC_URL: form.funC_URL,
                 active: form.active,
                 createD_BY: form.createdBy || 'system',
-                createD_DATETIME: getBangkokISOString(),
+                createD_DATETIME: new Date().toISOString().slice(0, 19),
                 updateD_BY: ''
             };
-            await AppsfunctionsApi.createAppsFunctions(submitData);
+            await AppsFunctionsApi.createAppsFunctions(submitData);
             toast.success('Successfully created!');
             onSuccess();
             onClose();
@@ -134,7 +110,7 @@ export default function AppsFunctionsCreateModal({
         <div className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4" onClick={onClose}>
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <div className="sticky top-0 bg-[#005496] text-white p-6 rounded-t-xl flex justify-between items-center">
-                    <h2 className="text-xl font-semibold">Create New Apps Function</h2>
+                    <h2 className="text-xl font-semibold">Create New Application Function</h2>
                     <button onClick={onClose} className="text-white hover:text-blue-200 transition-colors cursor-pointer" disabled={loading}>
                         <X size={24} />
                     </button>
@@ -159,7 +135,7 @@ export default function AppsFunctionsCreateModal({
                                 ))}
                             </select>
                             {error.apP_CODE && <p className="text-red-500 text-sm mt-1">{error.apP_CODE}</p>}
-                            {loadingApps && <p className="text-gray-500 text-sm mt-1">Loading applications...</p>}
+                            {loadingApps && <p className="text-gray-500 text-sm mt-1">Loading Applications...</p>}
                         </div>
                         {/* Function Code */}
                         <div>

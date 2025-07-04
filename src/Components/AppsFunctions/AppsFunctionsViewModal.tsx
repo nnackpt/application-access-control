@@ -1,4 +1,5 @@
 import { AppsFunctions } from "@/types/AppsFunctions"
+import formatDateTime from "@/Utils/formatDateTime"
 import getValue from "@/Utils/getValue"
 import { X } from "lucide-react"
 
@@ -35,21 +36,21 @@ export default function ViewModal({
     const updatedBy = getValue(data, ['updateD_BY', 'UPDATED_BY'])
     const updatedDatetime = getValue(data, ['updateD_DATETIME', 'UPDATED_DATETIME'])
 
-    const formatDate = (dateString?: string) => {
-        if (!dateString) return '-'
-        try {
-            return new Date(dateString).toLocaleString('th-TH', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            })
-        } catch {
-            return '-'
-        }
-    }
+    // const formatDate = (dateString?: string) => {
+    //     if (!dateString) return '-'
+    //     try {
+    //         return new Date(dateString).toLocaleString('th-TH', {
+    //             year: 'numeric',
+    //             month: '2-digit',
+    //             day: '2-digit',
+    //             hour: '2-digit',
+    //             minute: '2-digit',
+    //             second: '2-digit'
+    //         })
+    //     } catch {
+    //         return '-'
+    //     }
+    // }
 
     return (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4">
@@ -102,7 +103,7 @@ export default function ViewModal({
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-600 mb-1">Created Date</label>
-                            <p className="text-gray-900">{formatDate(createdDatetime) || '-'}</p>
+                            <p className="text-gray-900">{formatDateTime(createdDatetime) || '-'}</p>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-600 mb-1">Updated By</label>
@@ -110,7 +111,7 @@ export default function ViewModal({
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-600 mb-1">Updated Date</label>
-                            <p className="text-gray-900">{formatDate(updatedDatetime) || '-'}</p>
+                            <p className="text-gray-900">{formatDateTime(updatedDatetime) || '-'}</p>
                         </div>
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-600 mb-1">Description</label>

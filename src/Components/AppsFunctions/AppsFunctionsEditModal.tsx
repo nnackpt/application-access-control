@@ -1,4 +1,4 @@
-import { AppsfunctionsApi } from "@/services/AppsfunctionsApi";
+import { AppsFunctionsApi } from "@/services/AppsFunctionsApi";
 import { AppsFunctions } from "@/types/AppsFunctions";
 import getBangkokISOString from "@/Utils/getBangkokISOString";
 import { Trash2, X } from "lucide-react";
@@ -37,15 +37,15 @@ export default function AppsFunctionsEditModal({
         if (error[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
-    const validateForm = () => {
-        const newErrors: { [key: string]: string } = {};
-        if (!form.name.trim()) newErrors.name = 'Name is required';
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    // const validateForm = () => {
+    //     const newErrors: { [key: string]: string } = {};
+    //     if (!form.name.trim()) newErrors.name = 'Name is required';
+    //     setErrors(newErrors);
+    //     return Object.keys(newErrors).length === 0;
+    // };
 
     const handleSubmit = async () => {
-        if (!validateForm()) return;
+        // if (!validateForm()) return;
         setLoading(true);
         try {
             const submitData = {
@@ -59,7 +59,7 @@ export default function AppsFunctionsEditModal({
                 updateD_DATETIME: getBangkokISOString(),
             };
             // console.log('submitData:', submitData)
-            await AppsfunctionsApi.updateAppsFunctions(form.funC_CODE, submitData);
+            await AppsFunctionsApi.updateAppsFunctions(form.funC_CODE, submitData);
             toast.success('Successfully updated!');
             onSuccess();
             onClose();
