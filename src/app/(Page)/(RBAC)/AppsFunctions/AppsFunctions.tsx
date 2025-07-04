@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from "react"
 import { Plus, Calculator, Search, Download, ChevronDown } from "lucide-react"
 import AppsFunctionsTable from "@/Components/AppsFunctions/AppsFunctionsTable"
-import { AppsfunctionsApi } from "@/services/AppsfunctionsApi"
+import { AppsFunctionsApi } from "@/services/AppsFunctionsApi"
 import type { AppsFunctions } from "@/types/AppsFunctions"
-import { applicationApi } from "@/services/applicationApi"
+import { applicationApi } from "@/services/ApplicationApi"
 import { Application } from "@/types/Application"
 import AppsFunctionsCreateModal from "@/Components/AppsFunctions/AppsFunctionsCreateModal"
 import AppsFunctionsEditModal from "@/Components/AppsFunctions/AppsFunctionsEditModal"
@@ -87,7 +87,7 @@ export default function AppsFunctions() {
       setLoading(true)
       try {
         const [functionsResponse, applicationsResponse] = await Promise.all([
-          AppsfunctionsApi.getAppsFunctions(),
+          AppsFunctionsApi.getAppsFunctions(),
           applicationApi.getApplications()
         ])
         setAppsFunctions(functionsResponse)
