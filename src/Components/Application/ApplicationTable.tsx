@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Eye, Edit, Trash2, ChevronDown, ChevronUp } from "lucide-react"
 import { Application } from "@/types/Application"
-import { applicationApi } from "@/services/applicationApi"
+import { applicationApi } from "@/services/ApplicationApi"
 import ViewModal from "./ApplicationViewModal"
 import ApplicationEditModal from "./ApplicationEditModal"
 import DeleteConfirmModal from "../UI/DeleteConfirmModal"

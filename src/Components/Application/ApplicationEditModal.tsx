@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Trash2, X } from "lucide-react"
 import { Application } from "@/types/Application"
-import { applicationApi } from "@/services/applicationApi"
+import { applicationApi } from "@/services/ApplicationApi"
 import toast from "react-hot-toast"
 import getBangkokISOString from "@/Utils/getBangkokISOString"
 

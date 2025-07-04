@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react"
 import { Trash2, X } from "lucide-react"
 import { Application } from "@/types/Application"
-import { applicationApi } from "@/services/applicationApi"
+import { applicationApi } from "@/services/ApplicationApi"
 import toast from "react-hot-toast"
+import useCurrentUser from "@/hooks/useCurrentUser"
 
 const initForm: Application = {
   apP_CODE: '',
@@ -32,7 +33,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
   const [errors, setErrors] = useState<{[key: string]: string}>({})
   const [loading, setLoading] = useState(false)
   const [appCodeInput, setAppCodeInput] = useState('')
-  const [userName, setUserName] = useState<string>("");
+  const { userName } = useCurrentUser()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -85,33 +86,6 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
       setLoading(false)
     }
   }
-
-  useEffect(() => {
-      if (isOpen) {
-          fetch("http://10.83.51.52:5070/api/UserInfo/current", { credentials: "include" })
-          .then(res => res.ok ? res.json() : null)
-          .then(data => {
-              const userName = data?.userName || "system";
-              setUserName(userName)
-              setForm({
-                  ...initForm,
-                  createD_BY: userName,
-                  updateD_BY: userName
-              })
-              setErrors({})
-          })
-          .catch(() => {
-              setUserName("system")
-              setForm({
-                  ...initForm,
-                  createD_BY: "system",
-                  updateD_BY: "system"
-              })
-              setErrors({})
-          })
-      }
-      
-  }, [isOpen]);
 
   if (!isOpen) return null
 
