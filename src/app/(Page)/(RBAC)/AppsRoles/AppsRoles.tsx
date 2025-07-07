@@ -1,11 +1,12 @@
 "use client"
 
+import AppsRolesCreateModal from "@/Components/AppRoles/AppsRolesCreateModal"
 import AppsRolesEditModal from "@/Components/AppRoles/AppsRolesEditModal"
 import AppsRolesTable from "@/Components/AppRoles/AppsRolesTable"
 import { applicationApi } from "@/services/ApplicationApi"
 import { AppsRolesApi } from "@/services/AppsRolesApi"
 import { Application } from "@/types/Application"
-import { AppsRoles } from "@/types/AppsRoles"
+import type { AppsRoles } from "@/types/AppsRoles"
 import getValue from "@/Utils/getValue"
 import { Calculator, ChevronDown, Download, Plus, Search } from "lucide-react"
 import { useEffect, useState } from "react"
@@ -301,10 +302,16 @@ export default function AppsRoles() {
                     selectedTitle={selectedTitle}
                 />
 
+                <AppsRolesCreateModal
+                    isOpen={isCreateModalOpen}
+                    onClose={() => setIsCreateModalOpen(false)}
+                    onSuccess={handleRefresh}
+                />
+
                 <AppsRolesEditModal
                     isOpen={isEditModalOpen}
                     onClose={() => setIsEditModalOpen(false)}
-                    onSuccess={handleSuccess}
+                    onSuccess={handleRefresh}
                     editData={editData!}
                 />
             </div>
