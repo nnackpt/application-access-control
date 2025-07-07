@@ -1,6 +1,6 @@
 import { Application } from "@/types/Application"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5070'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL_HTTPS || process.env.NEXT_PUBLIC_API_URL_HTTPS_LOCAL
 
 class ApplicationApiService {
     private async fetchWithAuth(url: string, options: RequestInit = {}) {
