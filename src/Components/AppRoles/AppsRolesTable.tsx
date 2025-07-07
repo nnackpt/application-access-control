@@ -377,8 +377,89 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
 
                                     {/* Action BTN */}
                                     <div className="flex space-x-2 mb-3">
-                                        <button></button>
+                                        <button
+                                            onClick={() => handleView(appRole)}
+                                            className="flex-1 flex items-center justify-center space-x-2 px-3 py-1 text-[#005496] hover:text-[#005496] hover:bg-blue-100 rounded-lg transition-colors text-sm"
+                                        >
+                                            <Eye size={16} />
+                                            <span>View</span>
+                                        </button>
+                                        <button
+                                            onClick={() => handleEdit(appRole)}
+                                            className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 text-green-600 hover:text-green-800 hover:bg-green-100 rounded-lg transition-colors text-sm"
+                                        >
+                                            <Edit size={16} />
+                                            <span>Edit</span>
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(appRole)}
+                                            className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50 text-sm"
+                                            disabled={deleteLoading === roleCode}
+                                        >
+                                            {deleteLoading === roleCode ? (
+                                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
+                                            ) : (
+                                                <Trash2 size={14} />
+                                            )}
+                                            <span>Delete</span>
+                                        </button>
                                     </div>
+
+                                    {/* Expanded Details */}
+                                    {isExpanded && (
+                                        <div className="mt-3 pt-3 border-t border-gray-200 space-y-3">
+                                            <div className="grid grid-cols-1 gap-3 text-sm">
+                                                <div>
+                                                    <span className="font-medium text-gray-600">Description:</span>
+                                                    <p className="text-gray-900 mt-1 whitespace-pre-wrap">{desc || '-'}</p>
+                                                </div>
+
+                                                <div>
+                                                    <span className="font-medium text-gray-600">Home URL:</span>
+                                                    <div className="mt-1">
+                                                        {homeUrl ? (
+                                                            homeUrl.startsWith('http://') || homeUrl.startsWith('https://') ? (
+                                                                <a 
+                                                                    href={homeUrl}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="text-[#005496] hover:underline break-all"
+                                                                >
+                                                                    {homeUrl}
+                                                                </a>
+                                                            ) : (
+                                                                <span className="text-gray-900 break-all">{homeUrl}</span>
+                                                            )
+                                                        ) : (
+                                                            <span className="text-gray-500">-</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <span className="font-medium text-gray-600">Created By:</span>
+                                                        <p className="text-gray-900">{createdBy || '-'}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span className="font-medium text-gray-600">Updated By:</span>
+                                                        <p className="text-gray-900">{updatedBy || '-'}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 gap-2">
+                                                    <div>
+                                                        <span className="font-medium text-gray-600">Created:</span>
+                                                        <p className="text-gray-900">{formatDateTime(createdDate)}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span className="font-medium text-gray-600">Updated:</span>
+                                                        <p className="text-gray-900">{formatDateTime(updatedDate)}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             )
                         })}

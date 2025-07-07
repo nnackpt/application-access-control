@@ -1,3 +1,4 @@
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { applicationApi } from "@/services/ApplicationApi";
 import { AppsRolesApi } from "@/services/AppsRolesApi";
 import { Application } from "@/types/Application";
@@ -32,7 +33,7 @@ export default function AppsRolesCreateModal({
     const [loading, setLoading] = useState(false)
     const [applications, setApplications] = useState<Application[]>([])
     const [loadingApps, setLoadingApps] = useState(false)
-    const [userName, setUserName] = useState<string>("")
+    const { userName } = useCurrentUser();
 
     useEffect(() => {
         if (isOpen) {
