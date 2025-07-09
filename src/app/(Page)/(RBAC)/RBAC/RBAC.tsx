@@ -11,6 +11,9 @@ import { useEffect, useState } from "react"
 import { Calculator, ChevronDown, Download, Plus, Search } from "lucide-react"
 import RbacTable from "@/Components/RBAC/RbacTable"
 import RbacCreateModal from "@/Components/RBAC/RbacCreateModal"
+import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
+import { motion } from "framer-motion" // Import motion from framer-motion
+import StatsCard from "@/Components/UI/StatsCard"
 
 export default function RBAC() {
     const [refresh, setRefresh] = useState(0)
@@ -52,7 +55,7 @@ export default function RBAC() {
             const link = document.createElement('a')
             const url = URL.createObjectURL(blob)
             link.setAttribute('href', url)
-            link.setAttribute('download', `Application_Functions_${new Date().toISOString().split('T')[0]}.csv`)
+            link.setAttribute('download', `Application_RBAC_${new Date().toISOString().split('T')[0]}.csv`)
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
@@ -74,7 +77,6 @@ export default function RBAC() {
         }
         return ""
     }
-
 
     const getRoleName = (rbac: any) => {
         if (rbac.cM_APPS_ROLES && rbac.cM_APPS_ROLES.name) return rbac.cM_APPS_ROLES.name;
@@ -151,36 +153,20 @@ export default function RBAC() {
     }).length
     const inactiveRbac = totalRbac - activeRbac
 
-    // Get unique app titles and sort them
-    const uniqueAppTitles = Array.from(new Set(rbac.map(rbac => {
-        return getValue(rbac, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE'])
-    }).filter(Boolean))) as (string | number)[]
-    
-    const sortedAppTitles = uniqueAppTitles.sort((a, b) => {
-        const numA = parseFloat(String(a))
-        const numB = parseFloat(String(b))
-
-        if (!isNaN(numA) && !isNaN(numB)) {
-            return numA - numB
-        } else {
-            return String(a).localeCompare(String(b))
-        }
-    })
-
     const getLastUpdated = () => {
         if (rbac.length === 0) return "No data available"
 
         const latestUpdate = rbac.reduce((latest, rbac) => {
-          const updatedDate = getValue(rbac, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date'])
-          const createdDate = getValue(rbac, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date'])
-          
-          const rbacDate = updatedDate || createdDate
-          if (!rbacDate) return latest
+            const updatedDate = getValue(rbac, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date'])
+            const createdDate = getValue(rbac, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date'])
 
-          const rbacDateTime = new Date(rbacDate).getTime()
-          const latestDateTime = latest ? new Date(latest).getTime() : 0
+            const rbacDate = updatedDate || createdDate
+            if (!rbacDate) return latest
 
-          return rbacDateTime > latestDateTime ? rbacDate : latest
+            const rbacDateTime = new Date(rbacDate).getTime()
+            const latestDateTime = latest ? new Date(latest).getTime() : 0
+
+            return rbacDateTime > latestDateTime ? rbacDate : latest
         }, null)
 
         if (!latestUpdate) return "No updates available"
@@ -214,112 +200,90 @@ export default function RBAC() {
                                     </div>
                                 </div>
 
-                                <button
+                                <motion.button
                                     onClick={() => setIsCreateModalOpen(true)}
-                                    className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg hover:bg-[#004080] transition-colors shadow-lg cursor-pointer"
+                                    className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
+                                            shadow-lg cursor-pointer"
+                                    whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                                    whileTap={{ scale: 0.98 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                                 >
                                     <Plus size={20} />
                                     <span>Create New Application's RBAC</span>
-                                </button>
+                                </motion.button>
 
-                                <button
+                                <motion.button
                                     onClick={handleExport}
-                                    className="flex items-center space-x-2 bg-gray-400 hover:bg-gray-500 text-white px-6 py-3 rounded-lg transition-colors shadow-lg cursor-pointer"
+                                    className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
+                                            shadow-lg cursor-pointer"
+                                    whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                                    whileTap={{ scale: 0.98 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                                 >
                                     <Download size={20} />
                                     <span>Export Application's RBAC</span>
-                                </button>
+                                </motion.button>
                             </div>
                         </div>
 
                         <div className="flex items-center space-x-3">
-                            <div className="relative">
-                                <select 
-                                    value={selectedTitle}
-                                    onChange={(e) => setSelectedTitle(e.target.value)}
-                                    className="cursor-pointer border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-[#005496] focus:border-[#005496] appearance-none outline-none"
-                                >
-                                    <option value="all">All Applications</option>
-                                    {sortedAppTitles.map(appCode => (
-                                        <option key={appCode} value={appCode.toString()}>
-                                            {applicationTitle[appCode.toString()] || `Unknown App (${appCode})`}
-                                        </option>
-                                    ))}
-                                </select>
-                                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                            </div>
+                            <AppTitleSelect
+                                selectedTitle={selectedTitle}
+                                setSelectedTitle={setSelectedTitle}
+                                applications={applications}
+                            />
 
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                                <input 
-                                    type="text" 
-                                    placeholder="Search Roles..."
+                                <input
+                                    type="text"
+                                    placeholder="Search RBAC..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"     
+                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"
                                 />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* {Stats Cards} */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Total RBAC</p>
-                                <p className="text-2xl font-bold text-gray-900">
-                                    {loading ? '...' : totalRbac}
-                                </p>
-                            </div>
-                            <div className="p-3 bg-[#005496] bg-opacity-10 rounded-lg">
-                                <Calculator className="text-[#005496]" size={20} />
-                            </div>
-                        </div>
-                    </div>
+                {/* Stats Cards */}
+                {/* Modified grid for responsiveness: grid-cols-1 on small, md:grid-cols-2 on medium, lg:grid-cols-4 on large */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <StatsCard 
+                        title="Total RBAC"
+                        value={loading ? '...' : totalRbac}
+                        icon={<Calculator className="text-white" size={20} />}
+                        bgColor="bg-[#005496] bg-opacity-10"
+                        delay={0}
+                    />
 
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Active RBAC</p>
-                                <p className="text-2xl font-bold text-green-600">
-                                    {loading ? '...' : activeRbac}
-                                </p>
-                            </div>
-                            <div className="p-3 bg-green-100 rounded-lg">
-                                <div className="w-5 h-5 bg-green-500 rounded-full animate-pulse"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <StatsCard 
+                        title="Active RBAC"
+                        value={loading ? '...' : activeRbac}
+                        bgColor="bg-green-100"
+                        pulseColor="bg-green-500"
+                        valueColor="text-green-600"
+                        delay={0.1}
+                    />
 
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Inactive RBAC</p>
-                                <p className="text-2xl font-bold text-red-600">
-                                    {loading ? '...' : inactiveRbac}
-                                </p>
-                            </div>
-                            <div className="p-3 bg-red-100 rounded-lg">
-                                <div className="w-5 h-5 bg-red-500 rounded-full animate-pulse"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <StatsCard
+                        title="Inactive RBAC"
+                        value={loading ? '...' : inactiveRbac}
+                        bgColor="bg-red-100"
+                        pulseColor="bg-red-500"
+                        valueColor="text-red-600"
+                        delay={0.2}
+                    />
 
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Last Updated</p>
-                                <p className="text-lg font-semibold text-gray-900">
-                                    {loading ? '...' : getLastUpdated()}
-                                </p>
-                            </div>
-                            <div className="p-4 bg-blue-100 rounded-lg">
-                                <div className="w-5 h-5 bg-blue-500 rounded-full animate-pulse"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <StatsCard
+                        title="Last Updated"
+                        value={loading ? '...' : getLastUpdated()}
+                        bgColor="bg-blue-100"
+                        pulseColor="bg-blue-500"
+                        valueColor="text-gray-900"
+                        delay={0.3}
+                    />
                 </div>
 
                 <RbacTable

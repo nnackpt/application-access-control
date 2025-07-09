@@ -10,6 +10,9 @@ import { Application } from "@/types/Application"
 import AppsFunctionsCreateModal from "@/Components/AppsFunctions/AppsFunctionsCreateModal"
 import AppsFunctionsEditModal from "@/Components/AppsFunctions/AppsFunctionsEditModal"
 import getValue from "@/Utils/getValue"
+import { motion } from 'framer-motion';
+import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
+import StatsCard from "@/Components/UI/StatsCard"
 
 export default function AppsFunctions() {
   const [refresh, setRefresh] = useState(0)
@@ -23,6 +26,7 @@ export default function AppsFunctions() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editData, setEditData] = useState<AppsFunctions | null>(null)
+  const [applications, setApplications] = useState<Application[]>([]);
 
   const handleExport = () => {
     try {
@@ -91,6 +95,7 @@ export default function AppsFunctions() {
           applicationApi.getApplications()
         ])
         setAppsFunctions(functionsResponse)
+        setApplications(applicationsResponse)
 
         const TitlesMap: Record<string, string> = {}
         applicationsResponse.forEach((app: Application) => {
@@ -188,40 +193,41 @@ export default function AppsFunctions() {
                             </div>
                         </div>
                           
-                        <button
+                        <motion.button
                             onClick={() => setIsCreateModalOpen(true)}
-                            className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg hover:bg-[#004080] transition-colors shadow-lg cursor-pointer"
+                            className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
+                                    shadow-lg cursor-pointer"
+                            whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 17 }}
                         >
                             <Plus size={20} />
                             <span>Create New Application's Function</span>
-                        </button>
+                        </motion.button>
 
-                        <button
+                        <motion.button
                             onClick={handleExport}
-                            className="flex items-center space-x-2 bg-gray-400 hover:bg-gray-500 text-white px-6 py-3 rounded-lg transition-colors shadow-lg cursor-pointer"
+                            className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
+                                    shadow-lg cursor-pointer"
+                            whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 17 }}
                         >
                             <Download size={20} />
                             <span>Export Application's Function</span>
-                        </button>
+                        </motion.button>
+
                     </div>
                 </div>
 
                 <div className="flex items-center space-x-3">
                   <div className="relative">
                     {/* Select for Application Title */}
-                    <select
-                        value={selectedAppTitle}
-                        onChange={(e) => setSelectedAppTitle(e.target.value)}
-                        className="cursor-pointer border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-[#005496] focus:border-[#005496] appearance-none outline-none"
-                    >
-                        <option value="all">All Applications</option>
-                        {sortedAppTitles.map(appCode => (
-                            <option key={appCode} value={appCode.toString()}>
-                                {applicationTitle[appCode.toString()] || `Unknown App (${appCode})`}
-                            </option>
-                        ))}
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                    <AppTitleSelect
+                      selectedTitle={selectedAppTitle}
+                      setSelectedTitle={setSelectedAppTitle}
+                      applications={applications}
+                    />
                   </div>
 
                     <div className="relative">
@@ -240,61 +246,42 @@ export default function AppsFunctions() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Functions</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {loading ? '...' : totalFunctions}
-                </p>
-              </div>
-              <div className="p-3 bg-[#005496] bg-opacity-10 rounded-lg">
-                <Calculator className="text-[#005496] " size={20} />
-              </div>
-            </div>
-          </div>
+
+          <StatsCard
+            title="Total Functions"
+            value={loading ? '...' : totalFunctions}
+            icon={<Calculator className="text-white" size={20} />}
+            bgColor="bg-[#005496] bg-opacity-10"
+            delay={0}
+          />
+
+          <StatsCard
+            title="Active Functions"
+            value={loading ? '...' : activeFunctions}
+            bgColor="bg-green-100"
+            pulseColor="bg-green-500"
+            valueColor="text-green-600"
+            delay={0.1}
+          />
           
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Active Functions</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {loading ? '...' : activeFunctions}
-                </p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-lg">
-                <div className="w-5 h-5 bg-green-500 rounded-full animate-pulse"></div>
-              </div>
-            </div>
-          </div>
+          <StatsCard
+            title="Inactive Functions"
+            value={loading ? '...' : inactiveFunctions}
+            bgColor="bg-red-100"
+            pulseColor="bg-red-500"
+            valueColor="text-red-600"
+            delay={0.2}
+          />
+
+          <StatsCard
+            title="Last Updated"
+            value={loading ? '...' : getLastUpdated()}
+            bgColor="bg-blue-100"
+            pulseColor="bg-blue-500"
+            valueColor="text-gray-900"
+            delay={0.3}
+          />
           
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Inactive Functions</p>
-                <p className="text-2xl font-bold text-red-600">
-                  {loading ? '...' : inactiveFunctions}
-                </p>
-              </div>
-              <div className="p-3 bg-red-100 rounded-lg">
-                <div className="w-5 h-5 bg-red-500 rounded-full animate-pulse"></div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Last Updated</p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {loading ? '...' : getLastUpdated()}
-                </p>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <div className="w-5 h-5 bg-blue-500 rounded-full animate-pulse"></div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Table */}

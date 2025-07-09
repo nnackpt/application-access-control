@@ -10,6 +10,9 @@ import type { AppsRoles } from "@/types/AppsRoles"
 import getValue from "@/Utils/getValue"
 import { Calculator, ChevronDown, Download, Plus, Search } from "lucide-react"
 import { useEffect, useState } from "react"
+import { motion } from 'framer-motion';
+import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
+import StatsCard from "@/Components/UI/StatsCard"
 
 export default function AppsRoles() {
     const [refresh, setRefresh] = useState(0)
@@ -23,6 +26,7 @@ export default function AppsRoles() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [editData, setEditData] = useState<AppsRoles | null>(null)
+    const [applications, setApplications] = useState<Application[]>([])
 
     // Function to handle search term change
     const handleExport = () => {
@@ -49,7 +53,7 @@ export default function AppsRoles() {
             const link = document.createElement('a')
             const url = URL.createObjectURL(blob)
             link.setAttribute('href', url)
-            link.setAttribute('download', `Application_Functions_${new Date().toISOString().split('T')[0]}.csv`)
+            link.setAttribute('download', `Application_Roles_${new Date().toISOString().split('T')[0]}.csv`)
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
@@ -95,6 +99,7 @@ export default function AppsRoles() {
                     applicationApi.getApplications()
                 ])
                 setAppsRoles(roleResponse)
+                setApplications(appResponse)
 
                 const TitlesMap: Record<string, string> = {}
                 appResponse.forEach((app: Application) => {
@@ -187,39 +192,40 @@ export default function AppsRoles() {
                                     </div>
                                 </div>
 
-                                <button
+                                <motion.button
                                     onClick={() => setIsCreateModalOpen(true)}
-                                    className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg hover:bg-[#004080] transition-colors shadow-lg cursor-pointer"
+                                    className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
+                                            shadow-lg cursor-pointer"
+                                    whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                                    whileTap={{ scale: 0.98 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                                 >
                                     <Plus size={20} />
                                     <span>Create New Application's Role</span>
-                                </button>
+                                </motion.button>
 
-                                <button
+                                <motion.button
                                     onClick={handleExport}
-                                    className="flex items-center space-x-2 bg-gray-400 hover:bg-gray-500 text-white px-6 py-3 rounded-lg transition-colors shadow-lg cursor-pointer"
+                                    className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
+                                            shadow-lg cursor-pointer"
+                                    whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                                    whileTap={{ scale: 0.98 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                                 >
                                     <Download size={20} />
                                     <span>Export Application's Role</span>
-                                </button>
+                                </motion.button>
+
                             </div>
                         </div>
 
                         <div className="flex items-center space-x-3">
                             <div className="relative">
-                                <select 
-                                    value={selectedTitle}
-                                    onChange={(e) => setSelectedTitle(e.target.value)}
-                                    className="cursor-pointer border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-[#005496] focus:border-[#005496] appearance-none outline-none"
-                                >
-                                    <option value="all">All Applications</option>
-                                    {sortedAppTitles.map(appCode => (
-                                        <option key={appCode} value={appCode.toString()}>
-                                            {applicationTitle[appCode.toString()] || `Unknown App (${appCode})`}
-                                        </option>
-                                    ))}
-                                </select>
-                                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                <AppTitleSelect
+                                    selectedTitle={selectedTitle}
+                                    setSelectedTitle={setSelectedTitle}
+                                    applications={applications}
+                                />
                             </div>
 
                             <div className="relative">
@@ -238,61 +244,42 @@ export default function AppsRoles() {
 
                 {/* {Stats Cards} */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Total Roles</p>
-                                <p className="text-2xl font-bold text-gray-900">
-                                    {loading ? '...' : totalRoles}
-                                </p>
-                            </div>
-                            <div className="p-3 bg-[#005496] bg-opacity-10 rounded-lg">
-                                <Calculator className="text-[#005496]" size={20} />
-                            </div>
-                        </div>
-                    </div>
 
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Active Roles</p>
-                                <p className="text-2xl font-bold text-green-600">
-                                    {loading ? '...' : activeRoles}
-                                </p>
-                            </div>
-                            <div className="p-3 bg-green-100 rounded-lg">
-                                <div className="w-5 h-5 bg-green-500 rounded-full animate-pulse"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <StatsCard
+                        title="Total Roles"
+                        value={loading ? '...' : totalRoles}
+                        icon={<Calculator className="text-white" size={20} />}
+                        bgColor="bg-[#005496] bg-opacity-10"
+                        delay={0}
+                    />
 
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Inactive Roles</p>
-                                <p className="text-2xl font-bold text-red-600">
-                                    {loading ? '...' : inactiveRoles}
-                                </p>
-                            </div>
-                            <div className="p-3 bg-red-100 rounded-lg">
-                                <div className="w-5 h-5 bg-red-500 rounded-full animate-pulse"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <StatsCard
+                        title="Active Roles"
+                        value={loading ? '...' : activeRoles}
+                        bgColor="bg-green-100"
+                        pulseColor="bg-green-500"
+                        valueColor="text-green-600"
+                        delay={0.1}
+                    />
+                    
+                    <StatsCard
+                        title="Inactive Roles"
+                        value={loading ? '...' : inactiveRoles}
+                        bgColor="bg-red-100"
+                        pulseColor="bg-red-500"
+                        valueColor="text-red-600"
+                        delay={0.2}
+                    />
 
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Last Updated</p>
-                                <p className="text-lg font-semibold text-gray-900">
-                                    {loading ? '...' : getLastUpdated()}
-                                </p>
-                            </div>
-                            <div className="p-4 bg-blue-100 rounded-lg">
-                                <div className="w-5 h-5 bg-blue-500 rounded-full animate-pulse"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <StatsCard
+                        title="Last Updated"
+                        value={loading ? '...' : getLastUpdated()}
+                        bgColor="bg-blue-100"
+                        pulseColor="bg-blue-500"
+                        valueColor="text-gray-900"
+                        delay={0.3}
+                    />
+                    
                 </div>
 
                 <AppsRolesTable

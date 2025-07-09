@@ -1,13 +1,15 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Download, Plus, Search, Settings } from "lucide-react"
+import { Calculator, Download, Plus, Search, Settings } from "lucide-react"
 import ApplicationTable from "@/Components/Application/ApplicationTable"
 import { applicationApi } from "@/services/ApplicationApi"
 import { Application } from "@/types/Application"
 import ApplicationCreateModal from "@/Components/Application/ApplicationCreateModal"
 import ApplicationEditModal from "@/Components/Application/ApplicationEditModal"
 import getValue from "@/Utils/getValue"
+import { motion } from 'framer-motion';
+import StatsCard from "@/Components/UI/StatsCard"
 
 export default function Applications() {
   const [refresh, setRefresh] = useState(0)
@@ -137,96 +139,101 @@ export default function Applications() {
                     </div>
                 </div>
 
-                <button
+                <motion.button
                     onClick={() => setIsCreateModalOpen(true)}
-                    className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg hover:bg-[#004080] transition-colors shadow-lg cursor-pointer"
+                    className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
+                            shadow-lg cursor-pointer"
+                    whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                     <Plus size={20} />
                     <span>Create New Application's</span>
-                </button>
+                </motion.button>
 
-                <button
+                <motion.button
                     onClick={handleExport}
-                    className="flex items-center space-x-2 bg-gray-400 hover:bg-gray-500 text-white px-6 py-3 rounded-lg transition-colors shadow-lg cursor-pointer"
+                    className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
+                            shadow-lg cursor-pointer"
+                    whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                     <Download size={20} />
                     <span>Export Application's</span>
-                </button>
+                </motion.button>
               </div>
             </div>
 
-            <div className="flex ites-center space-x-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                <input 
-                  type="text" 
-                  placeholder="Search Applications..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"  
-                />
-              </div>
+            <div className="flex items-center space-x-3">
+                <div className="relative">
+                    <motion.div
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <Search size={16} />
+                    </motion.div>
+                    <motion.input
+                        type="text"
+                        placeholder="Search Applications..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg
+                                  focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none
+                                  w-64 md:w-72 lg:w-80
+                                  transition-all duration-300 ease-in-out"
+                        whileFocus={{
+                            borderColor: "#005496",
+                            boxShadow: "0 0 0 2px rgba(0, 84, 150, 0.2)",
+                            width: "min(320px, 90vw)" // Max width 320px or 90vw
+                        }}
+                        whileHover={{ borderColor: "#005496" }}
+                    />
+                </div>
             </div>
           </div>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Applications</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {loading ? '...' : totalApplications}
-                </p>
-              </div>
-              <div className="p-3 bg-[#005496] bg-opacity-10 rounded-lg">
-                <Settings className="text-[#005496]" size={20} />
-              </div>
-            </div>
-          </div>
+
+          <StatsCard
+            title="Total Applications"
+            value={loading ? '...' : totalApplications}
+            icon={<Calculator className="text-white" size={20} />}
+            bgColor="bg-[#005496] bg-opacity-10"
+            delay={0}
+          />
+
+          <StatsCard
+            title=" Active Applications"
+            value={loading ? '...' : activeApplications}
+            bgColor="bg-green-100"
+            pulseColor="bg-green-500"
+            valueColor="text-green-600"
+            delay={0.1}
+          />
           
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Active Applications</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {loading ? '...' : activeApplications}
-                </p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-lg">
-                <div className="w-5 h-5 bg-green-500 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Inactive Applications</p>
-                <p className="text-2xl font-bold text-red-600">
-                  {loading ? '...' : inactiveApplications}
-                </p>
-              </div>
-              <div className="p-3 bg-red-100 rounded-lg">
-                <div className="w-5 h-5 bg-red-500 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Last Updated</p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {loading ? '...' : getLastUpdated()}
-                </p>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <div className="w-5 h-5 bg-blue-500 rounded-full animate-pulse"></div>
-              </div>
-            </div>
-          </div>
+          <StatsCard
+            title="Inactive Applications"
+            value={loading ? '...' : inactiveApplications}
+            bgColor="bg-red-100"
+            pulseColor="bg-red-500"
+            valueColor="text-red-600"
+            delay={0.2}
+          />
+
+          <StatsCard
+            title="Last Updated"
+            value={loading ? '...' : getLastUpdated()}
+            bgColor="bg-blue-100"
+            pulseColor="bg-blue-500"
+            valueColor="text-gray-900"
+            delay={0.3}
+          />
+      
         </div>
 
         {/* Table */}
