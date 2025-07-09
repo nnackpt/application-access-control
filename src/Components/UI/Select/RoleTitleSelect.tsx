@@ -1,48 +1,63 @@
-import { Application } from "@/types/Application"
-import { Listbox, Transition } from "@headlessui/react"
-import { ChevronDownIcon, CheckIcon, ArrowRightCircleIcon } from "@heroicons/react/20/solid"
-import { Fragment, useEffect, useRef, useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
+"use client"
 
-interface AppTitleSelectProps {
-    selectedTitle: string
-    setSelectedTitle: (title: string) => void
-    applications: Application[]
+import { AppsRoles } from "@/types/AppsRoles"
+import { useEffect, useRef, useState } from "react"
+import { motion } from 'framer-motion';
+import { ChevronDownIcon, ArrowRightCircleIcon } from "@heroicons/react/20/solid";
+import { AnimatePresence } from 'framer-motion';
+
+interface RoleTitleSelectProps {
+    selectedRole: string
+    setSelectedRole: (roleCode: string) => void
+    roles: AppsRoles[]
+    selectedAppCode: string
 }
 
-export default function AppTitleSelect({
-    selectedTitle,
-    setSelectedTitle,
-    applications
-}: AppTitleSelectProps) {
+export default function RoleTitleSelect({
+    selectedRole,
+    setSelectedRole,
+    roles,
+    selectedAppCode
+}: RoleTitleSelectProps) {
     const [open, setOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
-    
-    // const filterApp = applications.filter(app =>
-    //     selectedTitle === 'all' ? true : app.apP_CODE === selectedTitle
-    // )
-    
-    // const options = [
-    //     { value: 'all', label: "All Application" },
-    //     ...filterApp.map(app => ({
-    //         value: app.apP_CODE?.toString() || '',
-    //         label:
-    //     }))
-    // ]
 
-    const sortedAppOptions = applications
-        .map(app => ({
-            value: app.apP_CODE?.toString() || '',
-            label: app.title || `Unknown App ${app.apP_CODE}`
+    const filterRoles = roles.filter(role => 
+        selectedAppCode === 'all' ? true : role.apP_CODE === selectedAppCode
+    )
+
+    // const options = [
+    //     { value: 'all', label: 'All Roles' },
+    //     ...filterRoles.map(role => ({
+    //         value: role.rolE_CODE?.toString() || '',
+    //         label: `${role.rolE_CODE || 'Unknown'} - ${role.name || 'Unnamed'}`
+    //     }))
+    // ].filter(option => option.value !== '').sort((a, b) => a.label.localeCompare(b.label))
+
+    const sortedRoleOptions = filterRoles
+        .map(role => ({
+            value: role.rolE_CODE?.toString() || '',
+            label: `${role.rolE_CODE || 'Unknown'} - ${role.name || 'Unnamed'}`
         }))
         .filter(option => option.value !== '')
         .sort((a, b) => a.label.localeCompare(b.label))
 
     const options = [
-        { value: 'all', label: 'All Application' },
-        ...sortedAppOptions
+        { value: 'all', label: 'All Roles' },
+        ...sortedRoleOptions
     ]
-    
+
+    const current = options.find(o => o.value === selectedRole) || options[0]
+    useEffect(() => {
+        const availableRoleCodes = roles
+            .filter(role => selectedAppCode === 'all' || role.apP_CODE === selectedAppCode)
+            .map(role => role.rolE_CODE?.toString())
+
+        if (selectedRole !== 'all' && !availableRoleCodes.includes(selectedRole)) {
+            setSelectedRole('all')
+        }
+    }, [selectedAppCode, roles, selectedRole, setSelectedRole])
+
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -54,9 +69,7 @@ export default function AppTitleSelect({
             document.removeEventListener('mousedown', handleClickOutside)
         }
     }, [])
-    
-    const current = options.find(o => o.value === selectedTitle) || options[0]
-    
+
     return (
         <div className="relative w-72" ref={dropdownRef}>
             <button
@@ -85,17 +98,17 @@ export default function AppTitleSelect({
                             <li
                                 key={option.value}
                                 onClick={() => {
-                                    setSelectedTitle(option.value)
+                                    setSelectedRole(option.value)
                                     setOpen(false)
                                 }}
                                 className={`cursor-pointer select-none px-4 py-2 flex items-center gap-2 ${
-                                    selectedTitle === option.value
+                                    selectedRole === option.value
                                         ? 'bg-[#005496] text-white font-semibold'
                                         : 'text-gray-900 hover:bg-[#e6f0fa]'
                                     }`
                                 }
                             >
-                                {selectedTitle === option.value && (
+                                {selectedRole === option.value && (
                                     <ArrowRightCircleIcon className="h-4 w-4 text-white" />
                                 )}
                                 {option.label}

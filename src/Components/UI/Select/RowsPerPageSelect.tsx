@@ -1,8 +1,9 @@
 import { Listbox, Transition } from "@headlessui/react"
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { motion } from 'framer-motion';
-import { CheckIcon, ChevronRight } from "lucide-react";
-import { Fragment } from "react";
+import { CheckIcon, ChevronRight, ArrowRightCircleIcon } from "lucide-react";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { AnimatePresence } from 'framer-motion';
 
 interface RowsPerPageSelectProps {
     rowsPerPage: number
@@ -21,81 +22,68 @@ export default function RowsPerPageSelect({
         { value: 0, label: "ALL" },
     ]
 
-    const currentSelectedOption = options.find((option) => option.value === rowsPerPage)
+    const [open, setOpen] = useState(false)
+    const dropdownRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+                setOpen(false)
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => document.removeEventListener("mousedown", handleClickOutside)
+    }, [])
+
+    const current = options.find(o => o.value === rowsPerPage) || options[0]
 
     return (
-        <Listbox value={rowsPerPage} onChange={setRowsPerPage}>
-            {({ open }) => (
-                <div className="relative w-20">
-                    <Listbox.Button
-                        className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-8 text-left shadow-md
-                                    focus:outline-none focus-visible:border-[#005496] focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2
-                                    focus-visible:ring-offset-[#005496] sm:text-sm border border-gray-300 hover:border-gray-400 transition-colors duration-200"
+        <div className="relative w-20" ref={dropdownRef}>
+            <button
+                onClick={() => setOpen(prev => !prev)}
+                className="w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-8 text-left shadow-md
+                            focus:outline-none border border-gray-300 hover:border-gray-400 transition-colors duration-200 text-sm relative"
+            >
+                <span>{current.label}</span>
+                <span className="absolute inset-y-0 right-0 flex items-center pr-2">
+                    <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                        <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                    </motion.div>
+                </span>
+            </button>
+
+            <AnimatePresence>
+                {open && (
+                    <motion.ul
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto overflow-x-hidden rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5 border border-gray-200"
                     >
-                        <span className="block truncate">
-                            {currentSelectedOption ? currentSelectedOption.label : "10"}
-                        </span>
-                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                            <motion.div
-                                animate={{ rotate: open ? 180 : 0 }}
-                                transition={{ duration: 0.2 }}
+                        {options.map(option => (
+                            <li
+                                key={option.value}
+                                onClick={() => {
+                                    setRowsPerPage(option.value)
+                                    setOpen(false)
+                                }}
+                                className={`cursor-pointer select-none px-4 py-2 flex items-center gap-2 ${
+                                    rowsPerPage === option.value
+                                        ? 'bg-[#005496] text-white font-semibold'
+                                        : 'text-gray-900 hover:bg-[#e6f0fa]'
+                                    }`
+                                }
                             >
-                                <ChevronDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                            </motion.div>
-                        </span>
-                    </Listbox.Button>
-                    <Transition
-                        show={open}
-                        as={Fragment}
-                        leave="transition ease-in duration-100"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                    >
-                        <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.25 }}
-                            className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm"
-                        >
-                            <Listbox.Options static className="focus:outline-none">
-                                {options.map((option) => (
-                                    <Listbox.Option
-                                        key={option.value}
-                                        className={({ active }) =>
-                                            `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                                                active ? 'bg-[#005496] text-white' : 'text-gray-900'
-                                            }`
-                                        }
-                                        value={option.value}
-                                    >
-                                        {({ selected, active }) => (
-                                            <>
-                                                <span
-                                                    className={`bloack ${
-                                                        selected ? "font-semibold" : "font-normal"
-                                                    }`}
-                                                >
-                                                    {option.label}
-                                                </span>
-                                                {selected ? (
-                                                    <span
-                                                        className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                                                            active ? "text-white" : "text-[#005496]"
-                                                        }`}
-                                                    >
-                                                        <ChevronRight className="h-5 w-5" aria-hidden="true" />
-                                                    </span>
-                                                ) : null}
-                                            </>
-                                        )}
-                                    </Listbox.Option>
-                                ))}
-                            </Listbox.Options>
-                        </motion.div>
-                    </Transition>
-                </div>
-            )}
-        </Listbox>
+                                {rowsPerPage === option.value && (
+                                    <ArrowRightCircleIcon className="h-4 w-4 text-white" />
+                                )}
+                                {option.label}
+                            </li>
+                        ))}
+                    </motion.ul>
+                )}
+            </AnimatePresence>
+        </div>
     )
 }
