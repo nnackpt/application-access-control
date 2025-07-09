@@ -14,6 +14,7 @@ import RbacCreateModal from "@/Components/RBAC/RbacCreateModal"
 import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
 import { motion } from "framer-motion" // Import motion from framer-motion
 import StatsCard from "@/Components/UI/StatsCard"
+import RoleTitleSelect from "@/Components/UI/Select/RoleTitleSelect"
 
 export default function RBAC() {
     const [refresh, setRefresh] = useState(0)
@@ -29,6 +30,7 @@ export default function RBAC() {
     const [editData, setEditData] = useState<Rbac | null>(null)
     const [applications, setApplications] = useState<Application[]>([])
     const [roles, setRoles] = useState<AppsRoles[]>([])
+    const [selectedRole, setSelectedRole] = useState("all")
 
     const handleExport = () => {
         try {
@@ -227,12 +229,6 @@ export default function RBAC() {
                         </div>
 
                         <div className="flex items-center space-x-3">
-                            <AppTitleSelect
-                                selectedTitle={selectedTitle}
-                                setSelectedTitle={setSelectedTitle}
-                                applications={applications}
-                            />
-
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                                 <input
@@ -241,6 +237,21 @@ export default function RBAC() {
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"
+                                />
+                            </div>
+                            
+                            <div className="flex flex-col space-y-4 ml-4">
+                                <AppTitleSelect
+                                    selectedTitle={selectedTitle}
+                                    setSelectedTitle={setSelectedTitle}
+                                    applications={applications}
+                                />
+
+                                <RoleTitleSelect
+                                    selectedRole={selectedRole}
+                                    setSelectedRole={setSelectedRole}
+                                    roles={roles}
+                                    selectedAppCode={selectedTitle}
                                 />
                             </div>
                         </div>
@@ -291,6 +302,7 @@ export default function RBAC() {
                     onRefresh={handleRefresh}
                     searchTerm={searchTerm}
                     selectedTitle={selectedTitle}
+                    selectedRole={selectedRole}
                 />
 
                 <RbacCreateModal

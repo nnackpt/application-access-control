@@ -17,9 +17,10 @@ interface RbacTableProps {
     onRefresh: () => void
     searchTerm: string
     selectedTitle: string 
+    selectedRole: string
 }
 
-export default function RbacTable({ refreshSignal, onRefresh, searchTerm, selectedTitle }: RbacTableProps) {
+export default function RbacTable({ refreshSignal, onRefresh, searchTerm, selectedTitle, selectedRole }: RbacTableProps) {
     const [data, setData] = useState<Rbac[]>([])
     const [loading, setLoading] = useState(false)
     const [viewData, setViewData] = useState<Rbac | null>(null)
@@ -64,7 +65,7 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
 
     useEffect(() => {
         setCurrentPage(1)
-    }, [searchTerm, selectedTitle])
+    }, [searchTerm, selectedTitle, selectedRole])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -120,17 +121,18 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
     const filteredData = data.filter(rbac => {
         const rbacCode = getValue(rbac, ['rbaC_CODE'])
         const appCode = getValue(rbac, ['apP_CODE'])
-        const appName = getAppName(rbac)
-        const roleCode = getValue(rbac, ['rolE_CODE'])
-        const roleName = getRoleName(rbac)
-        const funcCode = getValue(rbac, ['funC_CODE'])
-        const createdBy = getValue(rbac, ['createD_BY'])
+        const appName = getAppName(rbac) || ''
+        const roleCode = getValue(rbac, ['rolE_CODE']) || ''
+        const roleName = getRoleName(rbac) || ''
+        const funcCode = getValue(rbac, ['funC_CODE']) || ''
+        const createdBy = getValue(rbac, ['createD_BY']) || ''
         // const createdDate = getValue(rbac, ['createD_DATETIME'])
-        const updatedBy = getValue(rbac, ['updateD_BY'])
+        const updatedBy = getValue(rbac, ['updateD_BY']) || ''
         // const updatedDate = getValue(rbac, ['updateD_DATETIME'])
 
         const matchesSearchTerm = searchTerm.toLowerCase()
         const appCodeMatches = selectedTitle === "all" || appCode.toLowerCase() === selectedTitle.toLowerCase()
+        const roleCodeMatches = selectedRole === "all" || roleCode.toLowerCase() === selectedRole.toLowerCase()
 
         const textMatches = (
             rbacCode.toLowerCase().includes(matchesSearchTerm) ||
@@ -143,7 +145,7 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
             updatedBy.toLowerCase().includes(matchesSearchTerm)
         )
 
-        return appCodeMatches && textMatches
+        return appCodeMatches && roleCodeMatches && textMatches
     })
 
     const handleView = (rbac: Rbac) => {
