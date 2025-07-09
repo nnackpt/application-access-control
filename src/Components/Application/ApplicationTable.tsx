@@ -9,6 +9,7 @@ import toast, { Toaster } from "react-hot-toast"
 import getValue from "@/Utils/getValue"
 import formatDateTime from "@/Utils/formatDateTime"
 import Pagination from "../UI/Pagination"
+import RowsPerPageSelect from "../UI/Select/RowsPerPageSelect"
 
 interface ApplicationTableProps {
   refreshSignal: number
@@ -188,17 +189,10 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">Display</span>
-              <select
-                value={rowsPerPage}
-                onChange={(e) => handleRowsPerPageChange(Number(e.target.value))}
-                className="border border-gray-300 rounded px-3 py-1 text-sm focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none"
-              >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-                <option value={0}>ALL</option>
-              </select>
+              <RowsPerPageSelect
+                  rowsPerPage={rowsPerPage}
+                  setRowsPerPage={handleRowsPerPageChange}
+              />
               <span className="text-sm text-gray-600">Records</span>
             </div>
             <div className="text-sm text-gray-600">

@@ -9,6 +9,8 @@ import toast, { Toaster } from "react-hot-toast"
 import Pagination from "../UI/Pagination"
 import formatDateTime from './../../Utils/formatDateTime';
 import { Edit, Eye, Trash2 } from "lucide-react"
+import RowsPerPageSelect from "../UI/Select/RowsPerPageSelect"
+import DeleteConfirmModal from './../UI/DeleteConfirmModal';
 
 interface RbacTableProps {
     refreshSignal: number
@@ -219,17 +221,10 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
                         <div className="flex items-center space-x-4">
                             <div className="flex items-center space-x-2">
                                 <span className="text-sm text-gray-600">Display</span>
-                                <select 
-                                    value={rowsPerPage}
-                                    onChange={(e) => handleRowsPerPageChange(Number(e.target.value))}
-                                    className="border border-gray-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none"
-                                >
-                                    <option value={10}>10</option>
-                                    <option value={25}>25</option>
-                                    <option value={50}>50</option>
-                                    <option value={100}>100</option>
-                                    <option value={0}>ALL</option>
-                                </select>
+                                <RowsPerPageSelect
+                                    rowsPerPage={rowsPerPage}
+                                    setRowsPerPage={handleRowsPerPageChange}
+                                />
                                 <span className="text-sm text-gray-600">Records</span>
                             </div>
                             <div className="text-sm text-gray-600">
@@ -281,11 +276,11 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
                                         return (
                                             <tr key={`${rbacCode || index}-${index}`} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">
                                                 <td className="px-3 py-3 font-medium text-[#005486] text-sm">{rbacCode || '-'}</td>
-                                                <td className="px-3 py-3 font-medium text-[#005486] text-sm">{appCode || '-'}</td>
-                                                <td className="px-3 py-3 font-medium text-sm">{appName || '-'}</td>
-                                                <td className="px-3 py-3 font-medium text-sm">{roleCode || '-'}</td>
-                                                <td className="px-3 py-3 font-medium text-sm">{roleName || '-'}</td>
-                                                <td className="px-3 py-3 font-medium text-sm">{funcCode || '-'}</td>
+                                                <td className="px-3 py-3 text-sm">{appCode || '-'}</td>
+                                                <td className="px-3 py-3 text-sm">{appName || '-'}</td>
+                                                <td className="px-3 py-3 text-sm">{roleCode || '-'}</td>
+                                                <td className="px-3 py-3 text-sm">{roleName || '-'}</td>
+                                                <td className="px-3 py-3 text-sm">{funcCode || '-'}</td>
                                                 <td className="px-3 py-3 text-sm">{createdBy || '-'}</td>
                                                 <td className="px-3 py-3 whitespace-nowrap text-sm">
                                                     {formatDateTime(createdDate)}
@@ -353,15 +348,15 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
                     onClose={() => setIsEditModalOpen(false)}
                     onSuccess={handleEditSuccess}
                     editData={editData!}
-                />
+                /> */}
 
                 <DeleteConfirmModal
-                    isOpen={deleteModal.open}
-                    onClose={() => setDeleteModal({ appRoles: null, open: false })}
+                    isOpen={deleteModal.open} 
+                    onClose={() => setDeleteModal({ rbac: null, open: false })}
                     onConfirm={confirmDelete}
-                    appName={deleteModal.appRoles ? getValue(deleteModal.appRoles, ['funC_CODE']) || '' : ''}
+                    appName={deleteModal.rbac ? getValue(deleteModal.rbac, ['rbaC_CODE']) || '' : ''}
                     loading={!!deleteLoading}
-                /> */}
+                />
 
                 {deleteSuccess && (
                     <Toaster
