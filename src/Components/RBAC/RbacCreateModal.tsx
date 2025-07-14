@@ -6,10 +6,12 @@ import { rbacApi } from "@/services/RbacApi";
 import { Application } from "@/types/Application";
 import { AppsRoles } from "@/types/AppsRoles";
 import { AppsFunctions } from "@/types/AppsFunctions";
-import { X } from "lucide-react";
+import { ChevronDownIcon, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { createRbac } from "@/types/Rbac";
+import { AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const initForm = {
   APP_CODE: "",
@@ -37,6 +39,8 @@ export default function RbacCreateModal({
   const [loadingFuncs, setLoadingFuncs] = useState(false);
   const [loadingAssignedFuncs, setLoadingAssignedFuncs] = useState(false);
   const { userName } = useCurrentUser();
+  const [showAppDropDown, setShowAppDropdown] = useState(false)
+  const [showRoleDropDown, setShowRoleDropdown] = useState(false)
 
   useEffect(() => {
     if (isOpen) {
@@ -71,16 +75,16 @@ export default function RbacCreateModal({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev: any) => ({ ...prev, [name]: value }));
     if (error[name]) setError((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleCheck = (funcCode: string, checked: boolean) => {
-    setForm(prev => ({
+    setForm((prev: { FUNC_CODES: any[]; }) => ({
       ...prev,
       FUNC_CODES: checked
         ? [...prev.FUNC_CODES, funcCode]
-        : prev.FUNC_CODES.filter(code => code !== funcCode)
+        : prev.FUNC_CODES.filter((code: string) => code !== funcCode)
     }));
     if (error.FUNC_CODES) setError(prev => ({ ...prev, FUNC_CODES: "" }));
   };
@@ -115,7 +119,7 @@ export default function RbacCreateModal({
 
     const fetchAssignedFuncs = async () => {
       if (!form.APP_CODE || !form.ROLE_CODE) {
-        setForm(prev => ({ ...prev, FUNC_CODES: [] }));
+        setForm((prev: any) => ({ ...prev, FUNC_CODES: [] }));
         return;
       }
 
@@ -123,7 +127,7 @@ export default function RbacCreateModal({
       try {
         const assigned = await rbacApi.getAssignedFuncCodes(form.APP_CODE, form.ROLE_CODE);
         if (!isCancelled) {
-          setForm(prev => ({
+          setForm((prev: any) => ({
             ...prev,
             // ใช้ฟังก์ชันที่ได้จาก API
             FUNC_CODES: assigned || []
@@ -133,7 +137,7 @@ export default function RbacCreateModal({
         if (!isCancelled) {
           console.error("Failed to load assigned functions", err);
           // ถ้าเกิดข้อผิดพลาด ให้เคลียร์ฟังก์ชัน
-          setForm(prev => ({ ...prev, FUNC_CODES: [] }));
+          setForm((prev: any) => ({ ...prev, FUNC_CODES: [] }));
         }
       } finally {
         if (!isCancelled) {
@@ -149,8 +153,8 @@ export default function RbacCreateModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-visible" onClick={e => e.stopPropagation()}>
         <div className="sticky top-0 bg-[#005496] text-white p-6 rounded-t-xl flex justify-between items-center">
           <h2 className="text-xl font-semibold">Create New Application's RBAC</h2>
           <button onClick={onClose} className="text-white hover:text-blue-200 transition-colors cursor-pointer" disabled={loading}>
@@ -159,41 +163,110 @@ export default function RbacCreateModal({
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
             {/* APP Code */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">APP Code <span className="text-red-500">*</span></label>
-              <select
-                name="APP_CODE"
-                value={form.APP_CODE}
-                onChange={handleChange}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] ${error.APP_CODE ? 'border-red-500' : 'border-gray-300'}`}
-                disabled={loading || loadingApps}
-              >
-                <option value="">Select APP Code</option>
-                {applications.map((app, i) => (
-                  <option key={i} value={app.apP_CODE}>{app.title}</option>
-                ))}
-              </select>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                APP Code <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <button
+                  onClick={() => setShowAppDropdown(prev => !prev)}
+                  className={`w-full p-3 border rounded-lg text-left flex justify-between items-center  
+                              focus:ring-2 focus:ring-[#005496] focus:border-[#005496] ${error.APP_CODE ? 'border-red-500' : 'border-gray-300'}`}
+                  disabled={loading || loadingApps}
+                >
+                  <span>
+                    {applications.find(app => app.apP_CODE === form.APP_CODE)?.title || "Select APP Code"}
+                  </span>
+                  <span className="pointer-events-none">
+                    <motion.div
+                      animate={{ rotate: showAppDropDown ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                    </motion.div>
+                  </span>
+                </button>
+
+                <AnimatePresence>
+                  {showAppDropDown && (
+                    <motion.ul
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg"
+                    >
+                      {applications.map((app) => (
+                        <li
+                          key={app.apP_CODE}
+                          onClick={() => {
+                            setForm((prev: any) => ({ ...prev, APP_CODE: app.apP_CODE, ROLE_CODE: "", FUNC_CODES: [] }))
+                            setShowAppDropdown(false)
+                          }}
+                          className="px-4 py-2 hover:bg-[#005496] hover:text-white cursor-pointer text-sm"
+                        >
+                          {app.title}
+                        </li>
+                      ))}
+                    </motion.ul>
+                  )}
+                </AnimatePresence>
+              </div>
               {error.APP_CODE && <p className="text-red-500 text-sm mt-1">{error.APP_CODE}</p>}
             </div>
 
             {/* Role Code */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Role Code <span className="text-red-500">*</span></label>
-              <select
-                name="ROLE_CODE"
-                value={form.ROLE_CODE}
-                onChange={handleChange}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] ${error.ROLE_CODE ? 'border-red-500' : 'border-gray-300'}`}
-                disabled={loading || loadingRoles}
-              >
-                <option value="">Select Role</option>
-                {roles
-                  .filter(r => r.apP_CODE === form.APP_CODE)
-                  .map((role, idx) => (
-                    <option key={idx} value={role.rolE_CODE}>{role.name}</option>
-                  ))}
-              </select>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Role Code <span className="text-red-500">*</span>
+              </label>
+                <div className="relative">
+                  <button
+                    onClick={() => setShowRoleDropdown(prev => !prev)}
+                    className={`w-full p-3 border rounded-lg text-left flex justify-between items-center
+                                focus:ring-2 focus:ring-[#005496] focus:border-[#005496] ${error.ROLE_CODE ? 'border-red-500' : 'border-gray-300'}`}
+                    disabled={loading || loadingRoles}
+                  >
+                    <span>
+                      {roles.find(role => role.rolE_CODE === form.ROLE_CODE)?.name || "Select Role Code"}
+                    </span>
+                    <span className="pointer-events-none">
+                      <motion.div
+                        animate={{ rotate: showRoleDropDown ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                      </motion.div>
+                    </span>
+                  </button>
+
+                  <AnimatePresence>
+                    {showRoleDropDown && (
+                      <motion.ul
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        className="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg"
+                      >
+                        {roles
+                          .filter(r => r.apP_CODE === form.APP_CODE)
+                          .map((role) => (
+                            <li
+                              key={role.rolE_CODE}
+                              onClick={() => {
+                                setForm((prev: any) => ({ ...prev, ROLE_CODE: role.rolE_CODE, FUNC_CODES: [] }))
+                                setShowRoleDropdown(false)
+                              }}
+                              className="px-4 py-2 hover:bg-[#005496] hover:text-white cursor-pointer text-sm"
+                            >
+                              {role.name}
+                            </li>
+                          ))}
+                      </motion.ul>
+                    )}
+                  </AnimatePresence>
+                </div>
               {error.ROLE_CODE && <p className="text-red-500 text-sm mt-1">{error.ROLE_CODE}</p>}
             </div>
 

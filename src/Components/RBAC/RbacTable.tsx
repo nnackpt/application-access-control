@@ -1,3 +1,5 @@
+"use client"
+
 import { rbacApi } from "@/services/RbacApi"
 import { Rbac } from "@/types/Rbac"
 import getValue from "@/Utils/getValue"
@@ -11,6 +13,7 @@ import formatDateTime from './../../Utils/formatDateTime';
 import { Edit, Eye, Trash2 } from "lucide-react"
 import RowsPerPageSelect from "../UI/Select/RowsPerPageSelect"
 import DeleteConfirmModal from './../UI/DeleteConfirmModal';
+import { useRouter } from "next/navigation"
 
 interface RbacTableProps {
     refreshSignal: number
@@ -35,6 +38,7 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
     const [deleteSuccess, setDeleteSuccess] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(10)
+    const router = useRouter()
 
     const getPaginatedData = () => {
         const startIndex = (currentPage - 1) * rowsPerPage
@@ -149,8 +153,12 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
     })
 
     const handleView = (rbac: Rbac) => {
-        setViewData(rbac)
-        setIsViewModalOpen(true)
+        // setViewData(rbac)
+        // setIsViewModalOpen(true)
+        const rbacCode = getValue(rbac, ['rbaC_CODE'])
+        if (rbacCode) {
+            router.push(`/RBAC/view/${rbacCode}`)
+        }
     }
 
     const handleEdit = (rbac: Rbac) => {
