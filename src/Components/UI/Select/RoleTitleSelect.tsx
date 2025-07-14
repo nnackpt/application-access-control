@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import { motion } from 'framer-motion';
 import { ChevronDownIcon, ArrowRightCircleIcon } from "@heroicons/react/20/solid";
 import { AnimatePresence } from 'framer-motion';
+import { ChevronRight } from 'lucide-react';
 
 interface RoleTitleSelectProps {
     selectedRole: string
@@ -109,7 +110,7 @@ export default function RoleTitleSelect({
                                 }
                             >
                                 {selectedRole === option.value && (
-                                    <ArrowRightCircleIcon className="h-4 w-4 text-white" />
+                                    <ChevronRight className="h-4 w-4 text-white" />
                                 )}
                                 {option.label}
                             </li>

@@ -76,7 +76,7 @@ export default function RowsPerPageSelect({
                                 }
                             >
                                 {rowsPerPage === option.value && (
-                                    <ArrowRightCircleIcon className="h-4 w-4 text-white" />
+                                    <ChevronRight className="h-4 w-4 text-white" />
                                 )}
                                 {option.label}
                             </li>

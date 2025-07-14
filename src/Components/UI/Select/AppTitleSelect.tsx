@@ -1,8 +1,9 @@
 import { Application } from "@/types/Application"
-import { Listbox, Transition } from "@headlessui/react"
-import { ChevronDownIcon, CheckIcon, ArrowRightCircleIcon } from "@heroicons/react/20/solid"
+// import { Listbox, Transition } from "@headlessui/react"
+import { ChevronDownIcon, CheckIcon  } from "@heroicons/react/20/solid"
 import { Fragment, useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
+import { ChevronRight } from 'lucide-react';
 
 interface AppTitleSelectProps {
     selectedTitle: string
@@ -96,7 +97,7 @@ export default function AppTitleSelect({
                                 }
                             >
                                 {selectedTitle === option.value && (
-                                    <ArrowRightCircleIcon className="h-4 w-4 text-white" />
+                                    <ChevronRight className="h-4 w-4 text-white" />
                                 )}
                                 {option.label}
                             </li>
