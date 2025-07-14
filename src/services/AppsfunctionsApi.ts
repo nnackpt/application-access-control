@@ -27,6 +27,10 @@ class AppsFunctionsApiService {
         return this.fetchApi('/api/CmAppFunctions')
     }
 
+    async getFunctionsByAppCode(appCode: string): Promise<AppsFunctions[]> {
+        return this.fetchApi(`/api/CmAppFunctions/app/${appCode}`)
+    }
+
     async createAppsFunctions(data: AppsFunctions): Promise<AppsFunctions> {
         return this.fetchApi('/api/CmAppFunctions', {
             method: 'POST',

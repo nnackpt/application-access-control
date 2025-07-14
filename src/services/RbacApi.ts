@@ -27,6 +27,10 @@ export class RbacApiService {
         return this.fetchRbacApi('/api/Rbac')
     }
 
+    async getRbacByCode(rbacCode: string): Promise<Rbac> {
+        return this.fetchRbacApi(`/api/Rbac/${rbacCode}`)
+    }
+
     async createRbac(data: Rbac): Promise<Rbac> {
         return this.fetchRbacApi('/api/Rbac', {
             method: 'POST',
