@@ -13,6 +13,8 @@ import { useEffect, useState } from "react"
 import { motion } from 'framer-motion';
 import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
 import StatsCard from "@/Components/UI/StatsCard"
+import 'react-loading-skeleton/dist/skeleton.css'
+import Skeleton from 'react-loading-skeleton'
 
 export default function AppsRoles() {
     const [refresh, setRefresh] = useState(0)
@@ -180,106 +182,132 @@ export default function AppsRoles() {
             <div className="p-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center space-x-4">
+                    {loading ? (
+                        <div className="flex justify-between items-center">
+                            {/* Skeleton ฝั่งซ้าย */}
                             <div className="flex space-x-3">
+                            <Skeleton height={40} width={180} borderRadius={8} />
+                            <Skeleton height={40} width={240} borderRadius={8} />
+                            <Skeleton height={40} width={220} borderRadius={8} />
+                            </div>
+            
+                            {/* Skeleton Search */}
+                            <div className="flex items-center space-x-3">
+                                <Skeleton height={40} width={180} borderRadius={8} />
+                                <Skeleton height={40} width={240} borderRadius={8} />
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex justify-between items-center flex-wrap gap-y-4">
+                            <div className="flex items-center space-x-4">
+                                <div className="flex space-x-3">
 
-                                <div className="bg-[#005496] rounded-lg shadow-lg p-[3px]">
-                                    <div className="bg-[#FBFCFD] rounded-lg p-[3px]">
-                                        <div className="bg-[#009EE3] text-white px-4 py-2 rounded-lg flex items-center justify-center">
-                                            <span>Application's Roles</span>
+                                    <div className="bg-[#005496] rounded-lg shadow-lg p-[3px]">
+                                        <div className="bg-[#FBFCFD] rounded-lg p-[3px]">
+                                            <div className="bg-[#009EE3] text-white px-4 py-2 rounded-lg flex items-center justify-center">
+                                                <span>Application's Roles</span>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <motion.button
+                                        onClick={() => setIsCreateModalOpen(true)}
+                                        className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
+                                                shadow-lg cursor-pointer"
+                                        whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                                        whileTap={{ scale: 0.98 }}
+                                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                                    >
+                                        <Plus size={20} />
+                                        <span>Create New Application's Role</span>
+                                    </motion.button>
+
+                                    <motion.button
+                                        onClick={handleExport}
+                                        className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
+                                                shadow-lg cursor-pointer"
+                                        whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                                        whileTap={{ scale: 0.98 }}
+                                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                                    >
+                                        <Download size={20} />
+                                        <span>Export Application's Role</span>
+                                    </motion.button>
+
+                                </div>
+                            </div>
+
+                            <div className="flex items-center space-x-3">
+                                <div className="relative">
+                                    <AppTitleSelect
+                                        selectedTitle={selectedTitle}
+                                        setSelectedTitle={setSelectedTitle}
+                                        applications={applications}
+                                    />
                                 </div>
 
-                                <motion.button
-                                    onClick={() => setIsCreateModalOpen(true)}
-                                    className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
-                                            shadow-lg cursor-pointer"
-                                    whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
-                                    whileTap={{ scale: 0.98 }}
-                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                                >
-                                    <Plus size={20} />
-                                    <span>Create New Application's Role</span>
-                                </motion.button>
-
-                                <motion.button
-                                    onClick={handleExport}
-                                    className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
-                                            shadow-lg cursor-pointer"
-                                    whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
-                                    whileTap={{ scale: 0.98 }}
-                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                                >
-                                    <Download size={20} />
-                                    <span>Export Application's Role</span>
-                                </motion.button>
-
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                                    <input 
+                                        type="text" 
+                                        placeholder="Search Roles..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"     
+                                    />
+                                </div>
                             </div>
                         </div>
-
-                        <div className="flex items-center space-x-3">
-                            <div className="relative">
-                                <AppTitleSelect
-                                    selectedTitle={selectedTitle}
-                                    setSelectedTitle={setSelectedTitle}
-                                    applications={applications}
-                                />
-                            </div>
-
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                                <input 
-                                    type="text" 
-                                    placeholder="Search Roles..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"     
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    )}
                 </div>
 
                 {/* {Stats Cards} */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    {loading ? (
+                        <>
+                            <Skeleton height={100} borderRadius={12} />
+                            <Skeleton height={100} borderRadius={12} />
+                            <Skeleton height={100} borderRadius={12} />
+                            <Skeleton height={100} borderRadius={12} />
+                        </>
+                    ) : (
+                        <>
+                            <StatsCard
+                                title="Total Roles"
+                                value={loading ? '...' : totalRoles}
+                                icon={<Calculator className="text-white" size={20} />}
+                                bgColor="bg-[#005496] bg-opacity-10"
+                                delay={0}
+                            />
 
-                    <StatsCard
-                        title="Total Roles"
-                        value={loading ? '...' : totalRoles}
-                        icon={<Calculator className="text-white" size={20} />}
-                        bgColor="bg-[#005496] bg-opacity-10"
-                        delay={0}
-                    />
+                            <StatsCard
+                                title="Active Roles"
+                                value={loading ? '...' : activeRoles}
+                                bgColor="bg-green-100"
+                                pulseColor="bg-green-500"
+                                valueColor="text-green-600"
+                                delay={0.1}
+                            />
+                            
+                            <StatsCard
+                                title="Inactive Roles"
+                                value={loading ? '...' : inactiveRoles}
+                                bgColor="bg-red-100"
+                                pulseColor="bg-red-500"
+                                valueColor="text-red-600"
+                                delay={0.2}
+                            />
 
-                    <StatsCard
-                        title="Active Roles"
-                        value={loading ? '...' : activeRoles}
-                        bgColor="bg-green-100"
-                        pulseColor="bg-green-500"
-                        valueColor="text-green-600"
-                        delay={0.1}
-                    />
-                    
-                    <StatsCard
-                        title="Inactive Roles"
-                        value={loading ? '...' : inactiveRoles}
-                        bgColor="bg-red-100"
-                        pulseColor="bg-red-500"
-                        valueColor="text-red-600"
-                        delay={0.2}
-                    />
-
-                    <StatsCard
-                        title="Last Updated"
-                        value={loading ? '...' : getLastUpdated()}
-                        bgColor="bg-blue-100"
-                        pulseColor="bg-blue-500"
-                        valueColor="text-gray-900"
-                        delay={0.3}
-                    />
-                    
+                            <StatsCard
+                                title="Last Updated"
+                                value={loading ? '...' : getLastUpdated()}
+                                bgColor="bg-blue-100"
+                                pulseColor="bg-blue-500"
+                                valueColor="text-gray-900"
+                                delay={0.3}
+                            />
+                        </> 
+                    )}  
                 </div>
 
                 <AppsRolesTable

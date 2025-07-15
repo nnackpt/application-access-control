@@ -149,40 +149,66 @@ export default function RbacViewPage() {
     <div className="max-w-6xl mx-auto px-4 py-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-[#005496]">RBAC Details</h1>
+        <h1 className="text-2xl font-bold text-[#005496]">{code}</h1>
         <motion.button
           onClick={() => router.back()}
           className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg shadow-lg cursor-pointer"
-          whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+          whileHover={{ 
+            scale: 1.05, 
+            backgroundColor: "#6B7280", 
+            boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)",
+            // x: -3
+          }}
           whileTap={{ scale: 0.98 }}
           transition={{ type: "spring", stiffness: 400, damping: 17 }}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
         >
+          <motion.span
+          whileHover={{   x: -5 }}
+          transition={{ type: "spring", stiffness: 500, damping: 20 }}
+          >  
           <ChevronLeft size={20} className="-ml-1" />
+          </motion.span>
           <span>Back</span>
         </motion.button>
       </div>
 
       {/* Application Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
-        <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
-          <div className="flex items-center space-x-2 text-gray-600 mb-2">
-            <Package size={20} className="text-[#005496]" />
-            <label className="text-sm font-semibold">APPLICATION</label>
+        <motion.div
+          className="p-4 bg-gray-50 rounded-lg border border-gray-100"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          whileHover={{ scale: 1.05 }}
+        >
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <div className="flex items-center space-x-2 text-gray-600 mb-2">
+              <Package size={20} className="text-[#005496]" />
+              <label className="text-sm font-semibold">APPLICATION</label>
+            </div>
+            <p className="text-[#005496] font-bold text-lg">{appCode}</p>
+            <p className="text-sm text-gray-800 mt-1">{appName}</p>
           </div>
-          <p className="text-[#005496] font-bold text-lg">{appCode}</p>
-          <p className="text-sm text-gray-800 mt-1">{appName}</p>
-        </div>
+        </motion.div>
 
-        <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
-          <div className="flex items-center space-x-2 text-gray-600 mb-2">
-            <Users size={20} className="text-[#005496]"/>
-            <label className="text-sm font-semibold">ROLE</label>
+        <motion.div
+          className="p-4 bg-gray-50 rounded-lg border border-gray-100"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          whileHover={{ scale: 1.05 }}
+        >
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <div className="flex items-center space-x-2 text-gray-600 mb-2">
+              <Users size={20} className="text-[#005496]"/>
+              <label className="text-sm font-semibold">ROLE</label>
+            </div>
+            <p className="text-[#005496] font-bold text-lg">{roleCode}</p>
+            <p className="text-sm text-gray-800 mt-1">{roleName}</p>
           </div>
-          <p className="text-[#005496] font-bold text-lg">{roleCode}</p>
-          <p className="text-sm text-gray-800 mt-1">{roleName}</p>
-        </div>
+        </motion.div>
       </div>
 
       {/* Pagination Controls and Display Info - Moved above the table */}

@@ -10,6 +10,8 @@ import ApplicationEditModal from "@/Components/Application/ApplicationEditModal"
 import getValue from "@/Utils/getValue"
 import { motion } from 'framer-motion';
 import StatsCard from "@/Components/UI/StatsCard"
+import 'react-loading-skeleton/dist/skeleton.css'
+import Skeleton from 'react-loading-skeleton'
 
 export default function Applications() {
   const [refresh, setRefresh] = useState(0)
@@ -127,112 +129,131 @@ export default function Applications() {
       <div className="p-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
+          {loading ? (
+            <div className="flex justify-between items-center">
+              {/* Skeleton ฝั่งซ้าย */}
               <div className="flex space-x-3">
+                <Skeleton height={40} width={200} borderRadius={8} />
+                <Skeleton height={40} width={160} borderRadius={8} />
+                <Skeleton height={40} width={200} borderRadius={8} />
+              </div>
 
-                <div className="bg-[#005496] rounded-lg shadow-lg p-[3px]"> {/* ชั้นที่ 1: สีน้ำเงินเข้ม #005496 (ด้านหลังสุด) */}
-                    <div className="bg-[#FBFCFD] rounded-lg p-[3px]"> {/* ชั้นที่ 2: สีขาว #FBFCFD (ชั้นกลาง) */}
-                        <div className="bg-[#009EE3] text-white px-4 py-2 rounded-lg flex items-center justify-center"> {/* ชั้นที่ 3: สีน้ำเงิน #009EE3 (ชั้นบนสุดพร้อมข้อความ) */}
-                            <span>Applications List</span>
-                        </div>
+              {/* Skeleton Search */}
+              <Skeleton height={40} width={200} borderRadius={8} />
+            </div>
+          ) : (
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-4">
+                <div className="flex space-x-3">
+                  {/* Title */}
+                  <div className="bg-[#005496] rounded-lg shadow-lg p-[3px]">
+                    <div className="bg-[#FBFCFD] rounded-lg p-[3px]">
+                      <div className="bg-[#009EE3] text-white px-4 py-2 rounded-lg flex items-center justify-center">
+                        <span>Applications List</span>
+                      </div>
                     </div>
-                </div>
+                  </div>
 
-                <motion.button
+                  {/* ปุ่ม Create */}
+                  <motion.button
                     onClick={() => setIsCreateModalOpen(true)}
-                    className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
-                            shadow-lg cursor-pointer"
+                    className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg shadow-lg cursor-pointer"
                     whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
                     whileTap={{ scale: 0.98 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                >
+                  >
                     <Plus size={20} />
                     <span>Create New Application's</span>
-                </motion.button>
+                  </motion.button>
 
-                <motion.button
+                  {/* ปุ่ม Export */}
+                  <motion.button
                     onClick={handleExport}
-                    className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
-                            shadow-lg cursor-pointer"
+                    className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg shadow-lg cursor-pointer"
                     whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
                     whileTap={{ scale: 0.98 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                >
+                  >
                     <Download size={20} />
                     <span>Export Application's</span>
-                </motion.button>
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Search */}
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <motion.div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    <Search size={16} />
+                  </motion.div>
+                  <motion.input
+                    type="text"
+                    placeholder="Search Applications..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64 md:w-72 lg:w-80 transition-all duration-300 ease-in-out"
+                    whileFocus={{
+                      borderColor: "#005496",
+                      boxShadow: "0 0 0 2px rgba(0, 84, 150, 0.2)",
+                      width: "min(320px, 90vw)",
+                    }}
+                    whileHover={{ borderColor: "#005496" }}
+                  />
+                </div>
               </div>
             </div>
-
-            <div className="flex items-center space-x-3">
-                <div className="relative">
-                    <motion.div
-                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <Search size={16} />
-                    </motion.div>
-                    <motion.input
-                        type="text"
-                        placeholder="Search Applications..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg
-                                  focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none
-                                  w-64 md:w-72 lg:w-80
-                                  transition-all duration-300 ease-in-out"
-                        whileFocus={{
-                            borderColor: "#005496",
-                            boxShadow: "0 0 0 2px rgba(0, 84, 150, 0.2)",
-                            width: "min(320px, 90vw)" // Max width 320px or 90vw
-                        }}
-                        whileHover={{ borderColor: "#005496" }}
-                    />
-                </div>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          {loading ? (
+            <>
+              <Skeleton height={100} borderRadius={12} />
+              <Skeleton height={100} borderRadius={12} />
+              <Skeleton height={100} borderRadius={12} />
+              <Skeleton height={100} borderRadius={12} />
+            </>
+          ) : (
+            <>
+              <StatsCard
+                title="Total Applications"
+                value={loading ? '...' : totalApplications}
+                icon={<Calculator className="text-white" size={20} />}
+                bgColor="bg-[#005496] bg-opacity-10"
+                delay={0}
+              />
 
-          <StatsCard
-            title="Total Applications"
-            value={loading ? '...' : totalApplications}
-            icon={<Calculator className="text-white" size={20} />}
-            bgColor="bg-[#005496] bg-opacity-10"
-            delay={0}
-          />
+              <StatsCard
+                title=" Active Applications"
+                value={loading ? '...' : activeApplications}
+                bgColor="bg-green-100"
+                pulseColor="bg-green-500"
+                valueColor="text-green-600"
+                delay={0.1}
+              />
+              
+              <StatsCard
+                title="Inactive Applications"
+                value={loading ? '...' : inactiveApplications}
+                bgColor="bg-red-100"
+                pulseColor="bg-red-500"
+                valueColor="text-red-600"
+                delay={0.2}
+              />
 
-          <StatsCard
-            title=" Active Applications"
-            value={loading ? '...' : activeApplications}
-            bgColor="bg-green-100"
-            pulseColor="bg-green-500"
-            valueColor="text-green-600"
-            delay={0.1}
-          />
+              <StatsCard
+                title="Last Updated"
+                value={loading ? '...' : getLastUpdated()}
+                bgColor="bg-blue-100"
+                pulseColor="bg-blue-500"
+                valueColor="text-gray-900"
+                delay={0.3}
+              />
+            </>
+          )}
+
           
-          <StatsCard
-            title="Inactive Applications"
-            value={loading ? '...' : inactiveApplications}
-            bgColor="bg-red-100"
-            pulseColor="bg-red-500"
-            valueColor="text-red-600"
-            delay={0.2}
-          />
-
-          <StatsCard
-            title="Last Updated"
-            value={loading ? '...' : getLastUpdated()}
-            bgColor="bg-blue-100"
-            pulseColor="bg-blue-500"
-            valueColor="text-gray-900"
-            delay={0.3}
-          />
       
         </div>
 

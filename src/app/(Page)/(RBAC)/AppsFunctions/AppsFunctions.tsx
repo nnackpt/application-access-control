@@ -13,6 +13,8 @@ import getValue from "@/Utils/getValue"
 import { motion } from 'framer-motion';
 import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
 import StatsCard from "@/Components/UI/StatsCard"
+import 'react-loading-skeleton/dist/skeleton.css'
+import Skeleton from 'react-loading-skeleton'
 
 export default function AppsFunctions() {
   const [refresh, setRefresh] = useState(0)
@@ -181,6 +183,22 @@ export default function AppsFunctions() {
       <div className="p-8">
         {/* Header */}
         <div className="mb-8">
+          {loading ? (
+            <div className="flex justify-between items-center">
+              {/* Skeleton ฝั่งซ้าย */}
+              <div className="flex space-x-3">
+              <Skeleton height={40} width={180} borderRadius={8} />
+              <Skeleton height={40} width={240} borderRadius={8} />
+              <Skeleton height={40} width={220} borderRadius={8} />
+              </div>
+
+              {/* Skeleton Search */}
+              <div className="flex items-center space-x-3">
+                  <Skeleton height={40} width={180} borderRadius={8} />
+                  <Skeleton height={40} width={240} borderRadius={8} />
+              </div>
+          </div>
+          ) : (
             <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-4">
                     <div className="flex space-x-3">
@@ -242,46 +260,56 @@ export default function AppsFunctions() {
                     </div>
                 </div>
             </div>
-        </div>
+          )}
+          </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          {loading ? (
+            <>
+              <Skeleton height={100} borderRadius={12} />
+              <Skeleton height={100} borderRadius={12} />
+              <Skeleton height={100} borderRadius={12} />
+              <Skeleton height={100} borderRadius={12} />
+            </>
+          ) : (
+            <>
+              <StatsCard
+                title="Total Functions"
+                value={loading ? '...' : totalFunctions}
+                icon={<Calculator className="text-white" size={20} />}
+                bgColor="bg-[#005496] bg-opacity-10"
+                delay={0}
+              />
 
-          <StatsCard
-            title="Total Functions"
-            value={loading ? '...' : totalFunctions}
-            icon={<Calculator className="text-white" size={20} />}
-            bgColor="bg-[#005496] bg-opacity-10"
-            delay={0}
-          />
+              <StatsCard
+                title="Active Functions"
+                value={loading ? '...' : activeFunctions}
+                bgColor="bg-green-100"
+                pulseColor="bg-green-500"
+                valueColor="text-green-600"
+                delay={0.1}
+              />
+              
+              <StatsCard
+                title="Inactive Functions"
+                value={loading ? '...' : inactiveFunctions}
+                bgColor="bg-red-100"
+                pulseColor="bg-red-500"
+                valueColor="text-red-600"
+                delay={0.2}
+              />
 
-          <StatsCard
-            title="Active Functions"
-            value={loading ? '...' : activeFunctions}
-            bgColor="bg-green-100"
-            pulseColor="bg-green-500"
-            valueColor="text-green-600"
-            delay={0.1}
-          />
-          
-          <StatsCard
-            title="Inactive Functions"
-            value={loading ? '...' : inactiveFunctions}
-            bgColor="bg-red-100"
-            pulseColor="bg-red-500"
-            valueColor="text-red-600"
-            delay={0.2}
-          />
-
-          <StatsCard
-            title="Last Updated"
-            value={loading ? '...' : getLastUpdated()}
-            bgColor="bg-blue-100"
-            pulseColor="bg-blue-500"
-            valueColor="text-gray-900"
-            delay={0.3}
-          />
-          
+              <StatsCard
+                title="Last Updated"
+                value={loading ? '...' : getLastUpdated()}
+                bgColor="bg-blue-100"
+                pulseColor="bg-blue-500"
+                valueColor="text-gray-900"
+                delay={0.3}
+              />
+            </>
+          )}
         </div>
 
         {/* Table */}

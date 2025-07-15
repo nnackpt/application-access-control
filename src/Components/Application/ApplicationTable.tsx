@@ -10,6 +10,7 @@ import getValue from "@/Utils/getValue"
 import formatDateTime from "@/Utils/formatDateTime"
 import Pagination from "../UI/Pagination"
 import RowsPerPageSelect from "../UI/Select/RowsPerPageSelect"
+import Skeleton from 'react-loading-skeleton'
 
 interface ApplicationTableProps {
   refreshSignal: number
@@ -172,9 +173,11 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#005496]"></div>
-      </div>
+      <div className="space-y-3">
+      {[...Array(10)].map((_, i) => (
+        <Skeleton key={i} height={40} borderRadius={8} />
+      ))}
+    </div>
     )
   }
 
@@ -192,6 +195,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
               <RowsPerPageSelect
                   rowsPerPage={rowsPerPage}
                   setRowsPerPage={handleRowsPerPageChange}
+                  isLoading={loading}
               />
               <span className="text-sm text-gray-600">Records</span>
             </div>
@@ -515,7 +519,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
             <div className="text-gray-400 mb-2">
               <Eye size={48} className="mx-auto" />
             </div>
-            <p>{searchTerm ? `No applications found matching your criteria` : 'No applications found'}</p>
+            <p>{searchTerm ? `No Applications found matching your criteria` : 'No Applications Found'}</p>
           </div>
         )}
       </div>

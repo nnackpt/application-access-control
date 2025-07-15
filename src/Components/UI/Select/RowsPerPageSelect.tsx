@@ -4,15 +4,19 @@ import { motion } from 'framer-motion';
 import { CheckIcon, ChevronRight, ArrowRightCircleIcon } from "lucide-react";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { AnimatePresence } from 'framer-motion';
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css';
 
 interface RowsPerPageSelectProps {
     rowsPerPage: number
     setRowsPerPage: (value: number) => void
+    isLoading?: boolean
 }
 
 export default function RowsPerPageSelect({
     rowsPerPage,
     setRowsPerPage,
+    isLoading = false
 }: RowsPerPageSelectProps) {
     const options = [
         { value: 10, label: "10" },
@@ -39,21 +43,27 @@ export default function RowsPerPageSelect({
 
     return (
         <div className="relative w-20" ref={dropdownRef}>
-            <button
-                onClick={() => setOpen(prev => !prev)}
-                className="w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-8 text-left shadow-md
-                            focus:outline-none border border-gray-300 hover:border-gray-400 transition-colors duration-200 text-sm relative"
-            >
-                <span>{current.label}</span>
-                <span className="absolute inset-y-0 right-0 flex items-center pr-2">
-                    <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                        <ChevronDownIcon className="h-5 w-5 text-gray-400" />
-                    </motion.div>
-                </span>
-            </button>
+            {isLoading ? (
+                <div className="py-2 pl-3 pr-8 rounded-l-lg shadow-md border border-gray-300 h-[40px] flex items-center">
+                    <Skeleton width={30} />
+                </div>
+            ) : (
+                <button
+                    onClick={() => setOpen(prev => !prev)}
+                    className="w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-8 text-left shadow-md
+                                focus:outline-none border border-gray-300 hover:border-gray-400 transition-colors duration-200 text-sm relative"
+                >
+                    <span>{current.label}</span>
+                    <span className="absolute inset-y-0 right-0 flex items-center pr-2">
+                        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                            <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                        </motion.div>
+                    </span>
+                </button>
+            )}
 
             <AnimatePresence>
-                {open && (
+                {open && !isLoading &&(
                     <motion.ul
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}

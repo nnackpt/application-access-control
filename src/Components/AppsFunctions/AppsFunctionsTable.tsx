@@ -10,6 +10,7 @@ import getValue from "@/Utils/getValue"
 import formatDateTime from "@/Utils/formatDateTime"
 import Pagination from "../UI/Pagination"
 import RowsPerPageSelect from "../UI/Select/RowsPerPageSelect"
+import Skeleton from 'react-loading-skeleton'
 
 interface AppsFunctionsTableProps {
     refreshSignal: number
@@ -170,10 +171,12 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
     })
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#005496]"></div>
-            </div>
+    return (
+        <div className="space-y-3">
+        {[...Array(10)].map((_, i) => (
+            <Skeleton key={i} height={40} borderRadius={8} />
+        ))}
+        </div>
         )
     }
 
@@ -191,6 +194,7 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
                             <RowsPerPageSelect
                                 rowsPerPage={rowsPerPage}
                                 setRowsPerPage={handleRowsPerPageChange}
+                                isLoading={loading}
                             />
                             <span className="text-sm text-gray-600">Records</span>
                         </div>
