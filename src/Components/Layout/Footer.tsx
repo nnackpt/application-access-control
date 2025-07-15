@@ -1,7 +1,16 @@
+// export default function Footer() {
+//     return (
+//         <footer className="bg-gradient-to-b from-[#005496] to-[#003d73] text-white p-2 text-right bottom-0 w-full font-inter font-medium fixed">
+//             <p>&copy; {new Date().getFullYear()} - Autoliv (Thailand) Co., Ltd. All rights reserved.</p>
+//         </footer>
+//     );
+// }
+
 export default function Footer() {
-    return (
-        <footer className="bg-[#005496] text-white p-2 text-right bottom-0 w-full font-inter font-medium fixed">
-            <p>&copy; {new Date().getFullYear()} - Autoliv (Thailand) Co., Ltd. All rights reserved.</p>
-        </footer>
-    );
+  return (
+    <footer className="w-full fixed bottom-0 px-4 py-2 text-xs text-left text-gray/20 bg-transparent font-inter">
+      <p>&copy; {new Date().getFullYear()} - Autoliv (Thailand) Co., Ltd. All rights reserved.</p>
+    </footer>
+  );
 }
+

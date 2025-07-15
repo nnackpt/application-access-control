@@ -1,14 +1,23 @@
-"use client"
+// "use client"
+
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Home - Autoliv (Thailand) Co., Ltd.",
+  description: "This is the layout for the application section.",
+};
 
 export default function Home() {
     return (
-        <div id="Home" className="flex flex-col md:flex-row h-auto md:h-[calc(100vh-210px)] min-h-screen md:min-h-[calc(100vh-210px)] w-full overflow-hidden">
+        <div id="Home" className="flex flex-col md:flex-row h-auto md:h-[calc(115vh-210px)] min-h-screen md:min-h-[calc(100vh-210px)] w-full overflow-hidden">
             {/* Left 2/3: background image section */}
             <div 
-                className="flex-none md:flex-[2] h-[66vh] md:h-full min-h-[300px] md:min-h-auto w-full bg-center bg-no-repeat"
+                className="flex-none md:flex-[2] h-full md:h-full min-h-[300px] md:min-h-auto w-full bg-center bg-no-repeat"
                 style={{
                     backgroundImage: 'url("/HomeBG.png")',
-                    backgroundSize: "cover"
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat"
                 }}
             />
 
@@ -18,7 +27,7 @@ export default function Home() {
                     Autoliv
                 </h1>
                 
-                <div className="w-full h-[15px] md:h-[20px] bg-[#009EE3] mb-4" />
+                <div className="w-full h-[15px] md:h-[20px] mb-4 animated-gradient-bar" />
 
                 <p className="text-[#005496] font-bold text-center md:text-left w-full text-[0.9rem] sm:text-[1rem] md:text-[1.1rem] tracking-wide">
                     APPLICATION ACCESS CONTROL (RBAC)

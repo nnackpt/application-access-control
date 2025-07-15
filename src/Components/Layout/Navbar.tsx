@@ -3,8 +3,8 @@
 import Link from "next/link";
 import React from "react";
 import { usePathname } from "next/navigation";
-import { Bars3Icon, ChevronDownIcon, UserIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
-import { motion, AnimatePresence, hover } from "framer-motion";
+import { Bars3Icon, ChevronDownIcon, UserIcon, ChevronUpIcon, Cog6ToothIcon, XMarkIcon, SunIcon, MoonIcon, ComputerDesktopIcon } from "@heroicons/react/24/outline";
+import { motion, AnimatePresence, hover, MotionGlobalConfig } from "framer-motion";
 
 // Types
 interface MenuItem {
@@ -266,6 +266,88 @@ const QuickMenuDropdown: React.FC<{
   menuData: { key: string; label: string; items: MenuItem[] }[];
   pathname: string;
 }> = ({ isOpen, onClose, menuData, pathname }) => {
+
+  const [showSettings, setShowSettings] = React.useState(false)
+
+  const handleSettingsClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setShowSettings(true)
+  }
+
+  const handleCloseSettings = () => {
+    setShowSettings(false)
+  }
+
+  const [theme, setTheme] = React.useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("theme") || "system"
+    }
+    return "system"
+  })
+
+  React.useEffect(() => {
+    const root = document.documentElement;
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const applyTheme = (value: string) => {
+      if (value === "dark") {
+        root.classList.add("dark")
+      } else if (value === "light") {
+        root.classList.remove("dark")
+      } else {
+        mediaQuery.matches
+          ? root.classList.add("dark")
+          : root.classList.remove("dark");
+      }
+    };
+
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      if (theme === "system") {
+        e.matches ? root.classList.add("dark") : root.classList.remove("dark");
+      }
+    };
+
+    applyTheme(theme);
+    localStorage.setItem("theme", theme);
+
+    mediaQuery.addEventListener("change", handleSystemThemeChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleSystemThemeChange);
+    };
+  }, [theme]);
+
+  const [fontSize, setFontSize] = React.useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("fontSize") || "base";
+    }
+    return "base";
+  });
+
+  React.useEffect(() => {
+    const root = document.documentElement;
+    // Clean up previous classes
+    root.classList.remove('text-sm', 'text-base', 'text-lg');
+
+    if (fontSize === 'small') root.classList.add('text-sm');
+    else if (fontSize === 'large') root.classList.add('text-lg');
+    else root.classList.add('text-base'); // Default
+    localStorage.setItem("fontSize", fontSize);
+  }, [fontSize]);
+
+  const [animationsEnabled, setAnimationsEnabled] = React.useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      // Default to true if not set
+      return localStorage.getItem("animationsEnabled") !== "false";
+    }
+    return true;
+  });
+
+  React.useEffect(() => {
+    MotionGlobalConfig.skipAnimations = !animationsEnabled
+    localStorage.setItem("animationsEnabled", String(animationsEnabled))
+  }, [animationsEnabled])
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -273,54 +355,160 @@ const QuickMenuDropdown: React.FC<{
           {/* Backdrop */}
           <div className="fixed inset-0 bg-black/10" onClick={onClose} />
 
-          {/* Menu with animation */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="fixed bottom-30 right-6 w-80 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden z-40"
-          >
-            <div className="p-4 border-b border-gray-100">
-              <h3 className="text-lg font-semibold text-[#005496]">Quick Menu</h3>
-            </div>
+          {/* Quick Menu (แสดงเมื่อ showSettings เป็น false) */}
+          <AnimatePresence>
+            {!showSettings && ( // เพิ่มเงื่อนไขนี้เพื่อซ่อน Quick Menu เมื่อ Settings เปิด
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+                className="fixed bottom-30 right-6 w-80 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden z-40"
+              >
+                <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+                  <h3 className="text-lg font-semibold text-[#005496]">Quick Menu</h3>
+                  <button
+                    onClick={handleSettingsClick}
+                    className="text-gray-500 hover:text-[#005496] transition-colors duration-200 p-1 rounded-full hover:bg-gray-100"
+                    aria-label="Settings"
+                  >
+                    <Cog6ToothIcon className="w-5 h-5" />
+                  </button>
+                </div>
 
-            <div className="max-h-96 overflow-y-auto p-2">
-              {menuData.map((menu) => (
-                <div key={menu.key} className="mb-3">
-                  <div className="px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
-                    {menu.label}
-                  </div>
-                  <div className="space-y-1">
-                    {menu.items.map((item, index) => {
-                      const isActive = pathname === item.href;
-                      return (
-                        <Link
-                          key={index}
-                          href={item.href}
-                          onClick={onClose}
-                          className={`block px-4 py-3 rounded-lg transition-all text-sm ${
-                            isActive
-                              ? "bg-gradient-to-r from-[#009EE3] to-[#005496] text-white shadow-md"
-                              : "text-gray-700 hover:bg-[#009EE3]/10 hover:text-[#005496]"
+                <div className="max-h-96 overflow-y-auto p-2">
+                  {menuData.map((menu) => (
+                    <div key={menu.key} className="mb-3">
+                      <div className="px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
+                        {menu.label}
+                      </div>
+                      <div className="space-y-1">
+                        {menu.items.map((item, index) => {
+                          const isActive = pathname === item.href;
+                          return (
+                            <Link
+                              key={index}
+                              href={item.href}
+                              onClick={onClose}
+                              className={`block px-4 py-3 rounded-lg transition-all text-sm ${
+                                isActive
+                                  ? "bg-gradient-to-r from-[#009EE3] to-[#005496] text-white shadow-md"
+                                  : "text-gray-700 hover:bg-[#009EE3]/10 hover:text-[#005496]"
+                              }`}
+                            >
+                              <div className="flex items-center space-x-3">
+                                <div
+                                  className={`w-2 h-2 rounded-full ${
+                                    isActive ? "bg-white" : "bg-[#009EE3]"
+                                  }`}
+                                ></div>
+                                <span>{item.label}</span>
+                              </div>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Settings Overlay (เปิดในตำแหน่งเดียวกัน) */}
+          <AnimatePresence>
+            {showSettings && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                // ใช้คลาสเดียวกับ Quick Menu เพื่อให้มีขนาดและตำแหน่งเดียวกัน
+                className="fixed bottom-30 right-6 w-80 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden z-40 flex flex-col"
+              >
+                <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+                  <h3 className="text-lg font-semibold text-[#005496]">Settings</h3>
+                  <button
+                    onClick={handleCloseSettings}
+                    className="text-gray-500 hover:text-[#005496] transition-colors duration-200 p-1 rounded-full hover:bg-gray-100"
+                    aria-label="Close Settings"
+                  >
+                    <XMarkIcon className="w-6 h-6" />
+                  </button>
+                </div>
+                <div className="flex-1 p-4 overflow-y-auto space-y-6">
+                  {/* Theme Selection */}
+                  <div>
+                    <h4 className="text-sm font-medium text-[#005496] mb-2">Theme</h4>
+                    <div className="flex items-center space-x-3">
+                      {["light", "dark", "system"].map((t) => (
+                        <button
+                          key={t}
+                          onClick={() => setTheme(t)}
+                          className={`px-4 py-2 rounded-lg border text-sm transition-colors duration-200 ${
+                            theme === t
+                              ? "bg-[#005496] text-white border-[#005496]"
+                              : "border-gray-300 hover:bg-gray-100 text-gray-700"
                           }`}
                         >
-                          <div className="flex items-center space-x-3">
-                            <div
-                              className={`w-2 h-2 rounded-full ${
-                                isActive ? "bg-white" : "bg-[#009EE3]"
-                              }`}
-                            ></div>
-                            <span>{item.label}</span>
-                          </div>
-                        </Link>
-                      );
-                    })}
+                          {t === "light" && <SunIcon className="w-5 h-5" />}
+                          {t === "dark" && <MoonIcon className="w-5 h-5" />}
+                          {t === "system" && <ComputerDesktopIcon className="w-5 h-5" />}
+                          <span>
+                            {t.charAt(0).toUpperCase() + t.slice(1)}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
+
+                  {/* Font Size */}
+                  <div>
+                    <h4 className="text-sm font-medium text-[#005496] mb-2">Font Size</h4>
+                    <select
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      value={fontSize}
+                      onChange={(e) => setFontSize(e.target.value)}
+                    >
+                      <option value="small">Small</option>
+                      <option value="base">Medium</option>
+                      <option value="large">Large</option>
+                    </select>
+                  </div>
+
+                  {/* Toggle Animations */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-[#005496]">Enable Animations</span>
+                    <label className="inline-flex items-center cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="sr-only peer" 
+                        checked={animationsEnabled}
+                        onChange={(e) => setAnimationsEnabled(e.target.checked)}
+                      />
+                      {/* เพิ่ม Framer Motion ให้กับตัววงกลมของ Toggle Switch */}
+                      <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-[#009EE3] relative transition-colors duration-200">
+                        <motion.div 
+                          className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow"
+                          initial={false}
+                          animate={{ x: animationsEnabled ? 20 : 0 }}
+                          transition={{ type: "spring", stiffness: 700, damping: 30 }}
+                        />
+                      </div>
+                    </label>
+                  </div>
+
+                  {/* Save Button */}
+                  {/* <div className="pt-4">
+                    <button className="w-full px-4 py-2 bg-[#005496] text-white rounded-lg hover:bg-[#003e74] transition-colors duration-200 text-sm font-medium">
+                      Save Settings
+                    </button>
+                  </div> */}
+
                 </div>
-              ))}
-            </div>
-          </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
     </AnimatePresence>

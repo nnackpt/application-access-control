@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
-body {
+/* body {
     padding-bottom: 32px;
-}
+} */
 
 /* #Home {
     padding-bottom: 0 !important;
@@ -14,3 +14,26 @@ body {
 .perspective {
   perspective: 1000px;
 } */
+
+/* For Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* For IE, Edge and Firefox */
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-gradient-bar {
+  background: linear-gradient(270deg, #009EE3, #005496, #009EE3);
+  background-size: 600% 600%;
+  animation: gradientAnimation 5s ease infinite;
+}
