@@ -1,5 +1,5 @@
 export interface AppsRoles {
-    rolE_CODE: string
+    rolE_CODE?: string
     apP_CODE: string
     name: string
     desc?: string
@@ -9,4 +9,8 @@ export interface AppsRoles {
     createD_DATETIME?: string
     updateD_BY?: string
     updateD_DATETIME?: string
+    cM_APPLICATIONS?: {
+        apP_CODE: string
+        apP_NAME: string
+    } 
 }

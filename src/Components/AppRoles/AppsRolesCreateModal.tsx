@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const initForm: AppsRoles = {
-    rolE_CODE: '',
+    // rolE_CODE: '',
     apP_CODE: '',
     name: '',
     desc: '',
@@ -37,6 +37,8 @@ export default function AppsRolesCreateModal({
 
     useEffect(() => {
         if (isOpen) {
+            setForm(initForm)
+            setError({})
             const fetchApplications = async () => {
                 setLoadingApps(true)
                 try {
@@ -70,7 +72,7 @@ export default function AppsRolesCreateModal({
     const validateForm = () => {
         const newErrors: { [key: string]: string } = {}
         if (!form.apP_CODE.trim()) newErrors.apP_CODE = 'APP Code is required'
-        if (!form.rolE_CODE.trim()) newErrors.rolE_CODE = 'Role Code is required' 
+        // if (!form.rolE_CODE.trim()) newErrors.rolE_CODE = 'Role Code is required'
         if (!form.name.trim()) newErrors.name = 'Name is required'
         setError(newErrors)
         return Object.keys(newErrors).length === 0
@@ -78,26 +80,27 @@ export default function AppsRolesCreateModal({
 
     const handleSubmit = async () => {
         if (!validateForm()) return
-        setLoading(true)
         try {
-            const submitData = {
-                rolE_CODE: form.rolE_CODE,
-                apP_CODE: form.apP_CODE,
-                name: form.name,
-                desc: form.desc,
-                homE_URL: form.homE_URL,
-                active: form.active,
-                createD_BY: form.createD_BY || 'system',
-                createD_DATETIME: new Date().toISOString().slice(0, 19),
-                updateD_BY: ''
+            setLoading(true)
+            const payload: AppsRoles = {
+                ...form,
+                createD_BY: userName,
+                createD_DATETIME: new Date().toISOString(),
+                active: form.active ?? true
             }
-            await AppsRolesApi.createAppsRoles(submitData)
+
+            if ("rolE_CODE" in payload) {
+                delete payload.rolE_CODE
+            }
+
+            const createdRole = await AppsRolesApi.createAppsRoles(payload)
             toast.success('Successfully created!')
             onSuccess()
             onClose()
-        } catch (error) {
-            toast.error('Create failed!')
+        } catch (error: any) {
             console.error("Error submitting form:", error)
+            toast.error(`Failed to create App Role: ${error.message || 'Unknown error'}`)
+            setError({ api: error.message || 'Failed to create App Role' })
         } finally {
             setLoading(false)
         }
@@ -138,16 +141,15 @@ export default function AppsRolesCreateModal({
                         </div>
                         {/* Role Code */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Role Code <span className="text-red-500">*</span></label>
-                            <input 
-                                type="text" 
-                                name="rolE_CODE" 
-                                value={form.rolE_CODE || ''}
-                                onChange={handleChange}
-                                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] ${error.rolE_CODE ? 'border-red-500' : 'border-gray-300'}`}
-                                disabled={loading}
-                            />
-                            {error.rolE_CODE && <p className="text-red-500 text-sm mt-1">{error.rolE_CODE}</p>}
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Role Code</label>
+                            <div className="relative">
+                                <input 
+                                    type="text"
+                                    value={form.rolE_CODE || ''}
+                                    className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-500"
+                                    disabled    
+                                />
+                            </div>
                         </div>
                         {/* {Name} */}
                         <div>
