@@ -17,6 +17,7 @@ import StatsCard from "@/Components/UI/StatsCard"
 import RoleTitleSelect from "@/Components/UI/Select/RoleTitleSelect"
 import 'react-loading-skeleton/dist/skeleton.css'
 import Skeleton from 'react-loading-skeleton'
+import { useRouter } from "next/navigation"
 
 export default function RBAC() {
     const [refresh, setRefresh] = useState(0)
@@ -28,11 +29,12 @@ export default function RBAC() {
     const [selectedTitle, setSelectedTitle] = useState("all")
     const [applicationTitle, setApplicationTitle] = useState<Record<string, string>>({})
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+    // const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [editData, setEditData] = useState<Rbac | null>(null)
     const [applications, setApplications] = useState<Application[]>([])
     const [roles, setRoles] = useState<AppsRoles[]>([])
     const [selectedRole, setSelectedRole] = useState("all")
+    const router = useRouter()
 
     const handleExport = () => {
         try {
@@ -221,7 +223,8 @@ export default function RBAC() {
                                 </div>
 
                                 <motion.button
-                                    onClick={() => setIsCreateModalOpen(true)}
+                                    onClick={() => router.push("/RBAC/Create")}
+                                    // onClick={() => setIsCreateModalOpen(true)}
                                     className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
                                             shadow-lg cursor-pointer"
                                     whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}

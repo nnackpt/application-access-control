@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Toaster } from "react-hot-toast";
+import 'react-loading-skeleton/dist/skeleton.css'
 
 export const metadata: Metadata = {
   title: "RBAC - Autoliv (Thailand) Co., Ltd.",
@@ -12,6 +14,10 @@ export default function RbacLayout({
 }>) {
   return (
     <div>
+        <Toaster
+            position="bottom-center"
+            reverseOrder={false}
+        />
         {children}
     </div>
   );
