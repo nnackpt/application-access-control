@@ -163,8 +163,12 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
     }
 
     const handleEdit = (rbac: Rbac) => {
-        setEditData(rbac)
-        setIsEditModalOpen(true)
+        // setEditData(rbac)
+        // setIsEditModalOpen(true)
+        const rbacCode = getValue(rbac, ['rbaC_CODE'])
+        if (rbacCode) {
+            router.push(`/RBAC/Edit/${rbacCode}`)
+        }
     }
 
     const handleDelete = (rbac: Rbac) => {
