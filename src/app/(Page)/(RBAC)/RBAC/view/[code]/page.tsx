@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { Rbac } from "@/types/Rbac"
 import { rbacApi } from "@/services/RbacApi"
 import { AppsFunctionsApi } from "@/services/AppsFunctionsApi"
@@ -14,6 +14,7 @@ import RowsPerPageSelect from "@/Components/UI/Select/RowsPerPageSelect"
 export default function RbacViewPage() {
   const { code } = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const [rbac, setRbac] = useState<Rbac | null>(null)
   const [functions, setFunctions] = useState<any[]>([])
@@ -45,7 +46,6 @@ export default function RbacViewPage() {
     fetchData()
   }, [code])
 
-  // Pagination Logic (moved up for use in getDisplayInfo and getTotalPages)
   const startIndex = (currentPage - 1) * rowsPerPage
   const endIndex = startIndex + rowsPerPage
   const paginatedFunctions = functions.slice(startIndex, endIndex)
@@ -53,7 +53,7 @@ export default function RbacViewPage() {
 
   const handleRowsPerPageChange = (value: number) => {
     setRowsPerPage(value)
-    setCurrentPage(1) // Reset to first page when rows per page changes
+    setCurrentPage(1)
   }
 
   const getDisplayInfo = () => {
@@ -66,6 +66,23 @@ export default function RbacViewPage() {
     const currentStartIndex = (currentPage - 1) * rowsPerPage + 1
     const currentEndIndex = Math.min(currentPage * rowsPerPage, functions.length)
     return `Showing ${currentStartIndex} to ${currentEndIndex} of ${functions.length} Records`
+  }
+
+  const handleBackToList = () => {
+    const params = new URLSearchParams()
+
+    const app = searchParams.get("app")
+    const role = searchParams.get("role")
+    const search = searchParams.get("search")
+
+    if (app) params.set("app", app)
+    if (role) params.set("role", role)
+    if (search) params.set("search", search)
+
+    const queryString = params.toString()
+    const backUrl = queryString ? `/RBAC?${queryString}` : '/RBAC'
+
+    router.push(backUrl)
   }
 
   if (loading) {
@@ -151,7 +168,7 @@ export default function RbacViewPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-[#005496]">{code}</h1>
         <motion.button
-          onClick={() => router.back()}
+          onClick={handleBackToList}
           className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg shadow-lg cursor-pointer"
           whileHover={{ 
             scale: 1.05, 

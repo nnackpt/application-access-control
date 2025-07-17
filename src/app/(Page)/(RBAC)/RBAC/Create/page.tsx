@@ -1,4 +1,5 @@
 import Create from "./Create";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Create RBAC - Autoliv (Thailand) Co., Ltd.",

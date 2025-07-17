@@ -154,20 +154,34 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
     })
 
     const handleView = (rbac: Rbac) => {
-        // setViewData(rbac)
-        // setIsViewModalOpen(true)
         const rbacCode = getValue(rbac, ['rbaC_CODE'])
         if (rbacCode) {
-            router.push(`/RBAC/view/${rbacCode}`)
+            // สร้าง query string จาก current filters
+            const params = new URLSearchParams()
+            if (selectedTitle !== "all") params.set('app', selectedTitle)
+            if (selectedRole !== "all") params.set('role', selectedRole)
+            if (searchTerm.trim()) params.set('search', searchTerm)
+            
+            const queryString = params.toString()
+            const url = queryString ? `/RBAC/view/${rbacCode}?${queryString}` : `/RBAC/view/${rbacCode}`
+            
+            router.push(url)
         }
     }
 
     const handleEdit = (rbac: Rbac) => {
-        // setEditData(rbac)
-        // setIsEditModalOpen(true)
         const rbacCode = getValue(rbac, ['rbaC_CODE'])
         if (rbacCode) {
-            router.push(`/RBAC/Edit/${rbacCode}`)
+            // สร้าง query string จาก current filters
+            const params = new URLSearchParams()
+            if (selectedTitle !== "all") params.set('app', selectedTitle)
+            if (selectedRole !== "all") params.set('role', selectedRole)
+            if (searchTerm.trim()) params.set('search', searchTerm)
+            
+            const queryString = params.toString()
+            const url = queryString ? `/RBAC/Edit/${rbacCode}?${queryString}` : `/RBAC/Edit/${rbacCode}`
+            
+            router.push(url)
         }
     }
 

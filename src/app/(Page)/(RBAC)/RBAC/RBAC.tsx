@@ -12,12 +12,12 @@ import { Calculator, ChevronDown, Download, Plus, Search } from "lucide-react"
 import RbacTable from "@/Components/RBAC/RbacTable"
 import RbacCreateModal from "@/Components/RBAC/RbacCreateModal"
 import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
-import { motion } from "framer-motion" // Import motion from framer-motion
+import { motion } from "framer-motion"
 import StatsCard from "@/Components/UI/StatsCard"
 import RoleTitleSelect from "@/Components/UI/Select/RoleTitleSelect"
 import 'react-loading-skeleton/dist/skeleton.css'
 import Skeleton from 'react-loading-skeleton'
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 export default function RBAC() {
     const [refresh, setRefresh] = useState(0)
@@ -29,12 +29,57 @@ export default function RBAC() {
     const [selectedTitle, setSelectedTitle] = useState("all")
     const [applicationTitle, setApplicationTitle] = useState<Record<string, string>>({})
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-    // const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [editData, setEditData] = useState<Rbac | null>(null)
     const [applications, setApplications] = useState<Application[]>([])
     const [roles, setRoles] = useState<AppsRoles[]>([])
     const [selectedRole, setSelectedRole] = useState("all")
     const router = useRouter()
+    const searchParams = useSearchParams()
+
+    // เพิ่ม useEffect เพื่อดึงค่าจาก URL parameters
+    useEffect(() => {
+        const appParam = searchParams.get('app')
+        const roleParam = searchParams.get('role')
+        const searchParam = searchParams.get('search')
+
+        if (appParam) setSelectedTitle(appParam)
+        if (roleParam) setSelectedRole(roleParam)
+        if (searchParam) setSearchTerm(searchParam)
+    }, [searchParams])
+
+    // ฟังก์ชันสำหรับอัปเดต URL parameters
+    const updateURLParams = (app?: string, role?: string, search?: string) => {
+        const params = new URLSearchParams()
+        
+        if (app && app !== "all") params.set('app', app)
+        if (role && role !== "all") params.set('role', role)
+        if (search && search.trim()) params.set('search', search)
+        
+        const queryString = params.toString()
+        const newUrl = queryString ? `/RBAC?${queryString}` : '/RBAC'
+        
+        // ใช้ replace แทน push เพื่อไม่ให้เพิ่ม history
+        router.replace(newUrl)
+    }
+
+    // แก้ไขฟังก์ชัน setSelectedTitle
+    const handleSelectedTitleChange = (title: string) => {
+        setSelectedTitle(title)
+        setSelectedRole("all") // รีเซ็ต role เมื่อเปลี่ยน app
+        updateURLParams(title, "all", searchTerm)
+    }
+
+    // แก้ไขฟังก์ชัน setSelectedRole
+    const handleSelectedRoleChange = (role: string) => {
+        setSelectedRole(role)
+        updateURLParams(selectedTitle, role, searchTerm)
+    }
+
+    // แก้ไขฟังก์ชัน setSearchTerm
+    const handleSearchTermChange = (search: string) => {
+        setSearchTerm(search)
+        updateURLParams(selectedTitle, selectedRole, search)
+    }
 
     const handleExport = () => {
         try {
@@ -86,7 +131,6 @@ export default function RBAC() {
 
     const getRoleName = (rbac: any) => {
         if (rbac.cM_APPS_ROLES && rbac.cM_APPS_ROLES.name) return rbac.cM_APPS_ROLES.name;
-        // @ts-ignore
         if (roles && rbac.rolE_CODE && rbac.apP_CODE) {
             const role = roles.find(role => role.rolE_CODE === rbac.rolE_CODE && role.apP_CODE === rbac.apP_CODE);
             if (role) return role.name;
@@ -196,14 +240,12 @@ export default function RBAC() {
                 <div className="mb-8">
                     {loading ? (
                         <div className="flex justify-between items-center">
-                            {/* Skeleton ฝั่งซ้าย */}
                             <div className="flex space-x-3">
                             <Skeleton height={40} width={180} borderRadius={8} />
                             <Skeleton height={40} width={240} borderRadius={8} />
                             <Skeleton height={40} width={220} borderRadius={8} />
                             </div>
             
-                            {/* Skeleton Search */}
                             <div className="flex items-center space-x-3">
                                 <Skeleton height={40} width={180} borderRadius={8} />
                                 <Skeleton height={40} width={240} borderRadius={8} />
@@ -224,7 +266,6 @@ export default function RBAC() {
 
                                 <motion.button
                                     onClick={() => router.push("/RBAC/Create")}
-                                    // onClick={() => setIsCreateModalOpen(true)}
                                     className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
                                             shadow-lg cursor-pointer"
                                     whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
@@ -256,7 +297,7 @@ export default function RBAC() {
                                     type="text"
                                     placeholder="Search RBAC..."
                                     value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onChange={(e) => handleSearchTermChange(e.target.value)}
                                     className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"
                                 />
                             </div>
@@ -264,13 +305,13 @@ export default function RBAC() {
                             <div className="flex flex-col space-y-4 ml-4">
                                 <AppTitleSelect
                                     selectedTitle={selectedTitle}
-                                    setSelectedTitle={setSelectedTitle}
+                                    setSelectedTitle={handleSelectedTitleChange}
                                     applications={applications}
                                 />
 
                                 <RoleTitleSelect
                                     selectedRole={selectedRole}
-                                    setSelectedRole={setSelectedRole}
+                                    setSelectedRole={handleSelectedRoleChange}
                                     roles={roles}
                                     selectedAppCode={selectedTitle}
                                 />
@@ -281,7 +322,6 @@ export default function RBAC() {
                 </div>
 
                 {/* Stats Cards */}
-                {/* Modified grid for responsiveness: grid-cols-1 on small, md:grid-cols-2 on medium, lg:grid-cols-4 on large */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     {loading ? (
                         <>
@@ -344,13 +384,6 @@ export default function RBAC() {
                     onClose={() => setIsCreateModalOpen(false)}
                     onSuccess={handleRefresh}
                 />
-
-                {/* <AppsRolesEditModal
-                    isOpen={isEditModalOpen}
-                    onClose={() => setIsEditModalOpen(false)}
-                    onSuccess={handleRefresh}
-                    editData={editData!}
-                /> */}
             </div>
         </main>
     )
