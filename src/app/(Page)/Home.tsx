@@ -27,7 +27,7 @@ export default function Home() {
                     initial={{ y: 40, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 1, delay: 0.3 }}
-                    className="text-[#005496] font-black text-center md:text-left w-full text-[2rem] sm:text-[2.5rem] md:text-[3rem] lg:text-[3.5rem] leading-tight mb-4"
+                    className="text-primary font-black text-center md:text-left w-full text-[2rem] sm:text-[2.5rem] md:text-[3rem] lg:text-[3.5rem] leading-tight mb-4"
                 >
                     Autoliv
                 </motion.h1>
@@ -37,14 +37,14 @@ export default function Home() {
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
                     transition={{ duration: 1, delay: 0.6 }}
-                    className="w-full h-[15px] md:h-[20px] mb-4 bg-gradient-to-r from-[#005496] via-[#66a3d2] to-[#003d73] origin-left rounded animated-gradient-bar"
+                    className="w-full h-[15px] md:h-[20px] mb-4 bg-gradient-to-r from-[var(--primary-color-light)] via-[var(--primary-color)] to-[var(--primary-color-dark)] origin-left rounded animated-gradient-bar"
                 />
 
                 <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 1, delay: 1 }}
-                    className="text-[#005496] font-bold text-center md:text-left w-full text-[0.9rem] sm:text-[1rem] md:text-[1.1rem] tracking-wide"
+                    className="text-primary font-bold text-center md:text-left w-full text-[0.9rem] sm:text-[1rem] md:text-[1.1rem] tracking-wide"
                 >
                     APPLICATION ACCESS CONTROL (RBAC)
                 </motion.p>

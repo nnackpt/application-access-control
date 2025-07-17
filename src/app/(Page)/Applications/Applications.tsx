@@ -146,9 +146,9 @@ export default function Applications() {
               <div className="flex items-center space-x-4">
                 <div className="flex space-x-3">
                   {/* Title */}
-                  <div className="bg-[#005496] rounded-lg shadow-lg p-[3px]">
+                  <div className="bg-[var(--primary-color)] rounded-lg shadow-lg p-[3px]">
                     <div className="bg-[#FBFCFD] rounded-lg p-[3px]">
-                      <div className="bg-[#009EE3] text-white px-4 py-2 rounded-lg flex items-center justify-center">
+                      <div className="bg-[var(--primary-color-light)] text-white px-4 py-2 rounded-lg flex items-center justify-center">
                         <span>Applications List</span>
                       </div>
                     </div>
@@ -157,8 +157,8 @@ export default function Applications() {
                   {/* ปุ่ม Create */}
                   <motion.button
                     onClick={() => setIsCreateModalOpen(true)}
-                    className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg shadow-lg cursor-pointer"
-                    whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                    className="flex items-center space-x-2 bg-[var(--primary-color)] text-white px-6 py-2 rounded-lg shadow-lg cursor-pointer"
+                    whileHover={{ scale: 1.05, backgroundColor: "var(--primary-color-dark)", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
                     whileTap={{ scale: 0.98 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >

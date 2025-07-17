@@ -4,6 +4,17 @@
     padding-bottom: 32px;
 } */
 
+@layer base {
+  /* Light mode default */
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+
+  .dark body {
+    @apply bg-gray-900 text-gray-100;
+  }
+}
+
 /* #Home {
     padding-bottom: 0 !important;
 } */
@@ -33,7 +44,7 @@
 }
 
 .animated-gradient-bar {
-  background: linear-gradient(270deg, #009EE3, #005496, #009EE3);
+  background: linear-gradient(270deg, var(--primary-color-light), var(--primary-color), var(--primary-color-dark));
   background-size: 600% 600%;
   animation: gradientAnimation 5s ease infinite;
 }
@@ -41,4 +52,25 @@
 @keyframes shine {
   0% { background-position: 200% center; }
   100% { background-position: -200% center; }
+}
+
+/* .dark {
+  background-color: #333;
+  color: #fff;
+}
+
+.dark .some-element {
+  background-color: #555;
+} */
+
+:root {
+  --primary-color: #005496; /* ค่าเริ่มต้น */
+}
+
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.text-primary {
+  color: var(--primary-color);
 }
