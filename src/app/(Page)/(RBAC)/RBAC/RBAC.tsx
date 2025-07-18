@@ -18,6 +18,7 @@ import RoleTitleSelect from "@/Components/UI/Select/RoleTitleSelect"
 import 'react-loading-skeleton/dist/skeleton.css'
 import Skeleton from 'react-loading-skeleton'
 import { useRouter, useSearchParams } from "next/navigation"
+import { useExportData } from "@/hooks/useExportData"
 
 export default function RBAC() {
     const [refresh, setRefresh] = useState(0)
@@ -35,6 +36,7 @@ export default function RBAC() {
     const [selectedRole, setSelectedRole] = useState("all")
     const router = useRouter()
     const searchParams = useSearchParams()
+    const { exportToExcel } = useExportData<Rbac>()
 
     // เพิ่ม useEffect เพื่อดึงค่าจาก URL parameters
     useEffect(() => {
@@ -81,62 +83,73 @@ export default function RBAC() {
         updateURLParams(selectedTitle, selectedRole, search)
     }
 
-    const handleExport = () => {
-        try {
-            const exportData = rbac.map(rbac => ({
-                'RBAC Code': getValue(rbac, ['rbaC_CODE']) || '',
-                'APP Code': getValue(rbac, ['apP_CODE']) || '',
-                'Application Name': getAppName(rbac) || '',
-                'ROLE Code': getValue(rbac, ['rolE_CODE']) || '',
-                'Role Name': getRoleName(rbac) || '',
-                'FUNC Code': getValue(rbac, ['funC_CODE']) || '',
-                'Created By': getValue(rbac, ['createD_BY']) || '',
-                'Created Date': getValue(rbac, ['createD_DATETIME']) || '',
-                'Updated By': getValue(rbac, ['updateD_BY']) || '',
-                'Updated Date': getValue(rbac, ['updateD_DATETIME']) || ''
-            }))
-
-            const headers = Object.keys(exportData[0] || {})
-            const csvContent = [
-                headers.join(','),
-                ...exportData.map(row => headers.map(header => `"${(row as Record<string, any>)[header]}"`).join(','))
-            ].join('\n')
-
-            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
-            const link = document.createElement('a')
-            const url = URL.createObjectURL(blob)
-            link.setAttribute('href', url)
-            link.setAttribute('download', `Application_RBAC_${new Date().toISOString().split('T')[0]}.csv`)
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-            URL.revokeObjectURL(url)
-        } catch (error) {
-            console.error("Error exporting data:", error)
-            alert("Failed to export data. Please try again.")
+    // Helper function to get application name from RBAC item
+    const getAppName = (rbacItem: Rbac) => {
+        if (rbacItem.cM_APPLICATIONS && rbacItem.cM_APPLICATIONS.name) return rbacItem.cM_APPLICATIONS.name;
+        if (rbacItem.cM_APPS_ROLES && rbacItem.cM_APPS_ROLES.cM_APPLICATIONS && rbacItem.cM_APPS_ROLES.cM_APPLICATIONS.name) {
+            return rbacItem.cM_APPS_ROLES.cM_APPLICATIONS.name;
         }
-    }
-
-    const getAppName = (rbac: any) => {
-        if (rbac.cM_APPLICATIONS && rbac.cM_APPLICATIONS.name) return rbac.cM_APPLICATIONS.name
-        if (rbac.cM_APPS_ROLES && rbac.cM_APPS_ROLES.cM_APPLICATIONS && rbac.cM_APPS_ROLES.cM_APPLICATIONS.name) {
-            return rbac.cM_APPS_ROLES.cM_APPLICATIONS.name
+        // Fallback to applications list if joined data is not directly available
+        if (applications && rbacItem.apP_CODE) {
+            const app = applications.find(app => app.apP_CODE === rbacItem.apP_CODE);
+            if (app) return app.name;
         }
-        if (applications && rbac.apP_CODE) {
-            const app = applications.find(app => app.apP_CODE === rbac.apP_CODE)
-            if (app) return app.name
-        }
-        return ""
-    }
+        return "";
+    };
 
-    const getRoleName = (rbac: any) => {
-        if (rbac.cM_APPS_ROLES && rbac.cM_APPS_ROLES.name) return rbac.cM_APPS_ROLES.name;
-        if (roles && rbac.rolE_CODE && rbac.apP_CODE) {
-            const role = roles.find(role => role.rolE_CODE === rbac.rolE_CODE && role.apP_CODE === rbac.apP_CODE);
+    // Helper function to get role name from RBAC item
+    const getRoleName = (rbacItem: Rbac) => {
+        if (rbacItem.cM_APPS_ROLES && rbacItem.cM_APPS_ROLES.name) return rbacItem.cM_APPS_ROLES.name;
+        // Fallback to roles list if joined data is not directly available
+        if (roles && rbacItem.rolE_CODE && rbacItem.apP_CODE) {
+            const role = roles.find(role => role.rolE_CODE === rbacItem.rolE_CODE && role.apP_CODE === rbacItem.apP_CODE);
             if (role) return role.name;
         }
         return "";
     };
+
+    const handleExport = () => {
+        exportToExcel({
+            fileName: "Applications_RBAC",
+            sheetName: "Application RBAC",
+            data: rbac,
+            columns: [
+                { header: 'RBAC Code', keys: ['rbaC_CODE'] },
+                { header: 'APP Code', keys: ['apP_CODE'] },
+                // Use formatter for Application Name
+                { header: 'Application Name', formatter: (item) => getAppName(item) },
+                { header: 'ROLE Code', keys: ['rolE_CODE'] },
+                // Use formatter for Role Name
+                { header: 'Role Name', formatter: (item) => getRoleName(item) },
+                { header: 'FUNC Code', keys: ['funC_CODE'] },
+                { header: 'Created By', keys: ['createD_BY'] },
+                { header: 'Created Date', keys: ['createD_DATETIME'] },
+                { header: 'Updated By', keys: ['updateD_BY'] },
+                { header: 'Updated Date', keys: ['updateD_DATETIME'] }
+            ]
+        });
+    };
+
+    // const getAppName = (rbac: any) => {
+    //     if (rbac.cM_APPLICATIONS && rbac.cM_APPLICATIONS.name) return rbac.cM_APPLICATIONS.name
+    //     if (rbac.cM_APPS_ROLES && rbac.cM_APPS_ROLES.cM_APPLICATIONS && rbac.cM_APPS_ROLES.cM_APPLICATIONS.name) {
+    //         return rbac.cM_APPS_ROLES.cM_APPLICATIONS.name
+    //     }
+    //     if (applications && rbac.apP_CODE) {
+    //         const app = applications.find(app => app.apP_CODE === rbac.apP_CODE)
+    //         if (app) return app.name
+    //     }
+    //     return ""
+    // }
+
+    // const getRoleName = (rbac: any) => {
+    //     if (rbac.cM_APPS_ROLES && rbac.cM_APPS_ROLES.name) return rbac.cM_APPS_ROLES.name;
+    //     if (roles && rbac.rolE_CODE && rbac.apP_CODE) {
+    //         const role = roles.find(role => role.rolE_CODE === rbac.rolE_CODE && role.apP_CODE === rbac.apP_CODE);
+    //         if (role) return role.name;
+    //     }
+    //     return "";
+    // };
 
     const handleOpenCreateModal = () => {
         setEditRbac(null)

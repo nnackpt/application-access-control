@@ -15,6 +15,7 @@ import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
 import StatsCard from "@/Components/UI/StatsCard"
 import 'react-loading-skeleton/dist/skeleton.css'
 import Skeleton from 'react-loading-skeleton'
+import { useExportData } from "@/hooks/useExportData"
 
 export default function AppsRoles() {
     const [refresh, setRefresh] = useState(0)
@@ -29,42 +30,26 @@ export default function AppsRoles() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [editData, setEditData] = useState<AppsRoles | null>(null)
     const [applications, setApplications] = useState<Application[]>([])
+    const { exportToExcel } = useExportData<AppsRoles>();
 
-    // Function to handle search term change
     const handleExport = () => {
-        try {
-            const exportData = appsRoles.map(role => ({
-                'APP Code': getValue(role, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE']) || '',
-                'ROLE Code': getValue(role, ['rolE_CODE', 'roleCode', 'role_code', 'RoleCode', 'ROLE_CODE']) || '',
-                'Name': getValue(role, ['name', 'Name', 'role_name', 'roleName']) || '',
-                'Description': getValue(role, ['desc', 'description', 'Description']) || '',
-                'Active': getValue(role, ['active', 'Active', 'is_active', 'isActive', 'status']) ? 'Yes' : 'No',
-                'Home URL': getValue(role, ['homE_URL' ,'homeUrl', 'home_url', 'HomeUrl', 'HOME_URL']) || '',
-                'Created By': getValue(role, ['createD_BY', 'createdBy', 'created_by', 'CreatedBy', 'CREATED_BY', 'creator']) || '',
-                'Updated By': getValue(role, ['updateD_BY', 'updatedBy', 'updated_by', 'UpdatedBy', 'UPDATED_BY', 'modifier']) || '',
-                'Updated Date': getValue(role, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date']) || ''
-            }))
-
-            const headers = Object.keys(exportData[0] || {})
-            const csvContent = [
-                headers.join(','),
-                ...exportData.map(row => headers.map(header => `"${(row as Record<string, any>)[header]}"`).join(','))
-            ].join('\n')
-
-            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
-            const link = document.createElement('a')
-            const url = URL.createObjectURL(blob)
-            link.setAttribute('href', url)
-            link.setAttribute('download', `Application_Roles_${new Date().toISOString().split('T')[0]}.csv`)
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-            URL.revokeObjectURL(url)
-        } catch (error) {
-            console.error("Error exporting data:", error)
-            alert("Failed to export data. Please try again.")
-        }
-    }
+        exportToExcel({
+            fileName: "Applications_Roles",
+            sheetName: "Application Roles",
+            data: appsRoles,
+            columns: [
+                { header: 'APP Code', keys: ['apP_CODE'] },
+                { header: 'ROLE Code', keys: ['rolE_CODE'] },
+                { header: 'Name', keys: ['name'] },
+                { header: 'Description', keys: ['desc'] },
+                { header: 'Active', keys: ['active'] },
+                { header: 'Home URL', keys: ['homE_URL'] },
+                { header: 'Created By', keys: ['createD_BY'] },
+                { header: 'Updated By', keys: ['updateD_BY'] },
+                { header: 'Updated Date', keys: ['updateD_DATETIME'] }
+            ]
+        });
+    };
 
     const handleOpenCreateModal = () => {
         setEditRoles(null)

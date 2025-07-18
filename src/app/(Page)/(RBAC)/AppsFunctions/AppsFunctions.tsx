@@ -1,91 +1,78 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Plus, Calculator, Search, Download, ChevronDown } from "lucide-react"
+import { Plus, Calculator, Search, Download } from "lucide-react"
 import AppsFunctionsTable from "@/Components/AppsFunctions/AppsFunctionsTable"
 import { AppsFunctionsApi } from "@/services/AppsFunctionsApi"
 import type { AppsFunctions } from "@/types/AppsFunctions"
 import { applicationApi } from "@/services/ApplicationApi"
 import { Application } from "@/types/Application"
 import AppsFunctionsCreateModal from "@/Components/AppsFunctions/AppsFunctionsCreateModal"
-import AppsFunctionsEditModal from "@/Components/AppsFunctions/AppsFunctionsEditModal"
+// import AppsFunctionsEditModal from "@/Components/AppsFunctions/AppsFunctionsEditModal"
 import getValue from "@/Utils/getValue"
 import { motion } from 'framer-motion';
 import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
 import StatsCard from "@/Components/UI/StatsCard"
 import 'react-loading-skeleton/dist/skeleton.css'
 import Skeleton from 'react-loading-skeleton'
+import { useExportData } from "@/hooks/useExportData"
+// import { saveAs } from 'file-saver';
 
 export default function AppsFunctions() {
   const [refresh, setRefresh] = useState(0)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editFunction, setEditFunction] = useState<AppsFunctions | null>(null)
+  // const [isModalOpen, setIsModalOpen] = useState(false)
+  // const [editFunction, setEditFunction] = useState<AppsFunctions | null>(null)
   const [appsFunctions, setAppsFunctions] = useState<AppsFunctions[]>([])
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedAppTitle, setSelectedAppTitle] = useState("all")
-  const [applicationTitle, setApplicationTitle] = useState<Record<string, string>>({})
+  // const [applicationTitle, setApplicationTitle] = useState<Record<string, string>>({})
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [editData, setEditData] = useState<AppsFunctions | null>(null)
+  // const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  // const [editData, setEditData] = useState<AppsFunctions | null>(null)
   const [applications, setApplications] = useState<Application[]>([]);
+  const { exportToExcel } = useExportData<AppsFunctions>()
 
   const handleExport = () => {
-    try {
-        const exportData = appsFunctions.map(func => ({
-            'APP Code': getValue(func, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE']) || '',
-            'FUNC Code': getValue(func, ['funC_CODE', 'funcCode', 'func_code', 'FuncCode', 'FUNC_CODE', 'code', 'id']) || '',
-            'Name': getValue(func, ['name', 'Name', 'func_name', 'funcName']) || '',
-            'Description': getValue(func, ['desc', 'description', 'Description', 'func_desc', 'funcDesc']) || '',
-            'Active': getValue(func, ['active', 'Active', 'is_active', 'isActive', 'status']) ? 'Yes' : 'No',
-            'Function URL': getValue(func, ['funC_URL', 'funcUrl', 'func_url', 'FuncUrl', 'FUNC_URL', 'url']) || '',
-            'Created By': getValue(func, ['createD_BY', 'createdBy', 'created_by', 'CreatedBy', 'CREATED_BY', 'creator']) || '',
-            'Created Date': getValue(func, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date']) || '',
-            'Updated By': getValue(func, ['updateD_BY', 'updatedBy', 'updated_by', 'UpdatedBy', 'UPDATED_BY', 'modifier']) || '',
-            'Updated Date': getValue(func, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date']) || ''
-        }))
+    exportToExcel({
+        fileName: "Applications_Functions",
+        sheetName: "Application Functions",
+        data: appsFunctions,
+        columns: [
+            { header: 'APP Code', keys: ['apP_CODE'] },
+            { header: 'FUNC Code', keys: ['funC_CODE'] },
+            { header: 'Name', keys: ['name'] },
+            { header: 'Description', keys: ['desc'] },
+            { header: 'Active', keys: ['active'] },
+            { header: 'Function URL', keys: ['funC_URL'] },
+            { header: 'Created By', keys: ['createD_BY'] },
+            { header: 'Created Date', keys: ['createD_DATETIME'] },
+            { header: 'Updated By', keys: ['updateD_BY'] },
+            { header: 'Updated Date', keys: ['updateD_DATETIME'] }
+        ]
+    });
+  };
 
-        const headers = Object.keys(exportData[0] || {})
-        const csvContent = [
-            headers.join(','),
-            ...exportData.map(row => headers.map(header => `"${(row as Record<string, any>)[header]}"`).join(','))
-        ].join('\n')
+  // const handleOpenCreateModal = () => {
+  //   setEditFunction(null)
+  //   setIsModalOpen(true)
+  // }
 
-        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
-        const link = document.createElement('a')
-        const url = URL.createObjectURL(blob)
-        link.setAttribute('href', url)
-        link.setAttribute('download', `Application_Functions_${new Date().toISOString().split('T')[0]}.csv`)
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        URL.revokeObjectURL(url)
-    } catch (error) {
-        console.error('Error exporting data:', error)
-        alert('Error exporting data. Please try again')
-    }
-  }
+  // const handleEditFunction = (func: AppsFunctions) => {
+  //   setEditFunction(func)
+  //   setIsModalOpen(true)
+  // }
 
-  const handleOpenCreateModal = () => {
-    setEditFunction(null)
-    setIsModalOpen(true)
-  }
+  // const handleModalClose = () => {
+  //   setIsModalOpen(false)
+  //   setEditFunction(null)
+  // }
 
-  const handleEditFunction = (func: AppsFunctions) => {
-    setEditFunction(func)
-    setIsModalOpen(true)
-  }
-
-  const handleModalClose = () => {
-    setIsModalOpen(false)
-    setEditFunction(null)
-  }
-
-  const handleSuccess = () => {
-    setIsModalOpen(false)
-    setEditFunction(null)
-    handleRefresh()
-  }
+  // const handleSuccess = () => {
+  //   setIsModalOpen(false)
+  //   setEditFunction(null)
+  //   handleRefresh()
+  // }
 
   // ดึงข้อมูลสำหรับ stats
   useEffect(() => {
@@ -99,15 +86,15 @@ export default function AppsFunctions() {
         setAppsFunctions(functionsResponse)
         setApplications(applicationsResponse)
 
-        const TitlesMap: Record<string, string> = {}
-        applicationsResponse.forEach((app: Application) => {
-          const appCode = getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE', 'code', 'id'])
-          const appTitle = getValue(app, ['title', 'TITLE'])
-          if (appCode && appTitle) {
-            TitlesMap[appCode] = appTitle
-          }
-        })
-        setApplicationTitle(TitlesMap)
+        // const TitlesMap: Record<string, string> = {}
+        // applicationsResponse.forEach((app: Application) => {
+        //   const appCode = getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE', 'code', 'id'])
+        //   const appTitle = getValue(app, ['title', 'TITLE'])
+        //   if (appCode && appTitle) {
+        //     TitlesMap[appCode] = appTitle
+        //   }
+        // })
+        // setApplicationTitle(TitlesMap)
 
       } catch (error) {
         console.error('Error fetching data:', error)
@@ -132,20 +119,20 @@ export default function AppsFunctions() {
   const inactiveFunctions = totalFunctions - activeFunctions
 
   // นับจำนวน unique applications
-  const uniqueAppTitles = Array.from(new Set(appsFunctions.map(func => {
-    return getValue(func, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE'])
-  }).filter(Boolean))) as (string | number)[]
+  // const uniqueAppTitles = Array.from(new Set(appsFunctions.map(func => {
+  //   return getValue(func, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE'])
+  // }).filter(Boolean))) as (string | number)[]
 
-  const sortedAppTitles = uniqueAppTitles.sort((a, b) => {
-    const numA = parseFloat(String(a))
-    const numB = parseFloat(String(b))
+  // const sortedAppTitles = uniqueAppTitles.sort((a, b) => {
+  //   const numA = parseFloat(String(a))
+  //   const numB = parseFloat(String(b))
     
-    if (!isNaN(numA) && !isNaN(numB)) {
-      return numA - numB
-    } else {
-      return String(a).localeCompare(String(b))
-    }
-  })
+  //   if (!isNaN(numA) && !isNaN(numB)) {
+  //     return numA - numB
+  //   } else {
+  //     return String(a).localeCompare(String(b))
+  //   }
+  // })
 
   // หาวันที่ updated ล่าสุด
   const getLastUpdated = () => {
@@ -206,7 +193,7 @@ export default function AppsFunctions() {
                         <div className="bg-[#005496] rounded-lg shadow-lg p-[3px]"> {/* ชั้นที่ 1: สีน้ำเงินเข้ม #005496 (ด้านหลังสุด) */}
                             <div className="bg-[#FBFCFD] rounded-lg p-[3px]"> {/* ชั้นที่ 2: สีขาว #FBFCFD (ชั้นกลาง) */}
                                 <div className="bg-[#009EE3] text-white px-4 py-2 rounded-lg flex items-center justify-center"> {/* ชั้นที่ 3: สีน้ำเงิน #009EE3 (ชั้นบนสุดพร้อมข้อความ) */}
-                                    <span>Application's Function's</span>
+                                    <span>Application&apos;s Function&apos;s</span>
                                 </div>
                             </div>
                         </div>
@@ -220,7 +207,7 @@ export default function AppsFunctions() {
                             transition={{ type: "spring", stiffness: 400, damping: 17 }}
                         >
                             <Plus size={20} />
-                            <span>Create New Application's Function</span>
+                            <span>Create New Application&apos;s Function</span>
                         </motion.button>
 
                         <motion.button
@@ -232,7 +219,7 @@ export default function AppsFunctions() {
                             transition={{ type: "spring", stiffness: 400, damping: 17 }}
                         >
                             <Download size={20} />
-                            <span>Export Application's Function</span>
+                            <span>Export Application&apos;s Function</span>
                         </motion.button>
 
                     </div>
@@ -328,12 +315,12 @@ export default function AppsFunctions() {
         />
 
         {/* Edit Modal */}
-        <AppsFunctionsEditModal
+        {/* <AppsFunctionsEditModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           onSuccess={handleRefresh} 
           editData={editData!}
-        />
+        /> */}
       </div>
     </main>
   )
