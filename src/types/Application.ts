@@ -1,6 +1,7 @@
 export interface Application {
     // APP_Code: string
     apP_CODE: string
+    apP_NAME?: string
     name: string
     title: string
     desc?: string
@@ -11,4 +12,5 @@ export interface Application {
     createD_DATETIME?: string
     updateD_BY?: string
     updateD_DATETIME?: string
+    [key: string]: string | number | boolean | undefined
 }

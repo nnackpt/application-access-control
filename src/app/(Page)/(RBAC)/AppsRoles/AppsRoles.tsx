@@ -1,34 +1,39 @@
 "use client"
 
 import AppsRolesCreateModal from "@/Components/AppRoles/AppsRolesCreateModal"
-import AppsRolesEditModal from "@/Components/AppRoles/AppsRolesEditModal"
+// import AppsRolesEditModal from "@/Components/AppRoles/AppsRolesEditModal"
 import AppsRolesTable from "@/Components/AppRoles/AppsRolesTable"
+import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
+import StatsCard from "@/Components/UI/StatsCard"
+
 import { applicationApi } from "@/services/ApplicationApi"
 import { AppsRolesApi } from "@/services/AppsRolesApi"
 import { Application } from "@/types/Application"
 import type { AppsRoles } from "@/types/AppsRoles"
-import getValue from "@/Utils/getValue"
-import { Calculator, ChevronDown, Download, Plus, Search } from "lucide-react"
+
+// import getValue from "@/Utils/getValue"
+import { useExportData } from "@/hooks/useExportData"
+
+import { Calculator, Download, Plus, Search } from "lucide-react"
 import { useEffect, useState } from "react"
+
 import { motion } from 'framer-motion';
-import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
-import StatsCard from "@/Components/UI/StatsCard"
 import 'react-loading-skeleton/dist/skeleton.css'
 import Skeleton from 'react-loading-skeleton'
-import { useExportData } from "@/hooks/useExportData"
+import { getStats } from "@/Utils/getStats"
 
 export default function AppsRoles() {
     const [refresh, setRefresh] = useState(0)
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [editRoles, setEditRoles] = useState<AppsRoles | null>(null)
+    // const [isModalOpen, setIsModalOpen] = useState(false)
+    // const [editRoles, setEditRoles] = useState<AppsRoles | null>(null)
     const [appsRoles, setAppsRoles] = useState<AppsRoles[]>([])
     const [loading, setLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedTitle, setSelectedTitle] = useState("all")
-    const [applicationTitle, setApplicationTitle] = useState<Record<string, string>>({})
+    // const [applicationTitle, setApplicationTitle] = useState<Record<string, string>>({})
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-    const [editData, setEditData] = useState<AppsRoles | null>(null)
+    // const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+    // const [editData, setEditData] = useState<AppsRoles | null>(null)
     const [applications, setApplications] = useState<Application[]>([])
     const { exportToExcel } = useExportData<AppsRoles>();
 
@@ -51,26 +56,26 @@ export default function AppsRoles() {
         });
     };
 
-    const handleOpenCreateModal = () => {
-        setEditRoles(null)
-        setIsModalOpen(true)
-    }
+    // const handleOpenCreateModal = () => {
+    //     setEditRoles(null)
+    //     setIsModalOpen(true)
+    // }
 
-    const handleEditRole = (role: AppsRoles) => {
-        setEditRoles(role)
-        setIsModalOpen(true)
-    }
+    // const handleEditRole = (role: AppsRoles) => {
+    //     setEditRoles(role)
+    //     setIsModalOpen(true)
+    // }
 
-    const handleModalClose = () => {
-        setIsModalOpen(false)
-        setEditRoles(null)
-    }
+    // const handleModalClose = () => {
+    //     setIsModalOpen(false)
+    //     setEditRoles(null)
+    // }
 
-    const handleSuccess = () => {
-        setIsModalOpen(false)
-        setEditRoles(null)
-        handleRefresh()
-    }
+    // const handleSuccess = () => {
+    //     setIsModalOpen(false)
+    //     setEditRoles(null)
+    //     handleRefresh()
+    // }
 
     const handleRefresh = () => {
         setRefresh(prev => prev + 1)
@@ -88,15 +93,15 @@ export default function AppsRoles() {
                 setAppsRoles(roleResponse)
                 setApplications(appResponse)
 
-                const TitlesMap: Record<string, string> = {}
-                appResponse.forEach((app: Application) => {
-                    const appCode = getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE']) || ''
-                    const appTitle = getValue(app, ['titLE', 'title']) || ''
-                    if (appCode && appTitle) {
-                        TitlesMap[appCode] = appTitle
-                    }
-                })
-                setApplicationTitle(TitlesMap)
+                // const TitlesMap: Record<string, string> = {}
+                // appResponse.forEach((app: Application) => {
+                //     const appCode = getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE']) || ''
+                //     const appTitle = getValue(app, ['titLE', 'title']) || ''
+                //     if (appCode && appTitle) {
+                //         TitlesMap[appCode] = appTitle
+                //     }
+                // })
+                // setApplicationTitle(TitlesMap)
 
             } catch (error) {
                 console.error("Error fetching Apps and Roles:", error)
@@ -109,58 +114,65 @@ export default function AppsRoles() {
     }, [refresh])
 
     // Calculate total, active, and inactive roles
-    const totalRoles = appsRoles.length
-    const activeRoles = appsRoles.filter(role => {
-        const active = getValue(role, ['active', 'Active', 'is_active', 'isActive', 'status'])
-        return active === true
-    }).length
-    const inactiveRoles = totalRoles - activeRoles
+    // const totalRoles = appsRoles.length
+    // const activeRoles = appsRoles.filter(role => {
+    //     const active = getValue(role as unknown as Record<string, unknown>, ['active'])
+    //     return active === true
+    // }).length
+    // const inactiveRoles = totalRoles - activeRoles
 
     // Get unique app titles and sort them
-    const uniqueAppTitles = Array.from(new Set(appsRoles.map(role => {
-        return getValue(role, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE'])
-    }).filter(Boolean))) as (string | number)[]
+    // const uniqueAppTitles = Array.from(new Set(appsRoles.map(role => {
+    //     return getValue(role, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE'])
+    // }).filter(Boolean))) as (string | number)[]
     
-    const sortedAppTitles = uniqueAppTitles.sort((a, b) => {
-        const numA = parseFloat(String(a))
-        const numB = parseFloat(String(b))
+    // const sortedAppTitles = uniqueAppTitles.sort((a, b) => {
+    //     const numA = parseFloat(String(a))
+    //     const numB = parseFloat(String(b))
 
-        if (!isNaN(numA) && !isNaN(numB)) {
-            return numA - numB
-        } else {
-            return String(a).localeCompare(String(b))
-        }
-    })
+    //     if (!isNaN(numA) && !isNaN(numB)) {
+    //         return numA - numB
+    //     } else {
+    //         return String(a).localeCompare(String(b))
+    //     }
+    // })
 
-    const getLastUpdated = () => {
-        if (appsRoles.length === 0) return "No data available"
+    // const getLastUpdated = () => {
+    //     if (appsRoles.length === 0) return "No data available"
 
-        const latestUpdate = appsRoles.reduce((latest, role) => {
-          const updatedDate = getValue(role, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date'])
-          const createdDate = getValue(role, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date'])
+    //     const latestUpdate = appsRoles.reduce((latest: string | null, role) => {
+    //         const updatedDate = getValue(role as unknown as Record<string, unknown>, ['updateD_DATETIME']) as string | undefined
+    //         const createdDate = getValue(role as unknown as Record<string, unknown>, ['createD_DATETIME']) as string | undefined
           
-          const roleDate = updatedDate || createdDate
-          if (!roleDate) return latest
+    //       const roleDate = updatedDate || createdDate
+    //       if (!roleDate) return latest
 
-          const roleDateTime = new Date(roleDate).getTime()
-          const latestDateTime = latest ? new Date(latest).getTime() : 0
+    //       const roleDateTime = new Date(roleDate).getTime()
+    //       const latestDateTime = latest ? new Date(latest).getTime() : 0
 
-          return roleDateTime > latestDateTime ? roleDate : latest
-        }, null)
+    //       return roleDateTime > latestDateTime ? roleDate : latest
+    //     }, null)
 
-        if (!latestUpdate) return "No updates available"
+    //     if (!latestUpdate) return "No updates available"
 
-        const today = new Date()
-        const updateDate = new Date(latestUpdate)
-        const diffTime = today.getTime() - updateDate.getTime()
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+    //     const today = new Date()
+    //     const updateDate = new Date(latestUpdate)
+    //     const diffTime = today.getTime() - updateDate.getTime()
+    //     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
 
-        if (diffDays === 0) return 'Today'
-        if (diffDays === 1) return 'Yesterday'
-        if (diffDays < 7) return `${diffDays} days ago`
+    //     if (diffDays === 0) return 'Today'
+    //     if (diffDays === 1) return 'Yesterday'
+    //     if (diffDays < 7) return `${diffDays} days ago`
 
-        return updateDate.toLocaleDateString('th-TH')
-    }
+    //     return updateDate.toLocaleDateString('th-TH')
+    // }
+
+    const {
+        total: totalRoles,
+        active: activeRoles,
+        inactive: inactiveRoles,
+        getLastUpdated,
+    } = getStats({ data: appsRoles as AppsRoles[] })
 
     return (
         <main className="min-h-screen">
@@ -190,7 +202,7 @@ export default function AppsRoles() {
                                     <div className="bg-[#005496] rounded-lg shadow-lg p-[3px]">
                                         <div className="bg-[#FBFCFD] rounded-lg p-[3px]">
                                             <div className="bg-[#009EE3] text-white px-4 py-2 rounded-lg flex items-center justify-center">
-                                                <span>Application's Roles</span>
+                                                <span>Application&apos;s Roles</span>
                                             </div>
                                         </div>
                                     </div>
@@ -204,7 +216,7 @@ export default function AppsRoles() {
                                         transition={{ type: "spring", stiffness: 400, damping: 17 }}
                                     >
                                         <Plus size={20} />
-                                        <span>Create New Application's Role</span>
+                                        <span>Create New Application&apos;s Role</span>
                                     </motion.button>
 
                                     <motion.button
@@ -216,7 +228,7 @@ export default function AppsRoles() {
                                         transition={{ type: "spring", stiffness: 400, damping: 17 }}
                                     >
                                         <Download size={20} />
-                                        <span>Export Application's Role</span>
+                                        <span>Export Application&apos;s Role</span>
                                     </motion.button>
 
                                 </div>
@@ -308,12 +320,12 @@ export default function AppsRoles() {
                     onSuccess={handleRefresh}
                 />
 
-                <AppsRolesEditModal
+                {/* <AppsRolesEditModal
                     isOpen={isEditModalOpen}
                     onClose={() => setIsEditModalOpen(false)}
                     onSuccess={handleRefresh}
                     editData={editData!}
-                />
+                /> */}
             </div>
         </main>
     )

@@ -1,7 +1,11 @@
+import { Application } from "./Application";
+import { AppsFunctions } from "./AppsFunctions";
+import { AppsRoles } from "./AppsRoles";
+
 export interface Rbac {
-    cM_APPLICATIONS: any;
-    cM_APPS_ROLES: any;
-    cM_APPS_FUNCTIONS: any;
+    cM_APPLICATIONS: Application;
+    cM_APPS_ROLES: AppsRoles;
+    cM_APPS_FUNCTIONS: AppsFunctions;
     rbaC_CODE: string;
     apP_CODE: string;
     rolE_CODE: string;
@@ -10,6 +14,7 @@ export interface Rbac {
     createD_DATETIME?: string;
     updateD_BY?: string;
     updateD_DATETIME?: string;
+    [key: string]: string | number | boolean | object | undefined
 }
 
 export interface createRbac {

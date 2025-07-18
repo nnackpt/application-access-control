@@ -1,20 +1,25 @@
 "use client"
 
 import { rbacApi } from "@/services/RbacApi"
-import { Rbac } from "@/types/Rbac"
-import getValue from "@/Utils/getValue"
 import { applicationApi } from "@/services/ApplicationApi"
 import { AppsRolesApi } from "@/services/AppsRolesApi"
 import { Application } from "@/types/Application"
+import { Rbac } from "@/types/Rbac"
+
+import getValue from "@/Utils/getValue"
+import formatDateTime from './../../Utils/formatDateTime';
+
 import { useEffect, useState } from "react"
 import toast, { Toaster } from "react-hot-toast"
-import Pagination from "../UI/Pagination"
-import formatDateTime from './../../Utils/formatDateTime';
 import { Edit, Eye, Trash2 } from "lucide-react"
-import RowsPerPageSelect from "../UI/Select/RowsPerPageSelect"
-import DeleteConfirmModal from './../UI/DeleteConfirmModal';
 import { useRouter } from "next/navigation"
 import Skeleton from 'react-loading-skeleton'
+
+import Pagination from "../UI/Pagination"
+
+import RowsPerPageSelect from "../UI/Select/RowsPerPageSelect"
+import DeleteConfirmModal from './../UI/DeleteConfirmModal';
+import { AppsRoles } from "@/types/AppsRoles"
 
 interface RbacTableProps {
     refreshSignal: number
@@ -27,14 +32,14 @@ interface RbacTableProps {
 export default function RbacTable({ refreshSignal, onRefresh, searchTerm, selectedTitle, selectedRole }: RbacTableProps) {
     const [data, setData] = useState<Rbac[]>([])
     const [loading, setLoading] = useState(false)
-    const [viewData, setViewData] = useState<Rbac | null>(null)
-    const [editData, setEditData] = useState<Rbac | null>(null)
-    const [isViewModalOpen, setIsViewModalOpen] = useState(false)
+    // const [viewData, setViewData] = useState<Rbac | null>(null)
+    // const [editData, setEditData] = useState<Rbac | null>(null)
+    // const [isViewModalOpen, setIsViewModalOpen] = useState(false)
     const [applications, setApplications] = useState<Application[]>([])
-    const [roles, setRoles] = useState<any[]>([])
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+    const [roles, setRoles] = useState<AppsRoles[]>([])
+    // const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
-    const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+    // const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
     const [deleteModal, setDeleteModal] = useState<{rbac: Rbac|null, open: boolean}>({rbac: null, open: false})
     const [deleteSuccess, setDeleteSuccess] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
@@ -94,18 +99,15 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
         fetchData()
     }, [refreshSignal])
 
-    const getAppName = (rbac: any) => {
-        if (rbac.cM_APPLICATIONS && rbac.cM_APPLICATIONS.name) return rbac.cM_APPLICATIONS.name;
-        if (rbac.cM_APPS_ROLES && rbac.cM_APPS_ROLES.cM_APPLICATIONS && rbac.cM_APPS_ROLES.cM_APPLICATIONS.name)
-            return rbac.cM_APPS_ROLES.cM_APPLICATIONS.name;
-        if (applications && rbac.apP_CODE) {
-            const app = applications.find(app => app.apP_CODE === rbac.apP_CODE);
-            if (app) return app.name;
-        }
+    const getAppName = (rbacItem: Rbac) => {
+        if (rbacItem.cM_APPLICATIONS && rbacItem.cM_APPLICATIONS.apP_NAME) return rbacItem.cM_APPLICATIONS.apP_NAME;
+        if (rbacItem.cM_APPS_ROLES?.cM_APPLICATIONS?.apP_NAME) return rbacItem.cM_APPS_ROLES.cM_APPLICATIONS.apP_NAME;
+        const app = applications.find(app => app.apP_CODE === rbacItem.apP_CODE);
+        if (app) return app.apP_NAME;
         return "";
     };
 
-    const getRoleName = (rbac: any) => {
+    const getRoleName = (rbac: Rbac) => {
         if (rbac.cM_APPS_ROLES && rbac.cM_APPS_ROLES.name) return rbac.cM_APPS_ROLES.name;
         if (roles && rbac.rolE_CODE && rbac.apP_CODE) {
             const role = roles.find(role => role.rolE_CODE === rbac.rolE_CODE && role.apP_CODE === rbac.apP_CODE);
@@ -124,8 +126,8 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
     }, [])
 
     const filteredData = data.filter(rbac => {
-        const rbacCode = getValue(rbac, ['rbaC_CODE'])
-        const appCode = getValue(rbac, ['apP_CODE'])
+        const rbacCode = getValue(rbac, ['rbaC_CODE']) || ''
+        const appCode = getValue(rbac, ['apP_CODE']) || ''
         const appName = getAppName(rbac) || ''
         const roleCode = getValue(rbac, ['rolE_CODE']) || ''
         const roleName = getRoleName(rbac) || ''
@@ -156,7 +158,6 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
     const handleView = (rbac: Rbac) => {
         const rbacCode = getValue(rbac, ['rbaC_CODE'])
         if (rbacCode) {
-            // สร้าง query string จาก current filters
             const params = new URLSearchParams()
             if (selectedTitle !== "all") params.set('app', selectedTitle)
             if (selectedRole !== "all") params.set('role', selectedRole)
@@ -172,7 +173,6 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
     const handleEdit = (rbac: Rbac) => {
         const rbacCode = getValue(rbac, ['rbaC_CODE'])
         if (rbacCode) {
-            // สร้าง query string จาก current filters
             const params = new URLSearchParams()
             if (selectedTitle !== "all") params.set('app', selectedTitle)
             if (selectedRole !== "all") params.set('role', selectedRole)
@@ -213,23 +213,23 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
         }
     }
 
-    const handleEditSuccess = () => {
-        setEditData(null)
-        setIsEditModalOpen(false)
-        onRefresh()
-    }
+    // const handleEditSuccess = () => {
+    //     setEditData(null)
+    //     setIsEditModalOpen(false)
+    //     onRefresh()
+    // }
 
-    const toggleRowExpansion = (rbac: string) => {
-        setExpandedRows(prev => {
-            const newSet = new Set(prev)
-            if (newSet.has(rbac)) {
-                newSet.delete(rbac)
-            } else {
-                newSet.add(rbac)
-            }
-            return newSet
-        })
-    }
+    // const toggleRowExpansion = (rbac: string) => {
+    //     setExpandedRows(prev => {
+    //         const newSet = new Set(prev)
+    //         if (newSet.has(rbac)) {
+    //             newSet.delete(rbac)
+    //         } else {
+    //             newSet.add(rbac)
+    //         }
+    //         return newSet
+    //     })
+    // }
 
     if (loading) {
     return (
@@ -296,14 +296,14 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
                                     {getPaginatedData().map((rbac, index) => {
                                         const rbacCode = getValue(rbac,['rbaC_CODE'])
                                         const appCode = getValue(rbac, ['apP_CODE'])
-                                        const appName = getAppName(rbac)
+                                        const appName = getAppName(rbac) || ''
                                         const roleCode = getValue(rbac, ['rolE_CODE'])
                                         const roleName = getRoleName(rbac)
                                         const funcCode = getValue(rbac, ['funC_CODE'])
                                         const createdBy = getValue(rbac, ['createD_BY'])
-                                        const createdDate = getValue(rbac, ['createD_DATETIME'])
+                                        const createdDate = getValue(rbac, ['createD_DATETIME']) || ''
                                         const updatedBy = getValue(rbac, ['updateD_BY'])
-                                        const updatedDate = getValue(rbac, ['updateD_DATETIME'])
+                                        const updatedDate = getValue(rbac, ['updateD_DATETIME']) || ''
 
                                         return (
                                             <tr key={`${rbacCode || index}-${index}`} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">

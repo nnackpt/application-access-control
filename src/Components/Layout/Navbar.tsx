@@ -4,7 +4,8 @@ import Link from "next/link";
 import React from "react";
 import { usePathname } from "next/navigation";
 import { Bars3Icon, ChevronDownIcon, UserIcon, ChevronUpIcon, Cog6ToothIcon, XMarkIcon, SunIcon, MoonIcon, ComputerDesktopIcon } from "@heroicons/react/24/outline";
-import { motion, AnimatePresence, hover, MotionGlobalConfig } from "framer-motion";
+import { motion, AnimatePresence, MotionGlobalConfig } from "framer-motion";
+import Image from "next/image";
 
 // Types
 interface MenuItem {
@@ -24,7 +25,7 @@ interface DropdownMenuProps {
 // Components
 const Logo = () => (
   <Link href="/" className="flex items-center cursor-pointer hover:scale-105 transition-transform duration-200">
-    <img 
+    <Image 
       src="/autoliv_logo.png" 
       alt="Autoliv" 
       className="w-32 sm:w-40 lg:w-44 h-auto pt-4 sm:pt-5 pl-4 sm:pl-5"
@@ -78,7 +79,7 @@ const UserInfo = () => {
         } else {
           setUser(null);
         }
-      } catch (e) {
+      } catch {
         setUser(null);
       } finally {
         setLoading(false)
@@ -291,19 +292,19 @@ const QuickMenuDropdown: React.FC<{
 
     const applyTheme = (value: string) => {
       if (value === "dark") {
-        root.classList.add("dark")
-      } else if (value === "light") {
-        root.classList.remove("dark")
+        root.classList.add("dark");
       } else {
-        mediaQuery.matches
-          ? root.classList.add("dark")
-          : root.classList.remove("dark");
+        root.classList.remove("dark");
       }
     };
 
     const handleSystemThemeChange = (e: MediaQueryListEvent) => {
       if (theme === "system") {
-        e.matches ? root.classList.add("dark") : root.classList.remove("dark");
+        if (e.matches) {
+          root.classList.add("dark");
+        } else {
+          root.classList.remove("dark");
+        }
       }
     };
 

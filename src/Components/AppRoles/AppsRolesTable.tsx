@@ -234,9 +234,9 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
                                         const active = getValue(appRole, ['active'])
                                         const homeUrl = getValue(appRole, ['homE_URL'])
                                         const createdBy = getValue(appRole, ['createD_BY'])
-                                        const createdDate = getValue(appRole, ['createD_DATETIME'])
+                                        const createdDate = getValue(appRole, ['createD_DATETIME']) || ''
                                         const updatedBy = getValue(appRole, ['updateD_BY'])
-                                        const updatedDate = getValue(appRole, ['updateD_DATETIME'])
+                                        const updatedDate = getValue(appRole, ['updateD_DATETIME']) || ''
 
                                         return (
                                             <tr key={`${roleCode || index}-${index}`} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">
@@ -290,21 +290,21 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
                                                     <div className="flex space-x-1">
                                                         <button
                                                             onClick={() => handleView(appRole)}
-                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transition-colors transform hover:scale-110 transition-transform duration-200"
+                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transform hover:scale-110 transition-all duration-200"
                                                             title="View Details"
                                                         >
                                                             <Eye size={16} />
                                                         </button>
                                                         <button
                                                             onClick={() => handleEdit(appRole)}
-                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-green-600 hover:border-green-800 hover:bg-blue-50 hover:text-green-800 transition-colors transform hover:scale-110 transition-transform duration-200"
+                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-green-600 hover:border-green-800 hover:bg-blue-50 hover:text-green-800 transform hover:scale-110 transition-all duration-200"
                                                             title="Edit"
                                                         >
                                                             <Edit size={16} />
                                                         </button>
                                                         <button
                                                             onClick={() => handleDelete(appRole)}
-                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-red-600 hover:border-red-800 hover:bg-blue-50 hover:text-red-800 transition-colors disabled:opacity-50 transform hover:scale-110 transition-transform duration-200"
+                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-red-600 hover:border-red-800 hover:bg-blue-50 hover:text-red-800 disabled:opacity-50 transform hover:scale-110 transition-all duration-200"
                                                             title="Delete"
                                                             disabled={deleteLoading === roleCode}
                                                         >
@@ -329,15 +329,15 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
                         {/* Card Layout rendering */}
                         {getPaginatedData().map((appRole, index) => {
                             const appCode = getValue(appRole, ['apP_CODE'])
-                            const roleCode = getValue(appRole, ['rolE_CODE'])
+                            const roleCode = getValue(appRole, ['rolE_CODE']) || ''
                             const name = getValue(appRole, ['name'])
                             const desc = getValue(appRole, ['desc'])
                             const active = getValue(appRole, ['active'])
                             const homeUrl = getValue(appRole, ['homE_URL'])
-                            const createdBy = getValue(appRole, ['createD_BY'])
-                            const createdDate = getValue(appRole, ['createD_DATETIME'])
+                            const createdBy = getValue(appRole, ['createD_BY']) 
+                            const createdDate = getValue(appRole, ['createD_DATETIME']) || ''
                             const updatedBy = getValue(appRole, ['updateD_BY'])
-                            const updatedDate = getValue(appRole, ['updateD_DATETIME'])
+                            const updatedDate = getValue(appRole, ['updateD_DATETIME']) || ''
 
                             const isExpanded = expandedRows.has(roleCode)
 

@@ -1,6 +1,7 @@
 "use client"
 
 import useCurrentUser from "@/hooks/useCurrentUser"
+
 import { applicationApi } from "@/services/ApplicationApi"
 import { AppsRolesApi } from "@/services/AppsRolesApi"
 import { AppsFunctionsApi } from "@/services/AppsFunctionsApi"
@@ -8,17 +9,19 @@ import { rbacApi } from "@/services/RbacApi"
 import { Application } from "@/types/Application"
 import { AppsRoles } from "@/types/AppsRoles"
 import { AppsFunctions } from "@/types/AppsFunctions"
+import { createRbac } from "@/types/Rbac"
+
 import { ChevronDownIcon, ChevronLeft, Package, Users } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { createRbac } from "@/types/Rbac"
-import { AnimatePresence, motion } from 'framer-motion'
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import { useRouter } from "next/navigation"
+import { AnimatePresence, motion } from 'framer-motion'
+import { PlusIcon } from "@heroicons/react/24/outline"
+import 'react-loading-skeleton/dist/skeleton.css'
+
 import Pagination from "@/Components/UI/Pagination"
 import RowsPerPageSelect from "@/Components/UI/Select/RowsPerPageSelect"
-import { PlusIcon } from "@heroicons/react/24/outline"
-import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
-import 'react-loading-skeleton/dist/skeleton.css'
 
 const initForm = {
   APP_CODE: "",
@@ -126,23 +129,23 @@ export default function RbacCreatePage() {
       AppsRolesApi.getAppsRoles(),
       AppsFunctionsApi.getAppsFunctions()
     ])
-      .then(([apps, roles, funcs]) => {
+      .then(([apps, rolesData, funcs]) => {
         setApplications(apps)
-        setRoles(roles)
+        setRoles(rolesData)
         setFunctions(funcs)
-        setInitialLoading(false) // ปิด loading เมื่อโหลดเสร็จ
+        setInitialLoading(false) 
       })
       .catch(() => {
         toast.error("ERROR LOADING DATA")
-        setInitialLoading(false) // ปิด loading แม้เกิด error
+        setInitialLoading(false)
       })
   }, [])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setForm((prev: any) => ({ ...prev, [name]: value }))
-    if (error[name]) setError(prev => ({ ...prev, [name]: "" }))
-  }
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  //   const { name, value } = e.target
+  //   setForm((prev: any) => ({ ...prev, [name]: value }))
+  //   if (error[name]) setError(prev => ({ ...prev, [name]: "" }))
+  // }
 
   const handleCheck = (funcCode: string, checked: boolean) => {
     setForm((prev) => ({
@@ -183,7 +186,7 @@ export default function RbacCreatePage() {
 
     const fetchAssignedFuncs = async () => {
       if (!form.APP_CODE || !form.ROLE_CODE) {
-        setForm((prev: any) => ({ ...prev, FUNC_CODES: [] }))
+        setForm((prev: createRbac) => ({ ...prev, FUNC_CODES: [] }))
         return
       }
 
@@ -191,7 +194,7 @@ export default function RbacCreatePage() {
       try {
         const assigned = await rbacApi.getAssignedFuncCodes(form.APP_CODE, form.ROLE_CODE)
         if (!isCancelled) {
-          setForm((prev: any) => ({
+          setForm((prev: createRbac) => ({
             ...prev,
             FUNC_CODES: assigned || []
           }))
@@ -199,7 +202,7 @@ export default function RbacCreatePage() {
       } catch (err) {
         if (!isCancelled) {
           console.error("Failed to load assigned functions", err)
-          setForm((prev: any) => ({ ...prev, FUNC_CODES: [] }))
+          setForm((prev: createRbac) => ({ ...prev, FUNC_CODES: [] }))
         }
       } finally {
         if (!isCancelled) {
@@ -250,7 +253,7 @@ export default function RbacCreatePage() {
           {initialLoading ? (
             <Skeleton width={300} height={32} />
           ) : (
-            <h1 className="text-2xl font-bold text-[#005496]">CREATE APPLICATION'S RBAC</h1>
+            <h1 className="text-2xl font-bold text-[#005496]">CREATE APPLICATION&apos;S RBAC</h1>
           )}
           {initialLoading ? (
             <Skeleton width={100} height={40} className="rounded-lg" />
@@ -332,7 +335,7 @@ export default function RbacCreatePage() {
                           <li
                             key={app.apP_CODE}
                             onClick={() => {
-                              setForm((prev: any) => ({ ...prev, APP_CODE: app.apP_CODE, ROLE_CODE: "", FUNC_CODES: [] }))
+                              setForm((prev) => ({ ...prev, APP_CODE: app.apP_CODE, ROLE_CODE: "", FUNC_CODES: [] }))
                               setShowAppDropdown(false)
                               setCurrentPage(1)
                             }}
@@ -393,7 +396,11 @@ export default function RbacCreatePage() {
                           <li
                             key={role.rolE_CODE}
                             onClick={() => {
-                              setForm((prev: any) => ({ ...prev, ROLE_CODE: role.rolE_CODE, FUNC_CODES: [] }))
+                              setForm((prev: createRbac) => ({
+                                ...prev,
+                                ROLE_CODE: role.rolE_CODE!,
+                                FUNC_CODES: []
+                              }))
                               setShowRoleDropdown(false)
                               setCurrentPage(1)
                             }}
@@ -500,7 +507,7 @@ export default function RbacCreatePage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {paginatedFunctions.map((func, index) => {
+                      {paginatedFunctions.map((func) => {
                         const isSelected = form.FUNC_CODES.includes(func.funC_CODE)
                         return (
                           <tr

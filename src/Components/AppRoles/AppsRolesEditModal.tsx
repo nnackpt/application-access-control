@@ -54,7 +54,7 @@ export default function AppsRolesEditModal({
                 updateD_BY: 'system',
                 updateD_DATETIME: new Date().toISOString().slice(0, 19)
             }
-            await AppsRolesApi.updateAppsRoles(form.rolE_CODE, submitData)
+            await AppsRolesApi.updateAppsRoles(form.rolE_CODE || '', submitData)
             toast.success('Successfully updated!')
             onSuccess()
             onClose()

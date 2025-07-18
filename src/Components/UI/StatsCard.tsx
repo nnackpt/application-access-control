@@ -24,7 +24,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
     bgColor = "bg-gray-100",
     pulseColor = "bg-gray-500",
     valueColor = "text-gray-900",
-    delay = 0
+    // delay = 0
 }) => {
     return (
         <motion.div

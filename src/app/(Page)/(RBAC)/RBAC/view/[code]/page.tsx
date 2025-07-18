@@ -10,6 +10,7 @@ import Pagination from "@/Components/UI/Pagination"
 import { motion } from 'framer-motion';
 import { ChevronLeft, Package, Users } from "lucide-react"
 import RowsPerPageSelect from "@/Components/UI/Select/RowsPerPageSelect"
+import { AppsFunctions } from "@/types/AppsFunctions"
 
 export default function RbacViewPage() {
   const { code } = useParams()
@@ -17,7 +18,7 @@ export default function RbacViewPage() {
   const searchParams = useSearchParams()
 
   const [rbac, setRbac] = useState<Rbac | null>(null)
-  const [functions, setFunctions] = useState<any[]>([])
+  const [functions, setFunctions] = useState<AppsFunctions[]>([])
   const [loading, setLoading] = useState(true)
 
   const [currentPage, setCurrentPage] = useState(1)

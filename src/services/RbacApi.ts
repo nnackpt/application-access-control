@@ -26,7 +26,7 @@ export class RbacApiService {
             try {
                 const errorJson = JSON.parse(errorBodyText)
                 errorDetails += `, Details: ${JSON.stringify(errorJson, null, 2)}`
-            } catch (e) {
+            } catch {
                 // const errorText = await response.text()
                 errorDetails += `, Raw Text: ${errorBodyText}`
             }

@@ -3,7 +3,7 @@
 import { AppsRoles } from "@/types/AppsRoles"
 import { useEffect, useRef, useState } from "react"
 import { motion } from 'framer-motion';
-import { ChevronDownIcon, ArrowRightCircleIcon } from "@heroicons/react/20/solid";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { AnimatePresence } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 

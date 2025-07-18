@@ -1,36 +1,36 @@
 "use client"
 
 import { AppsRolesApi } from "@/services/AppsRolesApi"
+import { rbacApi } from "@/services/RbacApi"
+import { applicationApi } from "@/services/ApplicationApi"
 import { AppsRoles } from "@/types/AppsRoles"
 import { Application } from "@/types/Application"
-import { rbacApi } from "@/services/RbacApi"
 import { Rbac } from "@/types/Rbac"
-import { applicationApi } from "@/services/ApplicationApi"
-import getValue from "@/Utils/getValue"
-import { useEffect, useState } from "react"
-import { Calculator, ChevronDown, Download, Plus, Search } from "lucide-react"
+
+import { useEffect, useState, Suspense } from "react"
+import { Calculator, Download, Plus, Search } from "lucide-react"
+import { useRouter, useSearchParams } from "next/navigation"
+
 import RbacTable from "@/Components/RBAC/RbacTable"
 import RbacCreateModal from "@/Components/RBAC/RbacCreateModal"
 import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
-import { motion } from "framer-motion"
 import StatsCard from "@/Components/UI/StatsCard"
 import RoleTitleSelect from "@/Components/UI/Select/RoleTitleSelect"
-import 'react-loading-skeleton/dist/skeleton.css'
-import Skeleton from 'react-loading-skeleton'
-import { useRouter, useSearchParams } from "next/navigation"
+
 import { useExportData } from "@/hooks/useExportData"
 
-export default function RBAC() {
+import { motion } from "framer-motion"
+import 'react-loading-skeleton/dist/skeleton.css'
+import Skeleton from 'react-loading-skeleton'
+import { getStats } from "@/Utils/getStats"
+
+function RBACContent() {
     const [refresh, setRefresh] = useState(0)
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [editRbac, setEditRbac] = useState<Rbac | null>(null)
     const [rbac, setRbac] = useState<Rbac[]>([])
     const [loading, setLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedTitle, setSelectedTitle] = useState("all")
-    const [applicationTitle, setApplicationTitle] = useState<Record<string, string>>({})
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-    const [editData, setEditData] = useState<Rbac | null>(null)
     const [applications, setApplications] = useState<Application[]>([])
     const [roles, setRoles] = useState<AppsRoles[]>([])
     const [selectedRole, setSelectedRole] = useState("all")
@@ -38,7 +38,7 @@ export default function RBAC() {
     const searchParams = useSearchParams()
     const { exportToExcel } = useExportData<Rbac>()
 
-    // เพิ่ม useEffect เพื่อดึงค่าจาก URL parameters
+    // Effect to pull values from URL parameters on component mount
     useEffect(() => {
         const appParam = searchParams.get('app')
         const roleParam = searchParams.get('role')
@@ -49,7 +49,6 @@ export default function RBAC() {
         if (searchParam) setSearchTerm(searchParam)
     }, [searchParams])
 
-    // ฟังก์ชันสำหรับอัปเดต URL parameters
     const updateURLParams = (app?: string, role?: string, search?: string) => {
         const params = new URLSearchParams()
         
@@ -60,24 +59,21 @@ export default function RBAC() {
         const queryString = params.toString()
         const newUrl = queryString ? `/RBAC?${queryString}` : '/RBAC'
         
-        // ใช้ replace แทน push เพื่อไม่ให้เพิ่ม history
         router.replace(newUrl)
     }
 
-    // แก้ไขฟังก์ชัน setSelectedTitle
+    // Handlers for filter and search changes
     const handleSelectedTitleChange = (title: string) => {
         setSelectedTitle(title)
-        setSelectedRole("all") // รีเซ็ต role เมื่อเปลี่ยน app
+        setSelectedRole("all")
         updateURLParams(title, "all", searchTerm)
     }
 
-    // แก้ไขฟังก์ชัน setSelectedRole
     const handleSelectedRoleChange = (role: string) => {
         setSelectedRole(role)
         updateURLParams(selectedTitle, role, searchTerm)
     }
 
-    // แก้ไขฟังก์ชัน setSearchTerm
     const handleSearchTermChange = (search: string) => {
         setSearchTerm(search)
         updateURLParams(selectedTitle, selectedRole, search)
@@ -116,10 +112,8 @@ export default function RBAC() {
             columns: [
                 { header: 'RBAC Code', keys: ['rbaC_CODE'] },
                 { header: 'APP Code', keys: ['apP_CODE'] },
-                // Use formatter for Application Name
-                { header: 'Application Name', formatter: (item) => getAppName(item) },
+                { header: 'Application Name', formatter: (item) => getAppName(item) as string },
                 { header: 'ROLE Code', keys: ['rolE_CODE'] },
-                // Use formatter for Role Name
                 { header: 'Role Name', formatter: (item) => getRoleName(item) },
                 { header: 'FUNC Code', keys: ['funC_CODE'] },
                 { header: 'Created By', keys: ['createD_BY'] },
@@ -130,48 +124,6 @@ export default function RBAC() {
         });
     };
 
-    // const getAppName = (rbac: any) => {
-    //     if (rbac.cM_APPLICATIONS && rbac.cM_APPLICATIONS.name) return rbac.cM_APPLICATIONS.name
-    //     if (rbac.cM_APPS_ROLES && rbac.cM_APPS_ROLES.cM_APPLICATIONS && rbac.cM_APPS_ROLES.cM_APPLICATIONS.name) {
-    //         return rbac.cM_APPS_ROLES.cM_APPLICATIONS.name
-    //     }
-    //     if (applications && rbac.apP_CODE) {
-    //         const app = applications.find(app => app.apP_CODE === rbac.apP_CODE)
-    //         if (app) return app.name
-    //     }
-    //     return ""
-    // }
-
-    // const getRoleName = (rbac: any) => {
-    //     if (rbac.cM_APPS_ROLES && rbac.cM_APPS_ROLES.name) return rbac.cM_APPS_ROLES.name;
-    //     if (roles && rbac.rolE_CODE && rbac.apP_CODE) {
-    //         const role = roles.find(role => role.rolE_CODE === rbac.rolE_CODE && role.apP_CODE === rbac.apP_CODE);
-    //         if (role) return role.name;
-    //     }
-    //     return "";
-    // };
-
-    const handleOpenCreateModal = () => {
-        setEditRbac(null)
-        setIsModalOpen(true)
-    }
-
-    const handleEditRole = (role: Rbac) => {
-        setEditRbac(role)
-        setIsModalOpen(true)
-    }
-
-    const handleModalClose = () => {
-        setIsModalOpen(false)
-        setEditRbac(null)
-    }
-
-    const handleSuccess = () => {
-        setIsModalOpen(false)
-        setEditRbac(null)
-        handleRefresh()
-    }
-
     const handleRefresh = () => {
         setRefresh(prev => prev + 1)
     }
@@ -180,23 +132,13 @@ export default function RBAC() {
         const fetchAppsAndRoles = async () => {
             setLoading(true)
             try {
-                const [roleResponse, appResponse, appsRolesResponse] = await Promise.all([
+                const [rbacResponse, appResponse, appsRolesResponse] = await Promise.all([
                     rbacApi.getRbac(),
                     applicationApi.getApplications(),
                     AppsRolesApi.getAppsRoles()
                 ])
                 setApplications(appResponse)
-                setRbac(roleResponse)
-
-                const TitlesMap: Record<string, string> = {}
-                appResponse.forEach((app: Application) => {
-                    const appCode = getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE']) || ''
-                    const appTitle = getValue(app, ['titLE', 'title']) || ''
-                    if (appCode && appTitle) {
-                        TitlesMap[appCode] = appTitle
-                    }
-                })
-                setApplicationTitle(TitlesMap)
+                setRbac(rbacResponse)
                 setRoles(appsRolesResponse)
 
             } catch (error) {
@@ -209,42 +151,12 @@ export default function RBAC() {
         fetchAppsAndRoles()
     }, [refresh])
 
-    const totalRbac = rbac.length
-    const activeRbac = rbac.filter(rbac => {
-        const active = getValue(rbac, ['active', 'Active', 'is_active', 'isActive', 'status'])
-        return active === true
-    }).length
-    const inactiveRbac = totalRbac - activeRbac
-
-    const getLastUpdated = () => {
-        if (rbac.length === 0) return "No data available"
-
-        const latestUpdate = rbac.reduce((latest, rbac) => {
-            const updatedDate = getValue(rbac, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date'])
-            const createdDate = getValue(rbac, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date'])
-
-            const rbacDate = updatedDate || createdDate
-            if (!rbacDate) return latest
-
-            const rbacDateTime = new Date(rbacDate).getTime()
-            const latestDateTime = latest ? new Date(latest).getTime() : 0
-
-            return rbacDateTime > latestDateTime ? rbacDate : latest
-        }, null)
-
-        if (!latestUpdate) return "No updates available"
-
-        const today = new Date()
-        const updateDate = new Date(latestUpdate)
-        const diffTime = today.getTime() - updateDate.getTime()
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-
-        if (diffDays === 0) return 'Today'
-        if (diffDays === 1) return 'Yesterday'
-        if (diffDays < 7) return `${diffDays} days ago`
-
-        return updateDate.toLocaleDateString('th-TH')
-    }
+    const {
+        total: totalRbac,
+        active: activeRbac,
+        inactive: inactiveRbac,
+        getLastUpdated,
+    } = getStats({ data: rbac as Rbac[] })
 
     return (
         <main className="min-h-screen">
@@ -286,7 +198,7 @@ export default function RBAC() {
                                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                                 >
                                     <Plus size={20} />
-                                    <span>Create New Application's RBAC</span>
+                                    <span>Create New Application&apos;s RBAC</span>
                                 </motion.button>
 
                                 <motion.button
@@ -298,7 +210,7 @@ export default function RBAC() {
                                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                                 >
                                     <Download size={20} />
-                                    <span>Export Application's RBAC</span>
+                                    <span>Export Application&apos;s RBAC</span>
                                 </motion.button>
                             </div>
                         </div>
@@ -399,5 +311,13 @@ export default function RBAC() {
                 />
             </div>
         </main>
+    )
+}
+
+export default function RBAC() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <RBACContent />
+        </Suspense>
     )
 }

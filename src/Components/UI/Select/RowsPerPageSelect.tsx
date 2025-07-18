@@ -1,8 +1,8 @@
-import { Listbox, Transition } from "@headlessui/react"
+// import { Listbox, Transition } from "@headlessui/react"
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { motion } from 'framer-motion';
-import { CheckIcon, ChevronRight, ArrowRightCircleIcon } from "lucide-react";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from 'framer-motion';
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css';

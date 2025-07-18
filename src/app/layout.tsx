@@ -1,22 +1,23 @@
 "use client"
 
 // import type { Metadata } from "next";
-import { Geist, Geist_Mono, Roboto, Open_Sans } from "next/font/google";
+// import { Geist, Geist_Mono, Roboto, Open_Sans } from "next/font/google";
+import { Roboto, Open_Sans } from "next/font/google";
 
 import "./globals.css";
 // import Navbar from "@/Components/Layout/Navbar";
 import Footer from "@/Components/Layout/Footer";
 import { Sidebar, useSidebar } from '@/Components/Layout/Sidebar';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+// const geistSans = Geist({
+//   variable: "--font-geist-sans",
+//   subsets: ["latin"],
+// });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+// const geistMono = Geist_Mono({
+//   variable: "--font-geist-mono",
+//   subsets: ["latin"],
+// });
 
 const roboto = Roboto({
   variable: "--font-roboto", 

@@ -93,14 +93,15 @@ export default function AppsRolesCreateModal({
                 delete payload.rolE_CODE
             }
 
-            const createdRole = await AppsRolesApi.createAppsRoles(payload)
+            await AppsRolesApi.createAppsRoles(payload)
             toast.success('Successfully created!')
             onSuccess()
             onClose()
-        } catch (error: any) {
-            console.error("Error submitting form:", error)
-            toast.error(`Failed to create App Role: ${error.message || 'Unknown error'}`)
-            setError({ api: error.message || 'Failed to create App Role' })
+        } catch (error: unknown) {
+            const err = error as Error
+            console.error("Error submitting form:", err)
+            toast.error(`Failed to create App Role: ${err.message || 'Unknown error'}`)
+            setError({ api: err.message || 'Failed to create App Role' })
         } finally {
             setLoading(false)
         }

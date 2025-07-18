@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import getValue from "@/Utils/getValue";
-import toast from 'react-hot-toast';
+// import toast from 'react-hot-toast';
 
 interface ColumnConfig<T> {
     header: string;
@@ -15,7 +15,7 @@ interface ExportConfig<T> {
     columns: ColumnConfig<T>[]
 }
 
-export const useExportData = <T extends object>() => {
+export const useExportData = <T extends Record<string, unknown>>() => {
     const exportToExcel = ({ fileName, sheetName, data, columns }: ExportConfig<T>) => {
         try {
             if (data.length === 0) {
@@ -29,7 +29,7 @@ export const useExportData = <T extends object>() => {
                     // Use formatter if available, otherwise use getValue with keys
                     row[col.header] = col.formatter
                         ? col.formatter(item)
-                        : (col.keys ? getValue(item, col.keys) : '') || '';
+                        : (col.keys ? String(getValue(item, col.keys) || '') : '');
                 });
                 return row;
             });

@@ -35,9 +35,9 @@ export default function ViewModal({
   const baseUrl = getValue(data, ['basE_URL', 'baseUrl', 'base_url', 'BaseUrl', 'BASE_URL', 'url'])
   const loginUrl = getValue(data, ['logiN_URL', 'loginUrl', 'login_url', 'LoginUrl', 'LOGIN_URL'])
   const createdBy = getValue(data, ['createD_BY', 'createdBy', 'created_by', 'CreatedBy', 'CREATED_BY', 'creator'])
-  const createdDate = getValue(data, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date', 'CreatedDate', 'CREATED_DATE', 'createDate'])
+  const createdDate = getValue(data, ['createD_DATETIME']) || ''
   const updatedBy = getValue(data, ['updateD_BY', 'updatedBy', 'updated_by', 'UpdatedBy', 'UPDATED_BY', 'modifier'])
-  const updatedDate = getValue(data, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date', 'UpdatedDate', 'UPDATED_DATE', 'updateDate'])
+  const updatedDate = getValue(data, ['updateD_DATETIME']) || ''
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return '-'

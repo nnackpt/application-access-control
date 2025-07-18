@@ -242,9 +242,9 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
                                     const active = getValue(appFunc, ['active', 'Active', 'is_active', 'isActive', 'status'])
                                     const funcUrl = getValue(appFunc, ['funC_URL', 'funcUrl', 'func_url', 'FuncUrl', 'FUNC_URL', 'url'])
                                     const createdBy = getValue(appFunc, ['createD_BY', 'createdBy', 'created_by', 'CreatedBy', 'CREATED_BY', 'creator'])
-                                    const createdDate = getValue(appFunc, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date', 'CreatedDate', 'CREATED_DATE', 'createDate'])
+                                    const createdDate = getValue(appFunc, ['createD_DATETIME']) || ''
                                     const updatedBy = getValue(appFunc, ['updateD_BY', 'updatedBy', 'updated_by', 'UpdatedBy', 'UPDATED_BY', 'modifier'])
-                                    const updatedDate = getValue(appFunc, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date', 'UpdatedDate', 'UPDATED_DATE', 'updateDate'])
+                                    const updatedDate = getValue(appFunc, ['updateD_DATETIME']) || ''
 
                                     return (
                                         <tr key={`${funcCode || index}-${index}`} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">
@@ -300,21 +300,21 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
                                                 <div className="flex space-x-1">
                                                     <button
                                                         onClick={() => handleView(appFunc)}
-                                                        className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transition-colors transform hover:scale-110 transition-transform duration-200"
+                                                        className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transform hover:scale-110 transition-all duration-200"
                                                         title="View Details"
                                                     >
                                                         <Eye size={16} />
                                                     </button>
                                                     <button
                                                         onClick={() => handleEdit(appFunc)}
-                                                        className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-green-600 hover:border-green-800 hover:bg-blue-50 hover:text-green-800 transition-colors transform hover:scale-110 transition-transform duration-200"
+                                                        className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-green-600 hover:border-green-800 hover:bg-blue-50 hover:text-green-800 transform hover:scale-110 transition-all duration-200"
                                                         title="Edit"
                                                     >
                                                         <Edit size={16} />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDelete(appFunc)}
-                                                        className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-red-600 hover:border-red-800 hover:bg-blue-50 hover:text-red-800 transition-colors disabled:opacity-50 transform hover:scale-110 transition-transform duration-200"
+                                                        className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-red-600 hover:border-red-800 hover:bg-blue-50 hover:text-red-800 disabled:opacity-50 transform hover:scale-110 transition-all duration-200"
                                                         title="Delete"
                                                         disabled={deleteLoading === funcCode}
                                                     >
@@ -339,15 +339,15 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
                     {/* Card layout rendering */}
                     {getPaginatedData().map((appFunc, index) => {
                         const appCode = getValue(appFunc, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE'])
-                        const funcCode = getValue(appFunc, ['funC_CODE', 'funcCode', 'func_code', 'FuncCode', 'FUNC_CODE', 'code', 'id'])
+                        const funcCode = getValue(appFunc, ['funC_CODE']) || ''
                         const name = getValue(appFunc, ['name', 'Name', 'func_name', 'funcName'])
                         const desc = getValue(appFunc, ['desc', 'description', 'Description', 'func_desc', 'funcDesc'])
                         const active = getValue(appFunc, ['active', 'Active', 'is_active', 'isActive', 'status'])
                         const funcUrl = getValue(appFunc, ['funC_URL', 'funcUrl', 'func_url', 'FuncUrl', 'FUNC_URL', 'url'])
                         const createdBy = getValue(appFunc, ['createD_BY', 'createdBy', 'created_by', 'CreatedBy', 'CREATED_BY', 'creator'])
-                        const createdDate = getValue(appFunc, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date', 'CreatedDate', 'CREATED_DATE', 'createDate'])
+                        const createdDate = getValue(appFunc, ['createD_DATETIME']) || ''
                         const updatedBy = getValue(appFunc, ['updateD_BY', 'updatedBy', 'updated_by', 'UpdatedBy', 'UPDATED_BY', 'modifier'])
-                        const updatedDate = getValue(appFunc, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date', 'UpdatedDate', 'UPDATED_DATE', 'updateDate'])
+                        const updatedDate = getValue(appFunc, ['updateD_DATETIME']) || ''
 
                         const isExpanded = expandedRows.has(funcCode)
 

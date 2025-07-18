@@ -2,20 +2,24 @@
 
 import React, { useState, useEffect } from "react"
 import { Plus, Calculator, Search, Download } from "lucide-react"
-import AppsFunctionsTable from "@/Components/AppsFunctions/AppsFunctionsTable"
-import { AppsFunctionsApi } from "@/services/AppsFunctionsApi"
-import type { AppsFunctions } from "@/types/AppsFunctions"
-import { applicationApi } from "@/services/ApplicationApi"
-import { Application } from "@/types/Application"
-import AppsFunctionsCreateModal from "@/Components/AppsFunctions/AppsFunctionsCreateModal"
-// import AppsFunctionsEditModal from "@/Components/AppsFunctions/AppsFunctionsEditModal"
-import getValue from "@/Utils/getValue"
-import { motion } from 'framer-motion';
-import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
-import StatsCard from "@/Components/UI/StatsCard"
 import 'react-loading-skeleton/dist/skeleton.css'
 import Skeleton from 'react-loading-skeleton'
+
+import AppsFunctionsTable from "@/Components/AppsFunctions/AppsFunctionsTable"
+import AppsFunctionsCreateModal from "@/Components/AppsFunctions/AppsFunctionsCreateModal"
+// import AppsFunctionsEditModal from "@/Components/AppsFunctions/AppsFunctionsEditModal"
+import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
+import StatsCard from "@/Components/UI/StatsCard"
+
+import { AppsFunctionsApi } from "@/services/AppsFunctionsApi"
+import { applicationApi } from "@/services/ApplicationApi"
+import type { AppsFunctions } from "@/types/AppsFunctions"
+import { Application } from "@/types/Application"
+
+import { motion } from 'framer-motion';
+// import getValue from "@/Utils/getValue"
 import { useExportData } from "@/hooks/useExportData"
+import { getStats } from "@/Utils/getStats"
 // import { saveAs } from 'file-saver';
 
 export default function AppsFunctions() {
@@ -111,12 +115,12 @@ export default function AppsFunctions() {
   }
 
   // คำนวณ stats จากข้อมูล apps functions
-  const totalFunctions = appsFunctions.length
-  const activeFunctions = appsFunctions.filter(func => {
-    const active = getValue(func, ['active', 'Active', 'is_active', 'isActive', 'status'])
-    return active === true
-  }).length
-  const inactiveFunctions = totalFunctions - activeFunctions
+  // const totalFunctions = appsFunctions.length
+  // const activeFunctions = appsFunctions.filter(func => {
+  //   const active = getValue(func as unknown as Record<string, unknown>, ['active'])
+  //   return active === true
+  // }).length
+  // const inactiveFunctions = totalFunctions - activeFunctions
 
   // นับจำนวน unique applications
   // const uniqueAppTitles = Array.from(new Set(appsFunctions.map(func => {
@@ -135,35 +139,42 @@ export default function AppsFunctions() {
   // })
 
   // หาวันที่ updated ล่าสุด
-  const getLastUpdated = () => {
-    if (appsFunctions.length === 0) return 'No data'
+  // const getLastUpdated = () => {
+  //   if (appsFunctions.length === 0) return 'No data'
     
-    const latestUpdate = appsFunctions.reduce((latest, func) => {
-      const updatedDate = getValue(func, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date'])
-      const createdDate = getValue(func, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date'])
+  //   const latestUpdate = appsFunctions.reduce((latest: string | null, func) => {
+  //     const updatedDate = getValue(func as unknown as Record<string, unknown>, ['updateD_DATETIME']) as string | undefined
+  //     const createdDate = getValue(func as unknown as Record<string, unknown>, ['createD_DATETIME']) as string | undefined
       
-      const funcDate = updatedDate || createdDate
-      if (!funcDate) return latest
-      
-      const funcDateTime = new Date(funcDate).getTime()
-      const latestDateTime = latest ? new Date(latest).getTime() : 0
-      
-      return funcDateTime > latestDateTime ? funcDate : latest
-    }, null)
+  //     const funcDate = updatedDate || createdDate
+  //     if (!funcDate) return latest
 
-    if (!latestUpdate) return 'No data'
+  //     const funcDateTime = new Date(funcDate).getTime()
+  //     const latestDateTime = latest ? new Date(latest).getTime() : 0
+
+  //     return funcDateTime > latestDateTime ? funcDate : latest
+  //   }, null as string | null)
+
+  //   if (!latestUpdate) return 'No data'
     
-    const today = new Date()
-    const updateDate = new Date(latestUpdate)
-    const diffTime = today.getTime() - updateDate.getTime()
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+  //   const today = new Date()
+  //   const updateDate = new Date(latestUpdate)
+  //   const diffTime = today.getTime() - updateDate.getTime()
+  //   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
     
-    if (diffDays === 0) return 'Today'
-    if (diffDays === 1) return 'Yesterday'
-    if (diffDays < 7) return `${diffDays} days ago`
+  //   if (diffDays === 0) return 'Today'
+  //   if (diffDays === 1) return 'Yesterday'
+  //   if (diffDays < 7) return `${diffDays} days ago`
     
-    return updateDate.toLocaleDateString('th-TH')
-  }
+  //   return updateDate.toLocaleDateString('th-TH')
+  // }
+
+  const {
+    total: totalFunctions,
+    active: activeFunctions,
+    inactive: inactiveFunctions,
+    getLastUpdated,
+  } = getStats({ data: appsFunctions as AppsFunctions[] })
 
   return (
     <main className="min-h-screen">

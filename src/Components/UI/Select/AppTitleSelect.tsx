@@ -1,7 +1,7 @@
 import { Application } from "@/types/Application"
 // import { Listbox, Transition } from "@headlessui/react"
-import { ChevronDownIcon, CheckIcon  } from "@heroicons/react/20/solid"
-import { Fragment, useEffect, useRef, useState } from "react"
+import { ChevronDownIcon } from "@heroicons/react/20/solid"
+import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronRight } from 'lucide-react';
 

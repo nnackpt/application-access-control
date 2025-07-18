@@ -5,23 +5,24 @@ import { motion } from "framer-motion"
 import Skeleton from "react-loading-skeleton"
 import 'react-loading-skeleton/dist/skeleton.css'
 import { AiFillFileExcel } from "react-icons/ai"
-import { Calculator, Download, Plus, Search, Settings } from "lucide-react"
+import { Calculator, Plus, Search } from "lucide-react"
 
 import ApplicationTable from "@/Components/Application/ApplicationTable"
 import ApplicationCreateModal from "@/Components/Application/ApplicationCreateModal"
-import ApplicationEditModal from "@/Components/Application/ApplicationEditModal"
+// import ApplicationEditModal from "@/Components/Application/ApplicationEditModal"
 import StatsCard from "@/Components/UI/StatsCard"
 
 import { applicationApi } from "@/services/ApplicationApi"
 import { Application } from "@/types/Application"
-import getValue from "@/Utils/getValue"
+// import getValue from "@/Utils/getValue"
 import { useExportData } from "@/hooks/useExportData"
+import { getStats } from "@/Utils/getStats"
 
 export default function Applications() {
   const [refresh, setRefresh] = useState(0)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [editData, setEditData] = useState<Application | null>(null)
+  // const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  // const [editData, setEditData] = useState<Application | null>(null)
   const [applications, setApplications] = useState<Application[]>([])
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
@@ -71,37 +72,44 @@ export default function Applications() {
     fetchApplications()
   }, [refresh])
 
-  const totalApplications = applications.length
-  const activeApplications = applications.filter(app =>
-    getValue(app, ['active', 'Active', 'is_active', 'isActive', 'status']) === true
-  ).length
-  const inactiveApplications = totalApplications - activeApplications
+  // const totalApplications = applications.length
+  // const activeApplications = applications.filter(app =>
+  //   getValue(app, ['active', 'Active', 'is_active', 'isActive', 'status']) === true
+  // ).length
+  // const inactiveApplications = totalApplications - activeApplications
 
-  const getLastUpdated = () => {
-    if (applications.length === 0) return 'No data'
+  // const getLastUpdated = () => {
+  //   if (applications.length === 0) return 'No data'
 
-    const latestUpdate = applications.reduce((latest, app) => {
-      const updatedDate = getValue(app, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date'])
-      const createdDate = getValue(app, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date'])
-      const appDate = updatedDate || createdDate
-      if (!appDate) return latest
-      const appDateTime = new Date(appDate).getTime()
-      const latestDateTime = latest ? new Date(latest).getTime() : 0
-      return appDateTime > latestDateTime ? appDate : latest
-    }, null)
+  //   const latestUpdate = applications.reduce((latest, app) => {
+  //     const updatedDate = getValue(app, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date'])
+  //     const createdDate = getValue(app, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date'])
+  //     const appDate = updatedDate || createdDate
+  //     if (!appDate) return latest
+  //     const appDateTime = new Date(appDate).getTime()
+  //     const latestDateTime = latest ? new Date(latest).getTime() : 0
+  //     return appDateTime > latestDateTime ? appDate : latest
+  //   }, null)
 
-    if (!latestUpdate) return 'No data'
+  //   if (!latestUpdate) return 'No data'
 
-    const today = new Date()
-    const updateDate = new Date(latestUpdate)
-    const diffTime = today.getTime() - updateDate.getTime()
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+  //   const today = new Date()
+  //   const updateDate = new Date(latestUpdate)
+  //   const diffTime = today.getTime() - updateDate.getTime()
+  //   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
 
-    if (diffDays === 0) return 'Today'
-    if (diffDays === 1) return 'Yesterday'
-    if (diffDays < 7) return `${diffDays} days ago`
-    return updateDate.toLocaleDateString('th-TH')
-  }
+  //   if (diffDays === 0) return 'Today'
+  //   if (diffDays === 1) return 'Yesterday'
+  //   if (diffDays < 7) return `${diffDays} days ago`
+  //   return updateDate.toLocaleDateString('th-TH')
+  // }
+
+  const {
+    total: totalApplications,
+    active: activeApplications,
+    inactive: inactiveApplications,
+    getLastUpdated,
+  } = getStats({ data: applications as Application[] })
 
   return (
     <main className="min-h-screen">
@@ -215,12 +223,12 @@ export default function Applications() {
           onClose={() => setIsCreateModalOpen(false)}
           onSuccess={handleCreateSuccess}
         />
-        <ApplicationEditModal
+        {/* <ApplicationEditModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           onSuccess={handleRefresh}
           editData={editData!}
-        />
+        /> */}
       </div>
     </main>
   )

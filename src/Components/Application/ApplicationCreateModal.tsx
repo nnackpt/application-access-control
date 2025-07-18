@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { Trash2, X } from "lucide-react"
 import { Application } from "@/types/Application"
 import { applicationApi } from "@/services/ApplicationApi"
 import toast from "react-hot-toast"
-import useCurrentUser from "@/hooks/useCurrentUser"
+// import useCurrentUser from "@/hooks/useCurrentUser"
 
 const initForm: Application = {
   apP_CODE: '',
@@ -33,7 +33,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
   const [errors, setErrors] = useState<{[key: string]: string}>({})
   const [loading, setLoading] = useState(false)
   const [appCodeInput, setAppCodeInput] = useState('')
-  const { userName } = useCurrentUser()
+  // const { userName } = useCurrentUser()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target

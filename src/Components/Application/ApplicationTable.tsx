@@ -235,17 +235,17 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
               </thead>
               <tbody>
                 {getPaginatedData().map((app, index) => {
-                  const appCode = getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE', 'code', 'id'])
+                  const appCode = getValue(app, ['apP_CODE']) || ''
                   const name = getValue(app, ['name', 'Name', 'app_name', 'appName'])
                   const title = getValue(app, ['title', 'Title', 'app_title', 'appTitle'])
                   const desc = getValue(app, ['desc', 'description', 'Description', 'app_desc', 'appDesc'])
                   const active = getValue(app, ['active', 'Active', 'is_active', 'isActive', 'status'])
                   const baseUrl = getValue(app, ['basE_URL', 'baseUrl', 'base_url', 'BaseUrl', 'BASE_URL', 'url'])
                   const loginUrl = getValue(app, ['logiN_URL', 'loginUrl', 'login_url', 'LoginUrl', 'LOGIN_URL'])
-                  const createdBy = getValue(app, ['createD_BY', 'createdBy', 'created_by', 'CreatedBy', 'CREATED_BY', 'creator'])
-                  const createdDate = getValue(app, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date', 'CreatedDate', 'CREATED_DATE', 'createDate'])
+                  const createdBy = getValue(app, ['createD_BY']) || ''
+                  const createdDate = getValue(app, ['createD_DATETIME']) || ''
                   const updatedBy = getValue(app, ['updateD_BY', 'updatedBy', 'updated_by', 'UpdatedBy', 'UPDATED_BY', 'modifier'])
-                  const updatedDate = getValue(app, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date', 'UpdatedDate', 'UPDATED_DATE', 'updateDate'])
+                  const updatedDate = getValue(app, ['updateD_DATETIME']) || ''
 
                   return (
                     <tr key={`${appCode || index}-${index}`} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">
@@ -320,21 +320,21 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
                         <div className="flex space-x-1">
                           <button
                             onClick={() => handleView(app)}
-                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transition-colors transform hover:scale-110 transition-transform duration-200"
+                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transform hover:scale-110 transition-all duration-200"
                             title="View Details"
                           >
                             <Eye size={16} />
                           </button>
                           <button
                             onClick={() => handleEdit(app)}
-                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-green-600 hover:border-green-800 hover:bg-blue-50 hover:text-green-800 transition-colors transform hover:scale-110 transition-transform duration-200"
+                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-green-600 hover:border-green-800 hover:bg-blue-50 hover:text-green-800 transform hover:scale-110 transition-all duration-200"
                             title="Edit"
                           >
                             <Edit size={16} />
                           </button>
                           <button
                             onClick={() => handleDelete(app)}
-                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-red-600 hover:border-red-800 hover:bg-blue-50 hover:text-red-800 transition-colors disabled:opacity-50 transform hover:scale-110 transition-transform duration-200"
+                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-red-600 hover:border-red-800 hover:bg-blue-50 hover:text-red-800 disabled:opacity-50 transform hover:scale-110 transition-all duration-200"
                             title="Delete"
                             disabled={deleteLoading === appCode}
                           >
@@ -357,17 +357,17 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
         {/* Mobile & Tablet View - Card Layout */}
         <div className="xl:hidden">
           {getPaginatedData().map((app, index) => {
-            const appCode = getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE', 'code', 'id'])
+            const appCode = getValue(app, ['apP_CODE']) || ''
             const name = getValue(app, ['name', 'Name', 'app_name', 'appName'])
             const title = getValue(app, ['title', 'Title', 'app_title', 'appTitle'])
             const desc = getValue(app, ['desc', 'description', 'Description', 'app_desc', 'appDesc'])
             const active = getValue(app, ['active', 'Active', 'is_active', 'isActive', 'status'])
             const baseUrl = getValue(app, ['basE_URL', 'baseUrl', 'base_url', 'BaseUrl', 'BASE_URL', 'url'])
             const loginUrl = getValue(app, ['logiN_URL', 'loginUrl', 'login_url', 'LoginUrl', 'LOGIN_URL'])
-            const createdBy = getValue(app, ['createD_BY', 'createdBy', 'created_by', 'CreatedBy', 'CREATED_BY', 'creator'])
-            const createdDate = getValue(app, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date', 'CreatedDate', 'CREATED_DATE', 'createDate'])
+            const createdBy = getValue(app, ['createD_BY']) || ''
+            const createdDate = getValue(app, ['createD_DATETIME']) || ''
             const updatedBy = getValue(app, ['updateD_BY', 'updatedBy', 'updated_by', 'UpdatedBy', 'UPDATED_BY', 'modifier'])
-            const updatedDate = getValue(app, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date', 'UpdatedDate', 'UPDATED_DATE', 'updateDate'])
+            const updatedDate = getValue(app, ['updateD_DATETIME']) || ''
             
             const isExpanded = expandedRows.has(appCode)
 

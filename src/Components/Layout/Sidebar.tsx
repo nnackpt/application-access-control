@@ -22,6 +22,7 @@ import {
   ChevronUpIcon
 } from "@heroicons/react/24/outline";
 import { motion, AnimatePresence, MotionGlobalConfig } from "framer-motion";
+import Image from "next/image";
 
 // Types
 interface MenuItem {
@@ -110,7 +111,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
         } else {
           setUser(null);
         }
-      } catch (e) {
+      } catch {
         setUser(null);
       } finally {
         setLoading(false);
@@ -133,10 +134,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
     };
 
     const handleSystemThemeChange = (e: MediaQueryListEvent) => {
-      if (theme === "system") {
-        e.matches ? root.classList.add("dark") : root.classList.remove("dark");
+    if (theme === "system") {
+      if (e.matches) {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
       }
-    };
+    }
+  };
 
     applyTheme(theme === "system" ? mediaQuery.matches ? "dark" : "light" : theme);
     localStorage.setItem("theme", theme);
@@ -150,8 +155,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
 
   // เพิ่ม useEffect สำหรับ Font Size dropdown
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (fontSizeRef.current && !fontSizeRef.current.contains(e.target as Node)) {
+    const handleClickOutside = (_e: MouseEvent) => {
+      if (fontSizeRef.current && !fontSizeRef.current.contains(_e.target as Node)) {
         setFontSizeOpen(false);
       }
     };
@@ -197,19 +202,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
     return "#005496" // default
   })
 
-  const darkShades: { [key: string]: string } = {
-    '#005496': '#003d73',
-    '#4e5f6e': '#1d252b',
-    '#c49d7c': '#9a6d5b',
-  };
-
-  const lightShades: { [key: string]: string } = {
-    '#005496': '#009EE3', 
-    '#4e5f6e': '#a3b1bc',
-    '#c49d7c': '#ede6dd'
-  };
-
+  
   React.useEffect(() => {
+    const darkShades: { [key: string]: string } = {
+      '#005496': '#003d73',
+      '#4e5f6e': '#1d252b',
+      '#c49d7c': '#9a6d5b',
+    };
+  
+    const lightShades: { [key: string]: string } = {
+      '#005496': '#009EE3', 
+      '#4e5f6e': '#a3b1bc',
+      '#c49d7c': '#ede6dd'
+    };
     const cleanColor = primaryColor.trim().replace(/^##/, '#');
     const darkColor = darkShades[cleanColor] || '#003d73';
     const lightColor = lightShades[cleanColor] || '#b3d9ff';
@@ -303,9 +308,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <img
+                  <Image
                     src="/autoliv_logo.png"
                     alt="Autoliv"
+                    width={60}
+                    height={24}
                     className="w-15 h-6 flex-shrink-0"
                   />
                   {/* <div>

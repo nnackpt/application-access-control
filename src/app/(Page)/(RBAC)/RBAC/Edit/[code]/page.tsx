@@ -10,11 +10,12 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { motion } from 'framer-motion';
 import { ChevronLeft, Package, Save, Users, X } from "lucide-react";
+import { AppsFunctions } from "@/types/AppsFunctions";
 
-type RbacUpdatePayload = {
-    FUNC_CODES: string[]
-    UPDATED_BY: string | null
-}
+// type RbacUpdatePayload = {
+//     FUNC_CODES: string[]
+//     UPDATED_BY: string | null
+// }
 
 export default function RbacEditPage() {
     const { code } = useParams()
@@ -22,7 +23,7 @@ export default function RbacEditPage() {
     const { userName }  = useCurrentUser()
 
     const [rbac, setRbac] = useState<Rbac | null>(null)
-    const [functions, setFunctions] = useState<any[]>([])
+    const [functions, setFunctions] = useState<AppsFunctions[]>([])
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
     const [selectedFuncCodes, setSelectedFuncCodes] = useState<string[]>([])
@@ -246,7 +247,8 @@ export default function RbacEditPage() {
                             </thead>
                             <tbody>
                                 {functions.map((func, index) => {
-                                    const funcCode = getValue(func, ["funC_CODE"])
+                                    const funcCode = getValue<string>(func, ["funC_CODE"])
+                                    if (!funcCode) return null
                                     const isSelected = selectedFuncCodes.includes(funcCode)
 
                                     return (

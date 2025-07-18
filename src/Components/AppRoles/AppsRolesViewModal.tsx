@@ -23,9 +23,9 @@ export default function ViewModal({
     const active = getValue(data, ['active'])
     const homeUrl = getValue(data, ['homE_URL'])
     const createdBy = getValue(data, ['createD_BY'])
-    const createdDatetime = getValue(data, ['createD_DATETIME'])
+    const createdDatetime = getValue(data, ['createD_DATETIME']) || ''
     const updatedBy = getValue(data, ['updateD_BY'])
-    const updatedDatetime = getValue(data, ['updateD_DATETIME'])
+    const updatedDatetime = getValue(data, ['updateD_DATETIME']) || ''
 
     return (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4">

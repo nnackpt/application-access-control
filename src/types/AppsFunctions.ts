@@ -9,4 +9,5 @@ export interface AppsFunctions {
     createdDatetime?: string
     updatedBy?: string
     updatedDatetime?: string
+    [key: string]: string | number | boolean | undefined
 }

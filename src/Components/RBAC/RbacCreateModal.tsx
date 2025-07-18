@@ -1,4 +1,5 @@
 import useCurrentUser from "@/hooks/useCurrentUser";
+
 import { applicationApi } from "@/services/ApplicationApi";
 import { AppsRolesApi } from "@/services/AppsRolesApi";
 import { AppsFunctionsApi } from "@/services/AppsFunctionsApi";
@@ -6,10 +7,12 @@ import { rbacApi } from "@/services/RbacApi";
 import { Application } from "@/types/Application";
 import { AppsRoles } from "@/types/AppsRoles";
 import { AppsFunctions } from "@/types/AppsFunctions";
+import { createRbac } from "@/types/Rbac";
+
 import { ChevronDownIcon, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { createRbac } from "@/types/Rbac";
+
 import { AnimatePresence } from 'framer-motion';
 import { motion } from 'framer-motion';
 
@@ -36,7 +39,7 @@ export default function RbacCreateModal({
   const [functions, setFunctions] = useState<AppsFunctions[]>([]);
   const [loadingApps, setLoadingApps] = useState(false);
   const [loadingRoles, setLoadingRoles] = useState(false);
-  const [loadingFuncs, setLoadingFuncs] = useState(false);
+  // const [loadingFuncs, setLoadingFuncs] = useState(false);
   const [loadingAssignedFuncs, setLoadingAssignedFuncs] = useState(false);
   const { userName } = useCurrentUser();
   const [showAppDropDown, setShowAppDropdown] = useState(false)
@@ -46,7 +49,7 @@ export default function RbacCreateModal({
     if (isOpen) {
       setLoadingApps(true);
       setLoadingRoles(true);
-      setLoadingFuncs(true);
+      // setLoadingFuncs(true);
       Promise.all([
         applicationApi.getApplications(),
         AppsRolesApi.getAppsRoles(),
@@ -63,7 +66,7 @@ export default function RbacCreateModal({
         .finally(() => {
           setLoadingApps(false);
           setLoadingRoles(false);
-          setLoadingFuncs(false);
+          // setLoadingFuncs(false);
         });
     }
   }, [isOpen]);
@@ -73,19 +76,19 @@ export default function RbacCreateModal({
     setError({});
   }, [isOpen]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setForm((prev: any) => ({ ...prev, [name]: value }));
-    if (error[name]) setError((prev) => ({ ...prev, [name]: "" }));
-  };
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  //   const { name, value } = e.target;
+  //   setForm((prev: any) => ({ ...prev, [name]: value }));
+  //   if (error[name]) setError((prev) => ({ ...prev, [name]: "" }));
+  // };
 
   const handleCheck = (funcCode: string, checked: boolean) => {
-    setForm((prev: { FUNC_CODES: any[]; }) => ({
+    setForm((prev) => ({
       ...prev,
       FUNC_CODES: checked
         ? [...prev.FUNC_CODES, funcCode]
-        : prev.FUNC_CODES.filter((code: string) => code !== funcCode)
-    }));
+        : prev.FUNC_CODES.filter((code) => code !== funcCode),
+    }))
     if (error.FUNC_CODES) setError(prev => ({ ...prev, FUNC_CODES: "" }));
   };
 
@@ -102,7 +105,7 @@ export default function RbacCreateModal({
     if (!validateForm()) return;
     setLoading(true);
     try {
-      await rbacApi.createRbac({ ...form, CREATED_BY: userName });
+      await rbacApi.createRbac({ ...form, createD_BY: userName });
       toast.success("Successfully created!");
       onSuccess();
       onClose();
@@ -119,7 +122,7 @@ export default function RbacCreateModal({
 
     const fetchAssignedFuncs = async () => {
       if (!form.APP_CODE || !form.ROLE_CODE) {
-        setForm((prev: any) => ({ ...prev, FUNC_CODES: [] }));
+        setForm((prev) => ({ ...prev, FUNC_CODES: [] }));
         return;
       }
 
@@ -127,17 +130,12 @@ export default function RbacCreateModal({
       try {
         const assigned = await rbacApi.getAssignedFuncCodes(form.APP_CODE, form.ROLE_CODE);
         if (!isCancelled) {
-          setForm((prev: any) => ({
-            ...prev,
-            // ใช้ฟังก์ชันที่ได้จาก API
-            FUNC_CODES: assigned || []
-          }));
+          setForm((prev) => ({ ...prev, FUNC_CODES: assigned || [] }));
         }
       } catch (err) {
         if (!isCancelled) {
           console.error("Failed to load assigned functions", err);
-          // ถ้าเกิดข้อผิดพลาด ให้เคลียร์ฟังก์ชัน
-          setForm((prev: any) => ({ ...prev, FUNC_CODES: [] }));
+          setForm((prev) => ({ ...prev, FUNC_CODES: [] }));
         }
       } finally {
         if (!isCancelled) {
@@ -156,7 +154,7 @@ export default function RbacCreateModal({
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-visible" onClick={e => e.stopPropagation()}>
         <div className="sticky top-0 bg-[#005496] text-white p-6 rounded-t-xl flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Create New Application's RBAC</h2>
+          <h2 className="text-xl font-semibold">Create New Application&apos;s RBAC</h2>
           <button onClick={onClose} className="text-white hover:text-blue-200 transition-colors cursor-pointer" disabled={loading}>
             <X size={24} />
           </button>
@@ -201,7 +199,7 @@ export default function RbacCreateModal({
                         <li
                           key={app.apP_CODE}
                           onClick={() => {
-                            setForm((prev: any) => ({ ...prev, APP_CODE: app.apP_CODE, ROLE_CODE: "", FUNC_CODES: [] }))
+                            setForm((prev) => ({ ...prev, APP_CODE: app.apP_CODE, ROLE_CODE: "", FUNC_CODES: [] }))
                             setShowAppDropdown(false)
                           }}
                           className="px-4 py-2 hover:bg-[#005496] hover:text-white cursor-pointer text-sm"
@@ -255,7 +253,7 @@ export default function RbacCreateModal({
                             <li
                               key={role.rolE_CODE}
                               onClick={() => {
-                                setForm((prev: any) => ({ ...prev, ROLE_CODE: role.rolE_CODE, FUNC_CODES: [] }))
+                                setForm((prev) => ({ ...prev, ROLE_CODE: role.rolE_CODE || "", FUNC_CODES: [] }))
                                 setShowRoleDropdown(false)
                               }}
                               className="px-4 py-2 hover:bg-[#005496] hover:text-white cursor-pointer text-sm"
