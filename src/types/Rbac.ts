@@ -11,3 +11,17 @@ export interface Rbac {
     updateD_BY?: string;
     updateD_DATETIME?: string;
 }
+
+export interface createRbac {
+    APP_CODE: string;
+    ROLE_CODE: string;
+    FUNC_CODES: string[];
+    CREATED_BY?: string;
+}
+
+export interface CreateRbacRequest {
+    APP_CODE: string;
+    ROLE_CODE: string;
+    FUNC_CODES: string[];
+    createD_BY?: string;
+}

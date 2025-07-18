@@ -145,13 +145,13 @@ export default function RbacCreatePage() {
   }
 
   const handleCheck = (funcCode: string, checked: boolean) => {
-    setForm((prev: { FUNC_CODES: any[] }) => ({
+    setForm((prev) => ({
       ...prev,
       FUNC_CODES: checked
         ? [...prev.FUNC_CODES, funcCode]
-        : prev.FUNC_CODES.filter((code: string) => code !== funcCode)
+        : prev.FUNC_CODES.filter((code) => code !== funcCode),
     }))
-    if (error.FUNC_CODES) setError(prev => ({ ...prev, FUNC_CODES: "" }))
+    if (error.FUNC_CODES) setError((prev) => ({ ...prev, FUNC_CODES: "" }))
   }
 
   const validateForm = () => {
@@ -167,7 +167,7 @@ export default function RbacCreatePage() {
     if (!validateForm()) return
     setLoading(true)
     try {
-      await rbacApi.createRbac({ ...form, CREATED_BY: userName })
+      await rbacApi.createRbac({ ...form, createD_BY: userName })
       toast.success("SUCCESSFULLY CREATED!")
       router.push("/RBAC")
     } catch (err) {
@@ -476,16 +476,18 @@ export default function RbacCreatePage() {
                               form.FUNC_CODES.includes(func.funC_CODE)
                             )}
                             onChange={(e) => {
-                              const allFuncCodes = paginatedFunctions.map(func => func.funC_CODE)
+                              const allFuncCodes = paginatedFunctions.map((func) => func.funC_CODE)
                               if (e.target.checked) {
-                                setForm((prev: { FUNC_CODES: any }) => ({
+                                setForm((prev) => ({
                                   ...prev,
-                                  FUNC_CODES: [...new Set([...prev.FUNC_CODES, ...allFuncCodes])]
+                                  FUNC_CODES: [...new Set([...prev.FUNC_CODES, ...allFuncCodes])],
                                 }))
                               } else {
-                                setForm((prev: { FUNC_CODES: any[] }) => ({
+                                setForm((prev) => ({
                                   ...prev,
-                                  FUNC_CODES: prev.FUNC_CODES.filter((code: string) => !allFuncCodes.includes(code))
+                                  FUNC_CODES: prev.FUNC_CODES.filter(
+                                    (code: string) => !allFuncCodes.includes(code)
+                                  ),
                                 }))
                               }
                             }}

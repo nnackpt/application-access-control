@@ -1,4 +1,4 @@
-import { Rbac } from "@/types/Rbac";
+import { CreateRbacRequest, Rbac } from "@/types/Rbac";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL_HTTPS || process.env.NEXT_PUBLIC_API_URL_HTTPS_LOCAL
 
@@ -48,7 +48,7 @@ export class RbacApiService {
         return this.fetchRbacApi(`/api/Rbac/${rbacCode}`)
     }
 
-    async createRbac(data: Rbac): Promise<Rbac> {
+    async createRbac(data: CreateRbacRequest): Promise<Rbac> {
         return this.fetchRbacApi('/api/Rbac', {
             method: 'POST',
             body: JSON.stringify(data),
