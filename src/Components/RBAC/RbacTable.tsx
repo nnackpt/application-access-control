@@ -325,21 +325,21 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
                                                     <div className="flex space-x-1">
                                                         <button
                                                             onClick={() => handleView(rbac)}
-                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transition-colors transform hover:scale-110 transition-transform duration-200"
+                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transform hover:scale-110 transition-all duration-200"
                                                             title="View Details"
                                                         >
                                                             <Eye size={16} />
                                                         </button>
                                                         <button
                                                             onClick={() => handleEdit(rbac)}
-                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-green-600 hover:border-green-800 hover:bg-blue-50 hover:text-green-800 transition-colors transform hover:scale-110 transition-transform duration-200"
+                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-green-600 hover:border-green-800 hover:bg-blue-50 hover:text-green-800 transform hover:scale-110 transition-all duration-200"
                                                             title="Edit"
                                                         >
                                                             <Edit size={16} />
                                                         </button>
                                                         <button
                                                             onClick={() => handleDelete(rbac)}
-                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-red-600 hover:border-red-800 hover:bg-blue-50 hover:text-red-800 transition-colors disabled:opacity-50 transform hover:scale-110 transition-transform duration-200"
+                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-red-600 hover:border-red-800 hover:bg-blue-50 hover:text-red-800 disabled:opacity-50 transform hover:scale-110 transition-all duration-200"
                                                             title="Delete"
                                                             disabled={deleteLoading === rbacCode}
                                                         >
