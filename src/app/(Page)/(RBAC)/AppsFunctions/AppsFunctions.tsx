@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Plus, Calculator, Search, Download } from "lucide-react"
+import { Plus, Calculator, Search } from "lucide-react"
 import { AiFillFileExcel } from 'react-icons/ai';
 import 'react-loading-skeleton/dist/skeleton.css'
 import Skeleton from 'react-loading-skeleton'

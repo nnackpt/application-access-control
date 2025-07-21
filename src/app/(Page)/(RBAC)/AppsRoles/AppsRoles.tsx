@@ -14,7 +14,7 @@ import type { AppsRoles } from "@/types/AppsRoles"
 // import getValue from "@/Utils/getValue"
 import { useExportData } from "@/hooks/useExportData"
 
-import { Calculator, Download, Plus, Search } from "lucide-react"
+import { Calculator, Plus, Search } from "lucide-react"
 import { useEffect, useState } from "react"
 
 import { motion } from 'framer-motion';

@@ -8,7 +8,7 @@ import { Application } from "@/types/Application"
 import { Rbac } from "@/types/Rbac"
 
 import { useEffect, useState, Suspense } from "react"
-import { Calculator, Download, Plus, Search } from "lucide-react"
+import { Calculator, Plus, Search } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 import RbacTable from "@/Components/RBAC/RbacTable"
