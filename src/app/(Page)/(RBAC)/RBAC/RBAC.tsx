@@ -23,6 +23,7 @@ import { motion } from "framer-motion"
 import 'react-loading-skeleton/dist/skeleton.css'
 import Skeleton from 'react-loading-skeleton'
 import { getStats } from "@/Utils/getStats"
+import { AiFillFileExcel } from "react-icons/ai"
 
 function RBACContent() {
     const [refresh, setRefresh] = useState(0)
@@ -160,90 +161,12 @@ function RBACContent() {
 
     return (
         <main className="min-h-screen">
-            <div className="p-8">
-                {/* Header */}
-                <div className="mb-8">
-                    {loading ? (
-                        <div className="flex justify-between items-center">
-                            <div className="flex space-x-3">
-                            <Skeleton height={40} width={180} borderRadius={8} />
-                            <Skeleton height={40} width={240} borderRadius={8} />
-                            <Skeleton height={40} width={220} borderRadius={8} />
-                            </div>
-            
-                            <div className="flex items-center space-x-3">
-                                <Skeleton height={40} width={180} borderRadius={8} />
-                                <Skeleton height={40} width={240} borderRadius={8} />
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="flex justify-between items-center">
-                        <div className="flex items-center space-x-4">
-                            <div className="flex space-x-3">
+            <div className="p-6">
 
-                                <div className="bg-[#005496] rounded-lg shadow-lg p-[3px]">
-                                    <div className="bg-[#FBFCFD] rounded-lg p-[3px]">
-                                        <div className="bg-[#009EE3] text-white px-4 py-2 rounded-lg flex items-center justify-center">
-                                            <span>RBAC: Role Base Access Control</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <motion.button
-                                    onClick={() => router.push("/RBAC/Create")}
-                                    className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
-                                            shadow-lg cursor-pointer"
-                                    whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
-                                    whileTap={{ scale: 0.98 }}
-                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                                >
-                                    <Plus size={20} />
-                                    <span>Create New Application&apos;s RBAC</span>
-                                </motion.button>
-
-                                <motion.button
-                                    onClick={handleExport}
-                                    className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
-                                            shadow-lg cursor-pointer"
-                                    whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
-                                    whileTap={{ scale: 0.98 }}
-                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                                >
-                                    <Download size={20} />
-                                    <span>Export Application&apos;s RBAC</span>
-                                </motion.button>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center space-x-3">
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                                <input
-                                    type="text"
-                                    placeholder="Search RBAC..."
-                                    value={searchTerm}
-                                    onChange={(e) => handleSearchTermChange(e.target.value)}
-                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"
-                                />
-                            </div>
-                            
-                            <div className="flex flex-col space-y-4 ml-4">
-                                <AppTitleSelect
-                                    selectedTitle={selectedTitle}
-                                    setSelectedTitle={handleSelectedTitleChange}
-                                    applications={applications}
-                                />
-
-                                <RoleTitleSelect
-                                    selectedRole={selectedRole}
-                                    setSelectedRole={handleSelectedRoleChange}
-                                    roles={roles}
-                                    selectedAppCode={selectedTitle}
-                                />
-                            </div>
-                        </div>
+                <div className="flex justify-between items-start mb-6 -mt-4 px-2">
+                    <div className="text-[var(--primary-color)] text-xl font-bold">
+                        <span>RBAC: Role Base Access Control</span>
                     </div>
-                    )}
                 </div>
 
                 {/* Stats Cards */}
@@ -295,6 +218,85 @@ function RBACContent() {
                     )}
                     
                 </div>
+
+                {/* Header */}
+                <div className="mb-8">
+                    {loading ? (
+                        <div className="flex justify-between items-center">
+                            <div className="flex space-x-3">
+                            <Skeleton height={40} width={180} borderRadius={8} />
+                            <Skeleton height={40} width={240} borderRadius={8} />
+                            <Skeleton height={40} width={220} borderRadius={8} />
+                            </div>
+            
+                            <div className="flex items-center space-x-3">
+                                <Skeleton height={40} width={180} borderRadius={8} />
+                                <Skeleton height={40} width={240} borderRadius={8} />
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex justify-between items-center">
+                        <div className="flex items-center space-x-4">
+                            <div className="flex space-x-3">
+
+
+                                <motion.button
+                                    onClick={() => router.push("/RBAC/Create")}
+                                    className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
+                                            shadow-lg cursor-pointer"
+                                    whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                                    whileTap={{ scale: 0.98 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                                >
+                                    <Plus size={20} />
+                                    {/* <span>Create New Application&apos;s RBAC</span> */}
+                                </motion.button>
+
+                                <motion.button
+                                    onClick={handleExport}
+                                    className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
+                                            shadow-lg cursor-pointer"
+                                    whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                                    whileTap={{ scale: 0.98 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                                >
+                                    <AiFillFileExcel size={20} />
+                                    {/* <span>Export Application&apos;s RBAC</span> */}
+                                </motion.button>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center space-x-3">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                                <input
+                                    type="text"
+                                    placeholder="Search RBAC..."
+                                    value={searchTerm}
+                                    onChange={(e) => handleSearchTermChange(e.target.value)}
+                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"
+                                />
+                            </div>
+                            
+                            <div className="flex flex-col space-y-4 ml-4">
+                                <AppTitleSelect
+                                    selectedTitle={selectedTitle}
+                                    setSelectedTitle={handleSelectedTitleChange}
+                                    applications={applications}
+                                />
+
+                                <RoleTitleSelect
+                                    selectedRole={selectedRole}
+                                    setSelectedRole={handleSelectedRoleChange}
+                                    roles={roles}
+                                    selectedAppCode={selectedTitle}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    )}
+                </div>
+
 
                 <RbacTable
                     refreshSignal={refresh}

@@ -22,6 +22,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 
 import Pagination from "@/Components/UI/Pagination"
 import RowsPerPageSelect from "@/Components/UI/Select/RowsPerPageSelect"
+// import BackButton from "@/Components/UI/Button/BackButton"
 
 const initForm = {
   APP_CODE: "",
@@ -258,6 +259,7 @@ export default function RbacCreatePage() {
           {initialLoading ? (
             <Skeleton width={100} height={40} className="rounded-lg" />
           ) : (
+            // <BackButton router={router} />
             <motion.button
               onClick={() => router.back()}
               className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg shadow-lg cursor-pointer"
@@ -312,7 +314,7 @@ export default function RbacCreatePage() {
                   >
                     <div>
                       <span className="text-[#005496] font-bold text-lg block">
-                        {selectedApp?.apP_CODE || "Select APP Code"}
+                        {selectedApp?.apP_CODE || "SELECT APP CODE"}
                       </span>
                       {selectedApp && (
                         <span className="text-sm text-gray-800">{selectedApp.title}</span>
@@ -373,7 +375,7 @@ export default function RbacCreatePage() {
                   >
                     <div>
                       <span className="text-[#005496] font-bold text-lg block">
-                        {selectedRole?.rolE_CODE || "Select Role Code"}
+                        {selectedRole?.rolE_CODE || "SELECT ROLE CODE"}
                       </span>
                       {selectedRole && (
                         <span className="text-sm text-gray-800">{selectedRole.name}</span>

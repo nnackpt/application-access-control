@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import { Plus, Calculator, Search, Download } from "lucide-react"
+import { AiFillFileExcel } from 'react-icons/ai';
 import 'react-loading-skeleton/dist/skeleton.css'
 import Skeleton from 'react-loading-skeleton'
 
@@ -178,87 +179,12 @@ export default function AppsFunctions() {
 
   return (
     <main className="min-h-screen">
-      <div className="p-8">
-        {/* Header */}
-        <div className="mb-8">
-          {loading ? (
-            <div className="flex justify-between items-center">
-              {/* Skeleton ฝั่งซ้าย */}
-              <div className="flex space-x-3">
-              <Skeleton height={40} width={180} borderRadius={8} />
-              <Skeleton height={40} width={240} borderRadius={8} />
-              <Skeleton height={40} width={220} borderRadius={8} />
-              </div>
+      <div className="p-6">
 
-              {/* Skeleton Search */}
-              <div className="flex items-center space-x-3">
-                  <Skeleton height={40} width={180} borderRadius={8} />
-                  <Skeleton height={40} width={240} borderRadius={8} />
-              </div>
-          </div>
-          ) : (
-            <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-4">
-                    <div className="flex space-x-3">
-
-                        <div className="bg-[#005496] rounded-lg shadow-lg p-[3px]"> {/* ชั้นที่ 1: สีน้ำเงินเข้ม #005496 (ด้านหลังสุด) */}
-                            <div className="bg-[#FBFCFD] rounded-lg p-[3px]"> {/* ชั้นที่ 2: สีขาว #FBFCFD (ชั้นกลาง) */}
-                                <div className="bg-[#009EE3] text-white px-4 py-2 rounded-lg flex items-center justify-center"> {/* ชั้นที่ 3: สีน้ำเงิน #009EE3 (ชั้นบนสุดพร้อมข้อความ) */}
-                                    <span>Application&apos;s Function&apos;s</span>
-                                </div>
-                            </div>
-                        </div>
-                          
-                        <motion.button
-                            onClick={() => setIsCreateModalOpen(true)}
-                            className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
-                                    shadow-lg cursor-pointer"
-                            whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
-                            whileTap={{ scale: 0.98 }}
-                            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                        >
-                            <Plus size={20} />
-                            <span>Create New Application&apos;s Function</span>
-                        </motion.button>
-
-                        <motion.button
-                            onClick={handleExport}
-                            className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
-                                    shadow-lg cursor-pointer"
-                            whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
-                            whileTap={{ scale: 0.98 }}
-                            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                        >
-                            <Download size={20} />
-                            <span>Export Application&apos;s Function</span>
-                        </motion.button>
-
-                    </div>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <div className="relative">
-                    {/* Select for Application Title */}
-                    <AppTitleSelect
-                      selectedTitle={selectedAppTitle}
-                      setSelectedTitle={setSelectedAppTitle}
-                      applications={applications}
-                    />
-                  </div>
-
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                        <input 
-                            type="text" 
-                            placeholder="Search Functions..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"     
-                        />
-                    </div>
-                </div>
+          <div className="flex justify-between items-start mb-6 -mt-4 px-2">
+            <div className="text-[var(--primary-color)] text-xl font-bold">
+              APPLICATION&apos;S FUNCTION
             </div>
-          )}
           </div>
 
         {/* Stats Cards */}
@@ -309,6 +235,82 @@ export default function AppsFunctions() {
             </>
           )}
         </div>
+        
+        {/* Header */}
+        <div className="mb-8">
+          {loading ? (
+            <div className="flex justify-between items-center">
+              {/* Skeleton ฝั่งซ้าย */}
+              <div className="flex space-x-3">
+              <Skeleton height={40} width={180} borderRadius={8} />
+              <Skeleton height={40} width={240} borderRadius={8} />
+              <Skeleton height={40} width={220} borderRadius={8} />
+              </div>
+
+              {/* Skeleton Search */}
+              <div className="flex items-center space-x-3">
+                  <Skeleton height={40} width={180} borderRadius={8} />
+                  <Skeleton height={40} width={240} borderRadius={8} />
+              </div>
+          </div>
+          ) : (
+            <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                    <div className="flex space-x-3">
+
+                          
+                        <motion.button
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
+                                    shadow-lg cursor-pointer"
+                            whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                        >
+                            <Plus size={20} />
+                            {/* <span>Create New Application&apos;s Function</span> */}
+                        </motion.button>
+
+                        <motion.button
+                            onClick={handleExport}
+                            className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
+                                    shadow-lg cursor-pointer"
+                            whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                        >
+                            <AiFillFileExcel size={20} />
+                            {/* <span>Export Application&apos;s Function</span> */}
+                        </motion.button>
+
+                    </div>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <div className="relative">
+                    {/* Select for Application Title */}
+                    <AppTitleSelect
+                      selectedTitle={selectedAppTitle}
+                      setSelectedTitle={setSelectedAppTitle}
+                      applications={applications}
+                    />
+                  </div>
+
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                        <input 
+                            type="text" 
+                            placeholder="Search Functions..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"     
+                        />
+                    </div>
+                </div>
+            </div>
+          )}
+          </div>
+
 
         {/* Table */}
         <AppsFunctionsTable 

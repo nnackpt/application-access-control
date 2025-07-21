@@ -21,6 +21,7 @@ import { motion } from 'framer-motion';
 import 'react-loading-skeleton/dist/skeleton.css'
 import Skeleton from 'react-loading-skeleton'
 import { getStats } from "@/Utils/getStats"
+import { AiFillFileExcel } from "react-icons/ai"
 
 export default function AppsRoles() {
     const [refresh, setRefresh] = useState(0)
@@ -176,86 +177,12 @@ export default function AppsRoles() {
 
     return (
         <main className="min-h-screen">
-            <div className="p-8">
-                {/* Header */}
-                <div className="mb-8">
-                    {loading ? (
-                        <div className="flex justify-between items-center">
-                            {/* Skeleton ฝั่งซ้าย */}
-                            <div className="flex space-x-3">
-                            <Skeleton height={40} width={180} borderRadius={8} />
-                            <Skeleton height={40} width={240} borderRadius={8} />
-                            <Skeleton height={40} width={220} borderRadius={8} />
-                            </div>
-            
-                            {/* Skeleton Search */}
-                            <div className="flex items-center space-x-3">
-                                <Skeleton height={40} width={180} borderRadius={8} />
-                                <Skeleton height={40} width={240} borderRadius={8} />
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="flex justify-between items-center flex-wrap gap-y-4">
-                            <div className="flex items-center space-x-4">
-                                <div className="flex space-x-3">
+            <div className="p-6">
 
-                                    <div className="bg-[#005496] rounded-lg shadow-lg p-[3px]">
-                                        <div className="bg-[#FBFCFD] rounded-lg p-[3px]">
-                                            <div className="bg-[#009EE3] text-white px-4 py-2 rounded-lg flex items-center justify-center">
-                                                <span>Application&apos;s Roles</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <motion.button
-                                        onClick={() => setIsCreateModalOpen(true)}
-                                        className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
-                                                shadow-lg cursor-pointer"
-                                        whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
-                                        whileTap={{ scale: 0.98 }}
-                                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                                    >
-                                        <Plus size={20} />
-                                        <span>Create New Application&apos;s Role</span>
-                                    </motion.button>
-
-                                    <motion.button
-                                        onClick={handleExport}
-                                        className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
-                                                shadow-lg cursor-pointer"
-                                        whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
-                                        whileTap={{ scale: 0.98 }}
-                                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                                    >
-                                        <Download size={20} />
-                                        <span>Export Application&apos;s Role</span>
-                                    </motion.button>
-
-                                </div>
-                            </div>
-
-                            <div className="flex items-center space-x-3">
-                                <div className="relative">
-                                    <AppTitleSelect
-                                        selectedTitle={selectedTitle}
-                                        setSelectedTitle={setSelectedTitle}
-                                        applications={applications}
-                                    />
-                                </div>
-
-                                <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                                    <input 
-                                        type="text" 
-                                        placeholder="Search Roles..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"     
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                <div className="flex justify-between items-start mb-6 -mt-4 px-2">
+                    <div className="text-[var(--primary-color)] text-xl font-bold">
+                        <span>APPLICATION&apos;s ROLES</span>
+                    </div>
                 </div>
 
                 {/* {Stats Cards} */}
@@ -306,6 +233,81 @@ export default function AppsRoles() {
                         </> 
                     )}  
                 </div>
+
+                {/* Header */}
+                <div className="mb-8">
+                    {loading ? (
+                        <div className="flex justify-between items-center">
+                            {/* Skeleton ฝั่งซ้าย */}
+                            <div className="flex space-x-3">
+                            <Skeleton height={40} width={180} borderRadius={8} />
+                            <Skeleton height={40} width={240} borderRadius={8} />
+                            <Skeleton height={40} width={220} borderRadius={8} />
+                            </div>
+            
+                            {/* Skeleton Search */}
+                            <div className="flex items-center space-x-3">
+                                <Skeleton height={40} width={180} borderRadius={8} />
+                                <Skeleton height={40} width={240} borderRadius={8} />
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex justify-between items-center flex-wrap gap-y-4">
+                            <div className="flex items-center space-x-4">
+                                <div className="flex space-x-3">
+
+
+                                    <motion.button
+                                        onClick={() => setIsCreateModalOpen(true)}
+                                        className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
+                                                shadow-lg cursor-pointer"
+                                        whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                                        whileTap={{ scale: 0.98 }}
+                                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                                    >
+                                        <Plus size={20} />
+                                        {/* <span>Create New Application&apos;s Role</span> */}
+                                    </motion.button>
+
+                                    <motion.button
+                                        onClick={handleExport}
+                                        className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
+                                                shadow-lg cursor-pointer"
+                                        whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                                        whileTap={{ scale: 0.98 }}
+                                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                                    >
+                                        <AiFillFileExcel size={20} />
+                                        {/* <span>Export Application&apos;s Role</span> */}
+                                    </motion.button>
+
+                                </div>
+                            </div>
+
+                            <div className="flex items-center space-x-3">
+                                <div className="relative">
+                                    <AppTitleSelect
+                                        selectedTitle={selectedTitle}
+                                        setSelectedTitle={setSelectedTitle}
+                                        applications={applications}
+                                    />
+                                </div>
+
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                                    <input 
+                                        type="text" 
+                                        placeholder="Search Roles..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"     
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
 
                 <AppsRolesTable
                     refreshSignal={refresh}
