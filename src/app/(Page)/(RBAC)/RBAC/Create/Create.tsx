@@ -104,7 +104,7 @@ const PaginationSkeleton = () => (
   </div>
 )
 
-export default function RbacCreatePage() {
+export default function RbacCreate() {
   const [form, setForm] = useState<createRbac>(initForm)
   const [error, setError] = useState<{ [key: string]: string }>({})
   const [loading, setLoading] = useState(false)

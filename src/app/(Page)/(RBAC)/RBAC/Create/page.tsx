@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "This is the layout for the application section.",
 };
 
-export default function CreatePage() {
+export default function RbacCreatePage() {
     return (
         <Create />
     )

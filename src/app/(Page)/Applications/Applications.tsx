@@ -118,7 +118,7 @@ export default function Applications() {
         {/* Header: Title */}
         <div className="flex justify-between items-start mb-6 -mt-4 px-2">
           <div className="text-[var(--primary-color)] text-xl font-bold">
-            APPLICATION LIST
+            APPLICATION&apos;S LIST
           </div>
         </div>
 
