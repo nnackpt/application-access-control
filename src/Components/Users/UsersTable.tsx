@@ -181,15 +181,16 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
     }
 
     const handleEdit = (user: User) => {
-        const userId = getValue(user, ['autH_CODE'])
-        if (userId) {
+        const authCode = getValue(user, ['autH_CODE'])
+        if (authCode) {
             const params = new URLSearchParams()
-            if (selectedTitle !== "all") params.set("all", selectedTitle)
+            if (selectedTitle !== "all") params.set("app", selectedTitle)
             if (selectedRole !== "all") params.set("role", selectedRole)
             if (searchTerm.trim()) params.set("search", searchTerm)
 
             const queryString = params.toString()
-            const url = queryString ? `/User/edit/${userId}?${queryString}` : `/User/edit/${userId}`
+            const url = queryString ? `/Users/Edit/${authCode}?${queryString}` : `/Users/Edit/${authCode}`
+            console.log("Navigating to Edit URL:", url)
 
             router.push(url)
         }

@@ -49,10 +49,17 @@ export interface UsersAuthorizeCreateResponseDto {
     active: boolean
 }
 
+export interface FacilitySelectionDto {
+    sitE_CODE: string
+    domaiN_CODE: string
+    facT_CODE: string
+}
+
 export interface UsersAuthorizeUpdateRequestDto {
     rolE_CODE?: string
     fname?: string
     lname?: string
     org?: string
     active?: boolean
+    facilities?: FacilitySelectionDto[]
 }

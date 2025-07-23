@@ -45,6 +45,10 @@ export class UserAuthorizeApi {
         return this.fetchUserApi(`/api/CmUserAuthorize/user/${userId}`)
     }
 
+    async getUserFacilitiesByAuthCode(authCode: string): Promise<User[]> {
+        return this.fetchUserApi(`/api/CmUserAuthorize/${authCode}/facilities`)
+    }
+
     async createUser(request: UsersAuthorizeCreateRequestDto): Promise<UsersAuthorizeCreateRequestDto[]> {
         return this.fetchUserApi('/api/CmUserAuthorize', {
             method: "POST",
