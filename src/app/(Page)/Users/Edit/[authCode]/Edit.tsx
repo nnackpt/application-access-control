@@ -13,12 +13,12 @@ import { Application } from "@/types/Application";
 import { AppsRoles } from "@/types/AppsRoles";
 import { applicationApi } from "@/services/ApplicationApi";
 import { AppsRolesApi } from "@/services/AppsRolesApi";
-import RoleTitleSelect from "@/Components/UI/Select/RoleTitleSelect";
+// import RoleTitleSelect from "@/Components/UI/Select/RoleTitleSelect";
 
 export default function UserEditPage() {
     const { authCode } = useParams()
     const router = useRouter()
-    const { userName } = useCurrentUser()
+    // const { userName } = useCurrentUser()
 
     const [user, setUser] = useState<User | null>(null)
     const [allFacilities, setAllFacilities] = useState<FacilitySelectionDto[]>([])
@@ -52,22 +52,18 @@ export default function UserEditPage() {
                 console.log("Fetched user data:", userData)
                 setUser(userData)
 
-                const allAvailFacilities: FacilitySelectionDto[] = [
-                    { sitE_CODE: "ATH_AB", domaiN_CODE: "ATHAB", facT_CODE: "ATA" },
-                    { sitE_CODE: "ATH_SW", domaiN_CODE: "ATHSW", facT_CODE: "ATA" },
-                    { sitE_CODE: "ATH_TE", domaiN_CODE: "ATHTE", facT_CODE: "ATA" },
-                    { sitE_CODE: "ATH_EL", domaiN_CODE: "ATHEL", facT_CODE: "ATH" },
-                    { sitE_CODE: "ATH_SB", domaiN_CODE: "ATHSB", facT_CODE: "ATH" },
-                    { sitE_CODE: "ATH_SB", domaiN_CODE: "ATHSB", facT_CODE: "TCB" },
-                    { sitE_CODE: "ATH_SP", domaiN_CODE: "ATHSP", facT_CODE: "TCS" },
-                ];
-
-                setAllFacilities(allAvailFacilities)
-
-                // Fetch the facilities
-                const userCurrentFacilities = await UserApi.getUserFacilitiesByAuthCode(authCode as string)
-                setSelectedFacilities(userCurrentFacilities)
-
+                // Fetch all available facilities for this user ID
+                if (userData && userData.userid) {
+                    const userAllAvailFacilities = await UserApi.getUserFacilitiesByUserId(userData.userid)
+                    setAllFacilities(userAllAvailFacilities) // Populate allFacilities with facilities specific to the user
+                    // Initially, all facilities fetched by userId are considered selected
+                    setSelectedFacilities(userAllAvailFacilities) 
+                } else {
+                    console.warn("User data or User ID not available for fetching facilities.")
+                    setAllFacilities([])
+                    setSelectedFacilities([])
+                }
+                
                 // Fetch all available roles
                 const allAvailRoles = await AppsRolesApi.getAppsRoles()
                 setAllRoles(allAvailRoles)
@@ -79,7 +75,7 @@ export default function UserEditPage() {
                     lname: getValue(userData, ["lname"]) || '',
                     org: getValue(userData, ["org"]) || '',
                     active: getValue(userData, ["active"]) ?? true,
-                    facilities: userCurrentFacilities
+                    facilities: selectedFacilities // This will be updated again after setSelectedFacilities if needed
                 })
 
                 const allApplication = await applicationApi.getApplications()
@@ -254,6 +250,9 @@ export default function UserEditPage() {
 
     const appCode = getValue(user, ["apP_CODE"]) || ""
     const appName = getAppName(user) || "-"
+    const fname = getValue(user, ["fname"]) || ""
+    const lname = getValue(user, ["lname"]) || ""
+    const fullName = getFullName(fname, lname)
     const userId = getValue(user, ["userid"]) || "-"
     const roleName = getRoleName(user) || "-"
 
@@ -261,7 +260,7 @@ export default function UserEditPage() {
         <div className="max-w-6xl mx-auto px-4 py-6">
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-[#005496]">Edit User: {authCode}</h1>
+                <h1 className="text-2xl font-bold text-[#005496]">Edit User: {fullName}</h1>
                 <div className="flex space-x-2">
                     <motion.button
                         onClick={handleCancel}
@@ -361,14 +360,29 @@ export default function UserEditPage() {
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             ROLE CODE <span className="text-red-500">*</span>
                         </label>
-                        <input
+                        <select 
+                            value={formData.rolE_CODE}
+                            onChange={(e) => handleInputChange('rolE_CODE', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+                            disabled={saving}
+                        >
+                            <option value="">Select a Role</option>
+                            {allRoles
+                                .filter(role => role.apP_CODE === appCode)
+                                .map(role => (
+                                    <option key={role.rolE_CODE} value={role.rolE_CODE}>
+                                        {`${role.apP_CODE} - ${role.name}`}
+                                    </option>
+                                ))}
+                        </select>
+                        {/* <input
                             type="text"
                             value={formData.rolE_CODE}
                             onChange={(e) => handleInputChange('rolE_CODE', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#005496] focus:border-transparent"
                             placeholder="Enter role code"
                             disabled={saving}
-                        />
+                        /> */}
                         {/* <RoleTitleSelect
                             selectedRole={formData.rolE_CODE}
                             setSelectedRole={(value) => handleInputChange('rolE_CODE', value)}
@@ -457,9 +471,8 @@ export default function UserEditPage() {
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse text-sm">
                             <thead className="bg-[#005496] text-white">
-                                {/* REMOVED WHITESPACE HERE */}
                                 <tr>
-                                    <th className="text-left px-4 py-3 w-16">SELECT</th> {/* Added select column */}
+                                    <th className="text-left px-4 py-3 w-16">SELECT</th>
                                     <th className="text-left px-4 py-3">SITE CODE</th>
                                     <th className="text-left px-4 py-3">DOMAIN CODE</th>
                                     <th className="text-left px-4 py-3">FACILITY CODE</th>

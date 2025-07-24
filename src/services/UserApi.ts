@@ -1,4 +1,4 @@
-import { User, UsersAuthorizeCreateRequestDto, UsersAuthorizeUpdateRequestDto } from "@/types/User";
+import { FacilitySelectionDto, User, UsersAuthorizeCreateRequestDto, UsersAuthorizeUpdateRequestDto } from "@/types/User";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL_HTTPS || process.env.NEXT_PUBLIC_API_URL_HTTPS_LOCAL
 
@@ -47,6 +47,10 @@ export class UserAuthorizeApi {
 
     async getUserFacilitiesByAuthCode(authCode: string): Promise<User[]> {
         return this.fetchUserApi(`/api/CmUserAuthorize/${authCode}/facilities`)
+    }
+
+    async getUserFacilitiesByUserId(userId: string): Promise<FacilitySelectionDto[]> {
+        return this.fetchUserApi(`/api/CmUserAuthorize/user/${userId}/facilities`)
     }
 
     async createUser(request: UsersAuthorizeCreateRequestDto): Promise<UsersAuthorizeCreateRequestDto[]> {
