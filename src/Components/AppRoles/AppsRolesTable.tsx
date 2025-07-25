@@ -212,7 +212,7 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
                     <div className="hidden xl:block">
                         <div className="overflow-x-auto">
                             <table className="w-full">
-                                <thead className="bg-[#005496] text-white">
+                                <thead className="bg-[var(--primary-color)] text-white">
                                     <tr>
                                         {['APP Code', 'ROLE Code', 'Name', 'Description', 'Active',
                                             'Home URL', 'Created By', 'Create Date', 'Updated By',
@@ -240,8 +240,8 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
 
                                         return (
                                             <tr key={`${roleCode || index}-${index}`} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">
-                                                <td className="px-3 py-3 font-medium text-[#005486] text-sm">{appCode || '-'}</td>
-                                                <td className="px-3 py-3 font-medium text-[#005486] text-sm">{roleCode || '-'}</td>
+                                                <td className="px-3 py-3 font-medium text-[var(--primary-color)] text-sm">{appCode || '-'}</td>
+                                                <td className="px-3 py-3 font-medium text-[var(--primary-color)] text-sm">{roleCode || '-'}</td>
                                                 <td className="px-3 py-3 text-sm whitespace-break-spaces">{name || '-'}</td>
                                                 <td className="px-3 py-3 text-sm">
                                                     <div className="whitespace-pre-wrap" title={desc || ''}>
@@ -264,7 +264,7 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
                                                                 href={homeUrl}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-[#005496] hover:underline break-all whitespace-pre"
+                                                                className="text-[var(--primary-color)] hover:underline break-all whitespace-pre"
                                                                 title={homeUrl}    
                                                             >
                                                                 {homeUrl}
@@ -290,7 +290,7 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
                                                     <div className="flex space-x-1">
                                                         <button
                                                             onClick={() => handleView(appRole)}
-                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transform hover:scale-110 transition-all duration-200"
+                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-blue-50 hover:text-[var(--primary-color-dark)] transform hover:scale-110 transition-all duration-200"
                                                             title="View Details"
                                                         >
                                                             <Eye size={16} />
@@ -348,7 +348,7 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center space-x-2 mb-2">
                                                 <span className="text-sm text-gray-600">({appCode || '-'})</span>
-                                                <span className="text-sm font-semibold text-[#005496] bg-blue-50 px-2 py-1 rounded">
+                                                <span className="text-sm font-semibold text-[var(--primary-color)] bg-blue-50 px-2 py-1 rounded">
                                                     {roleCode || '-'}
                                                 </span>
                                                 <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
@@ -377,7 +377,7 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
                                     <div className="flex space-x-2 mb-3">
                                         <button
                                             onClick={() => handleView(appRole)}
-                                            className="flex-1 flex items-center justify-center space-x-2 px-3 py-1 text-[#005496] hover:text-[#005496] hover:bg-blue-100 rounded-lg transition-colors text-sm"
+                                            className="flex-1 flex items-center justify-center space-x-2 px-3 py-1 text-[var(--primary-color)] hover:text-[var(--primary-color)] hover:bg-blue-100 rounded-lg transition-colors text-sm"
                                         >
                                             <Eye size={16} />
                                             <span>View</span>
@@ -421,7 +421,7 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
                                                                     href={homeUrl}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
-                                                                    className="text-[#005496] hover:underline break-all"
+                                                                    className="text-[var(--primary-color)] hover:underline break-all"
                                                                 >
                                                                     {homeUrl}
                                                                 </a>

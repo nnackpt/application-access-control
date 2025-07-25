@@ -1,8 +1,9 @@
 import React, { useState } from "react"
 import { Trash2, X } from "lucide-react"
+import toast from "react-hot-toast"
+
 import { Application } from "@/types/Application"
 import { applicationApi } from "@/services/ApplicationApi"
-import toast from "react-hot-toast"
 // import useCurrentUser from "@/hooks/useCurrentUser"
 
 const initForm: Application = {
@@ -92,7 +93,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="sticky top-0 bg-[#005496] text-white p-6 rounded-t-xl flex justify-between items-center">
+        <div className="sticky top-0 bg-[var(--primary-color)] text-white p-6 rounded-t-xl flex justify-between items-center">
           <h2 className="text-xl font-semibold">Create New Application Code</h2>
           <button onClick={onClose} className="text-white hover:text-blue-200 transition-colors cursor-pointer" disabled={loading}>
             <X size={24} />
@@ -114,7 +115,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                   value={appCodeInput}
                   onChange={handleAppCodeChange}
                   // placeholder="01"
-                  className={`w-full pl-24 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] ${errors.appCode ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full pl-24 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] ${errors.appCode ? 'border-red-500' : 'border-gray-300'}`}
                   disabled={loading}
                 />
                 {appCodeInput && (
@@ -144,7 +145,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                   value={form.name}
                   onChange={handleChange}
                   // placeholder="e.g., TEST"
-                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                   disabled={loading}
                 />
                 {form.name && (
@@ -170,7 +171,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                   value={form.title}
                   onChange={handleChange}
                   // placeholder="e.g., TEST API"
-                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] ${errors.title ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] ${errors.title ? 'border-red-500' : 'border-gray-300'}`}
                   disabled={loading}
                 />
                 {form.title && (
@@ -196,7 +197,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                   value={form.basE_URL || ''}
                   onChange={handleChange}
                   // placeholder="https://example.com"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496]"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
                   disabled={loading}
                 />
                 {form.basE_URL && (
@@ -221,7 +222,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                   value={form.logiN_URL || ''}
                   onChange={handleChange}
                   // placeholder="https://example.com/login"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496]"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
                   disabled={loading}
                 />
                 {form.logiN_URL && (
@@ -243,7 +244,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                 name="active"
                 value={form.active ? "true" : "false"}
                 onChange={e => setForm(prev => ({ ...prev, active: e.target.value === "true" }))}
-                className="cursor-pointer w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496]"
+                className="cursor-pointer w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
                 disabled={loading}  
               >
                 <option value="true">Active</option>
@@ -288,7 +289,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                   onChange={handleChange}
                   // placeholder="e.g., Application description"
                   rows={3}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] resize-none"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] resize-none"
                   disabled={loading}
                 />
                 {form.desc && (
@@ -306,7 +307,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
           </div>
           <div className="flex justify-end space-x-4 mt-6 pt-2">
             <button type="button" onClick={onClose} className="cursor-pointer px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" disabled={loading}>Cancel</button>
-            <button type="button" onClick={handleSubmit} className="cursor-pointer px-6 py-3 bg-[#005496] text-white rounded-lg hover:bg-[#004080] transition-colors disabled:bg-gray-400" disabled={loading}>{loading ? 'Saving...' : 'Create'} Application</button>
+            <button type="button" onClick={handleSubmit} className="cursor-pointer px-6 py-3 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-color-dark)] transition-colors disabled:bg-gray-400" disabled={loading}>{loading ? 'Saving...' : 'Create'} Application</button>
           </div>
         </div>
       </div>

@@ -19,7 +19,8 @@ import {
   ChartBarIcon,
   ShieldCheckIcon,
   ChevronLeftIcon,
-  ChevronUpIcon
+  ChevronUpIcon,
+  ArrowUpIcon
 } from "@heroicons/react/24/outline";
 import { motion, AnimatePresence, MotionGlobalConfig } from "framer-motion";
 import Image from "next/image";
@@ -686,10 +687,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3 }}
             onClick={scrollToTop}
-            className="fixed bottom-6 right-6 z-30 bg-gradient-to-r from-[#009EE3] to-[#005496] text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 backdrop-blur-sm border border-white/20"
-            aria-label="Scroll to top"
+            // --- Positioning and Styling ---
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30
+                      bg-white px-2 py-1.5 rounded-full shadow-lg hover:shadow-xl
+                      transition-all duration-300 hover:scale-105 backdrop-blur-sm border border-white/20
+                      flex items-center space-x-2 font-semibold cursor-pointer"
+            aria-label="Back to top"
           >
-            <ChevronUpIcon className="w-6 h-6" />
+            <ArrowUpIcon className="w-4 h-4" style={{ color: 'var(--primary-color)' }} />
+            <span className="text-sm" style={{ color: 'var(--primary-color)' }}>Back To Top</span>
           </motion.button>
         )}
       </AnimatePresence>

@@ -331,7 +331,7 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
                                                     <button
                                                         onClick={() => handleView(user)}
                                                         className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent 
-                                                                text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transform hover:scale-110 
+                                                                text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-blue-50 hover:text-[var(--primary-color-dark)] transform hover:scale-110 
                                                                 transition-all duration-200"
                                                         title="View Details"
                                                     >

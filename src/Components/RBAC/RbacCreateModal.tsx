@@ -153,7 +153,7 @@ export default function RbacCreateModal({
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-visible" onClick={e => e.stopPropagation()}>
-        <div className="sticky top-0 bg-[#005496] text-white p-6 rounded-t-xl flex justify-between items-center">
+        <div className="sticky top-0 bg-[var(--primary-color)] text-white p-6 rounded-t-xl flex justify-between items-center">
           <h2 className="text-xl font-semibold">Create New Application&apos;s RBAC</h2>
           <button onClick={onClose} className="text-white hover:text-blue-200 transition-colors cursor-pointer" disabled={loading}>
             <X size={24} />
@@ -171,7 +171,7 @@ export default function RbacCreateModal({
                 <button
                   onClick={() => setShowAppDropdown(prev => !prev)}
                   className={`w-full p-3 border rounded-lg text-left flex justify-between items-center  
-                              focus:ring-2 focus:ring-[#005496] focus:border-[#005496] ${error.APP_CODE ? 'border-red-500' : 'border-gray-300'}`}
+                              focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] ${error.APP_CODE ? 'border-red-500' : 'border-gray-300'}`}
                   disabled={loading || loadingApps}
                 >
                   <span>
@@ -202,7 +202,7 @@ export default function RbacCreateModal({
                             setForm((prev) => ({ ...prev, APP_CODE: app.apP_CODE, ROLE_CODE: "", FUNC_CODES: [] }))
                             setShowAppDropdown(false)
                           }}
-                          className="px-4 py-2 hover:bg-[#005496] hover:text-white cursor-pointer text-sm"
+                          className="px-4 py-2 hover:bg-[var(--primary-color)] hover:text-white cursor-pointer text-sm"
                         >
                           {app.title}
                         </li>
@@ -223,7 +223,7 @@ export default function RbacCreateModal({
                   <button
                     onClick={() => setShowRoleDropdown(prev => !prev)}
                     className={`w-full p-3 border rounded-lg text-left flex justify-between items-center
-                                focus:ring-2 focus:ring-[#005496] focus:border-[#005496] ${error.ROLE_CODE ? 'border-red-500' : 'border-gray-300'}`}
+                                focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] ${error.ROLE_CODE ? 'border-red-500' : 'border-gray-300'}`}
                     disabled={loading || loadingRoles}
                   >
                     <span>
@@ -256,7 +256,7 @@ export default function RbacCreateModal({
                                 setForm((prev) => ({ ...prev, ROLE_CODE: role.rolE_CODE || "", FUNC_CODES: [] }))
                                 setShowRoleDropdown(false)
                               }}
-                              className="px-4 py-2 hover:bg-[#005496] hover:text-white cursor-pointer text-sm"
+                              className="px-4 py-2 hover:bg-[var(--primary-color)] hover:text-white cursor-pointer text-sm"
                             >
                               {role.name}
                             </li>
@@ -274,7 +274,7 @@ export default function RbacCreateModal({
                 Functions <span className="text-red-500">*</span>
                 {loadingAssignedFuncs && <span className="text-blue-500 text-xs ml-2">(Loading assigned functions...)</span>}
               </label>
-              <div className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] min-h-[3rem] max-h-60 overflow-y-auto ${error.FUNC_CODES ? 'border-red-500' : 'border-gray-300'}`}>
+              <div className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] min-h-[3rem] max-h-60 overflow-y-auto ${error.FUNC_CODES ? 'border-red-500' : 'border-gray-300'}`}>
                 {functions
                   .filter(f => f.apP_CODE === form.APP_CODE)
                   .map((func, idx) => (
@@ -299,7 +299,7 @@ export default function RbacCreateModal({
 
           <div className="flex justify-end space-x-4 mt-8 pt-6 border-t">
             <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" disabled={loading}>Cancel</button>
-            <button type="button" onClick={handleSubmit} className="px-6 py-3 bg-[#005496] text-white rounded-lg hover:bg-[#004080] transition-colors disabled:bg-gray-400" disabled={loading || loadingAssignedFuncs}>
+            <button type="button" onClick={handleSubmit} className="px-6 py-3 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-color-dark)] transition-colors disabled:bg-gray-400" disabled={loading || loadingAssignedFuncs}>
               {loading ? "Saving..." : "Create"}
             </button>
           </div>

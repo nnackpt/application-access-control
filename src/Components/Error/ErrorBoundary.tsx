@@ -54,7 +54,7 @@ export default class ErrorBoundary extends Component
                         )}
                         <button
                             onClick={this.handleRetry}
-                            className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-3 rounded-lg hover:bg-[#004080] transition-colors mx-auto"
+                            className="flex items-center space-x-2 bg-[var(--primary-color)] text-white px-6 py-3 rounded-lg hover:bg-[var(--primary-color-dark)] transition-colors mx-auto"
                         >
                             <RefreshCcw size={16} />
                             <span>Try Again</span>

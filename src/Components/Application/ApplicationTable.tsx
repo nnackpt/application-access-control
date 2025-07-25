@@ -220,7 +220,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
         <div className="hidden xl:block">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-[#005496] text-white">
+              <thead className="bg-[var(--primary-color)] text-white">
                 <tr>
                   {[
                     'APP Code', 'Name', 'Title', 'Description', 'Active', 
@@ -249,7 +249,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
 
                   return (
                     <tr key={`${appCode || index}-${index}`} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">
-                      <td className="px-3 py-3 font-medium text-[#005496] text-sm">{appCode || '-'}</td>
+                      <td className="px-3 py-3 font-medium text-[var(--primary-color)] text-sm">{appCode || '-'}</td>
                       <td className="px-3 py-3 font-medium text-sm">{name || '-'}</td>
                       <td className="px-3 py-3 text-sm">{title || '-'}</td>
                       <td className="px-3 py-3 text-sm max-w-[150px]">
@@ -273,7 +273,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
                               href={baseUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[#005496] hover:underline truncate block"
+                              className="text-[var(--primary-color)] hover:underline truncate block"
                               title={baseUrl}
                             >
                               {baseUrl.length > 15 ? `${baseUrl.substring(0, 15)}...` : baseUrl}
@@ -294,7 +294,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
                               href={loginUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[#005496] hover:underline truncate block"
+                              className="text-[var(--primary-color)] hover:underline truncate block"
                               title={loginUrl}
                             >
                               {loginUrl.length > 15 ? `${loginUrl.substring(0, 15)}...` : loginUrl}
@@ -320,7 +320,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
                         <div className="flex space-x-1">
                           <button
                             onClick={() => handleView(app)}
-                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transform hover:scale-110 transition-all duration-200"
+                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-blue-50 hover:text-[#004080] transform hover:scale-110 transition-all duration-200"
                             title="View Details"
                           >
                             <Eye size={16} />
@@ -377,7 +377,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-2">
-                      <span className="text-sm font-semibold text-[#005496] bg-blue-50 px-2 py-1 rounded">
+                      <span className="text-sm font-semibold text-[var(--primary-color)] bg-blue-50 px-2 py-1 rounded">
                         {appCode || '-'}
                       </span>
                       <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
@@ -406,7 +406,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
                 <div className="flex space-x-2 mb-3">
                   <button
                     onClick={() => handleView(app)}
-                    className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 text-[#005496] hover:text-[#004080] hover:bg-blue-100 rounded-lg transition-colors text-sm"
+                    className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 text-[var(--primary-color)] hover:text-[var(--primary-color-dark)] hover:bg-blue-100 rounded-lg transition-colors text-sm"
                   >
                     <Eye size={20} />
                     <span>View</span>
@@ -450,7 +450,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
                                 href={baseUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-[#005496] hover:underline break-all"
+                                className="text-[var(--primary-color)] hover:underline break-all"
                               >
                                 {baseUrl}
                               </a>
@@ -472,7 +472,7 @@ export default function ApplicationTable({ refreshSignal, onRefresh, searchTerm 
                                 href={loginUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-[#005496] hover:underline break-all"
+                                className="text-[var(--primary-color)] hover:underline break-all"
                               >
                                 {loginUrl}
                               </a>

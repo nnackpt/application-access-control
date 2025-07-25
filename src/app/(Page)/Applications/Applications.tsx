@@ -137,7 +137,7 @@ export default function Applications() {
                 title="Total Applications"
                 value={totalApplications}
                 icon={<Calculator className="text-white" size={20} />}
-                bgColor="bg-[#005496] bg-opacity-10"
+                bgColor="bg-[var(--primary-color)] bg-opacity-10"
                 delay={0}
               />
               <StatsCard
@@ -199,13 +199,13 @@ export default function Applications() {
               placeholder="Search Applications..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64 md:w-72 lg:w-80 transition-all duration-300 ease-in-out"
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] outline-none w-64 md:w-72 lg:w-80 transition-all duration-300 ease-in-out"
               whileFocus={{
-                borderColor: "#005496",
+                borderColor: "var(--primary-color)",
                 boxShadow: "0 0 0 2px rgba(0, 84, 150, 0.2)",
                 width: "min(320px, 90vw)",
               }}
-              whileHover={{ borderColor: "#005496" }}
+              whileHover={{ borderColor: "var(--primary-color)" }}
             />
           </div>
         </div>

@@ -1,16 +1,19 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { User } from "@/types/User"
-import getValue from "@/Utils/getValue"
-import Pagination from "@/Components/UI/Pagination"
-import { motion } from 'framer-motion'
 import { ChevronLeft, Package, Users, User as UserIcon, Building } from "lucide-react"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
+import { motion } from 'framer-motion'
+
+import getValue from "@/Utils/getValue"
+
+import Pagination from "@/Components/UI/Pagination"
 import RowsPerPageSelect from "@/Components/UI/Select/RowsPerPageSelect"
-import { UserApi } from "@/services/UserApi"
+
+import { User } from "@/types/User"
 import { Application } from '@/types/Application';
 import { AppsRoles } from "@/types/AppsRoles"
+import { UserApi } from "@/services/UserApi"
 import { applicationApi } from "@/services/ApplicationApi"
 import { AppsRolesApi } from "@/services/AppsRolesApi"
 
@@ -248,7 +251,7 @@ export default function UserViewPage() {
     <div className="max-w-6xl mx-auto px-4 py-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-[#005496]">{fullName}</h1>
+        <h1 className="text-2xl font-bold text-[var(--primary-color)]">{fullName}</h1>
         <motion.button
           onClick={handleBackToList}
           className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg shadow-lg cursor-pointer"
@@ -282,10 +285,10 @@ export default function UserViewPage() {
           whileHover={{ scale: 1.05 }}
         >
           <div className="flex items-center space-x-2 text-gray-600 mb-2">
-            <Package size={20} className="text-[#005496]" />
+            <Package size={20} className="text-[var(--primary-color)]" />
             <label className="text-sm font-semibold">APPLICATION</label>
           </div>
-          <p className="text-[#005496] font-bold text-lg">{appName}</p>
+          <p className="text-[var(--primary-color)] font-bold text-lg">{appName}</p>
           <p className="text-sm text-gray-800 mt-1">{appCode}</p>
         </motion.div>
 
@@ -297,10 +300,10 @@ export default function UserViewPage() {
           whileHover={{ scale: 1.05 }}
         >
           <div className="flex items-center space-x-2 text-gray-600 mb-2">
-            <Users size={20} className="text-[#005496]"/>
+            <Users size={20} className="text-[var(--primary-color)]"/>
             <label className="text-sm font-semibold">ROLE</label>
           </div>
-          <p className="text-[#005496] font-bold text-lg">{roleName}</p>
+          <p className="text-[var(--primary-color)] font-bold text-lg">{roleName}</p>
           <p className="text-sm text-gray-800 mt-1">{roleCode}</p>
         </motion.div>
 
@@ -312,10 +315,10 @@ export default function UserViewPage() {
           whileHover={{ scale: 1.05 }}
         >
           <div className="flex items-center space-x-2 text-gray-600 mb-2">
-            <UserIcon size={20} className="text-[#005496]"/>
+            <UserIcon size={20} className="text-[var(--primary-color)]"/>
             <label className="text-sm font-semibold">USER ID</label>
           </div>
-          <p className="text-[#005496] font-bold text-lg">{userId}</p>
+          <p className="text-[var(--primary-color)] font-bold text-lg">{userId}</p>
         </motion.div>
       </div>
 
@@ -329,10 +332,10 @@ export default function UserViewPage() {
           whileHover={{ scale: 1.05 }}
         >
           <div className="flex items-center space-x-2 text-gray-600 mb-2">
-            <UserIcon size={20} className="text-[#005496]"/>
+            <UserIcon size={20} className="text-[var(--primary-color)]"/>
             <label className="text-sm font-semibold">NAME</label>
           </div>
-          <p className="text-[#005496] font-bold text-lg">{fullName}</p>
+          <p className="text-[var(--primary-color)] font-bold text-lg">{fullName}</p>
         </motion.div>
 
         <motion.div
@@ -343,10 +346,10 @@ export default function UserViewPage() {
           whileHover={{ scale: 1.05 }}
         >
           <div className="flex items-center space-x-2 text-gray-600 mb-2">
-            <Building size={20} className="text-[#005496]"/>
+            <Building size={20} className="text-[var(--primary-color)]"/>
             <label className="text-sm font-semibold">ORG</label>
           </div>
-          <p className="text-[#005496] font-bold text-lg">{org}</p>
+          <p className="text-[var(--primary-color)] font-bold text-lg">{org}</p>
         </motion.div>
       </div>
 
@@ -382,7 +385,7 @@ export default function UserViewPage() {
       <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200"> 
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-sm">
-            <thead className="bg-[#005496] text-white">
+            <thead className="bg-[var(--primary-color)] text-white">
               <tr>
                 <th className="text-left px-4 py-3">SITE CODE</th>
                 <th className="text-left px-4 py-3">DOMAIN CODE</th>
@@ -397,7 +400,7 @@ export default function UserViewPage() {
                   <tr
                     key={index}
                     className={`border-b border-gray-100 ${
-                      isCurrentAuth ? "bg-blue-50 font-semibold text-[#005496]" : "hover:bg-gray-50"
+                      isCurrentAuth ? "bg-blue-50 font-semibold text-[var(--primary-color)]" : "hover:bg-gray-50"
                     }`}
                   >
                     <td className="px-4 py-3">{getValue(facility, ["sitE_CODE"]) || "-"}</td>

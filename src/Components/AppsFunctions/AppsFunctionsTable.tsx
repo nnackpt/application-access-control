@@ -219,7 +219,7 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
                 <div className="hidden xl:block">
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead className="bg-[#005496] text-white">
+                            <thead className="bg-[var(--primary-color)] text-white">
                                 <tr>
                                     {[
                                         'APP Code','FUNC Code', 'Name', 'Description', 'Active',
@@ -248,8 +248,8 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
 
                                     return (
                                         <tr key={`${funcCode || index}-${index}`} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">
-                                            <td className="px-3 py-3 font-medium text-[#005496] text-sm">{appCode || '-'}</td>
-                                            <td className="px-3 py-3 font-medium text-[#005496] text-sm">{funcCode || '-'}</td>
+                                            <td className="px-3 py-3 font-medium text-[var(--primary-color)] text-sm">{appCode || '-'}</td>
+                                            <td className="px-3 py-3 font-medium text-[var(--primary-color)] text-sm">{funcCode || '-'}</td>
                                             <td className="px-3 py-3 text-sm whitespace-break-spaces">{name || '-'}</td>
                                             <td className="px-3 py-3 text-sm">
                                                 <div className="whitespace-pre-wrap" title={desc || ''}>
@@ -272,7 +272,7 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
                                                             href={funcUrl}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="text-[#005496] hover:underline break-all whitespace-pre"
+                                                            className="text-[var(--primary-color)] hover:underline break-all whitespace-pre"
                                                             title={funcUrl}
                                                         >
                                                             {/* {funcUrl.length > 15 ? `${funcUrl.substring(0, 15)}...` : funcUrl} */}
@@ -300,7 +300,7 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
                                                 <div className="flex space-x-1">
                                                     <button
                                                         onClick={() => handleView(appFunc)}
-                                                        className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transform hover:scale-110 transition-all duration-200"
+                                                        className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-blue-50 hover:text-[var(--primary-color-dark)] transform hover:scale-110 transition-all duration-200"
                                                         title="View Details"
                                                     >
                                                         <Eye size={16} />
@@ -358,7 +358,7 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center space-x-2 mb-2">
                                             <span className="text-sm text-gray-600">({appCode || '-'})</span>
-                                            <span className="text-sm font-semibold text-[#005496] bg-blue-50 px-2 py-1 rounded">
+                                            <span className="text-sm font-semibold text-[var(--primary-color)] bg-blue-50 px-2 py-1 rounded">
                                                 {funcCode || '-'}
                                             </span>
                                             <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
@@ -387,7 +387,7 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
                                 <div className="flex space-x-2 mb-3">
                                     <button
                                         onClick={() => handleView(appFunc)}
-                                        className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 text-[#005496] hover:text-[#004080] hover:bg-blue-100 rounded-lg transition-colors text-sm"
+                                        className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 text-[var(--primary-color)] hover:text-[var(--primary-color-dark)] hover:bg-blue-100 rounded-lg transition-colors text-sm"
                                     >
                                         <Eye size={14} />
                                         <span>View</span>
@@ -431,7 +431,7 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
                                                                 href={funcUrl}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-[#005496] hover:underline break-all"
+                                                                className="text-[var(--primary-color)] hover:underline break-all"
                                                             >
                                                                 {funcUrl}
                                                             </a>

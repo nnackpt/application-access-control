@@ -109,7 +109,7 @@ export default function AppsFunctionsCreateModal({
     return (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4" onClick={onClose}>
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                <div className="sticky top-0 bg-[#005496] text-white p-6 rounded-t-xl flex justify-between items-center">
+                <div className="sticky top-0 bg-[var(--primary-color)] text-white p-6 rounded-t-xl flex justify-between items-center">
                     <h2 className="text-xl font-semibold">Create New Application Function</h2>
                     <button onClick={onClose} className="text-white hover:text-blue-200 transition-colors cursor-pointer" disabled={loading}>
                         <X size={24} />
@@ -124,7 +124,7 @@ export default function AppsFunctionsCreateModal({
                                 name="apP_CODE"
                                 value={form.apP_CODE || ''}
                                 onChange={handleChange}
-                                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] ${error.apP_CODE ? 'border-red-500' : 'border-gray-300'}`}
+                                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] ${error.apP_CODE ? 'border-red-500' : 'border-gray-300'}`}
                                 disabled={loading || loadingApps}
                             >
                                 <option value="">Select APP Code</option>
@@ -146,7 +146,7 @@ export default function AppsFunctionsCreateModal({
                                 value={form.funC_CODE || ''}
                                 onChange={handleChange}
                                 // placeholder="e.g., FUNC001"
-                                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] ${error.funcCode ? 'border-red-500' : 'border-gray-300'}`}
+                                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] ${error.funcCode ? 'border-red-500' : 'border-gray-300'}`}
                                 disabled={loading}
                             />
                             {error.funC_CODE && <p className="text-red-500 text-sm mt-1">{error.funC_CODE}</p>}
@@ -160,7 +160,7 @@ export default function AppsFunctionsCreateModal({
                                 value={form.name || ''}
                                 onChange={handleChange}
                                 // placeholder="e.g., User Management"
-                                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] ${error.name ? 'border-red-500' : 'border-gray-300'}`}
+                                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] ${error.name ? 'border-red-500' : 'border-gray-300'}`}
                                 disabled={loading}
                             />
                             {error.name && <p className="text-red-500 text-sm mt-1">{error.name}</p>}
@@ -174,7 +174,7 @@ export default function AppsFunctionsCreateModal({
                                 value={form.funC_URL || ''}
                                 onChange={handleChange}
                                 // placeholder="/api/users"
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496]"
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
                                 disabled={loading}
                             />
                         </div>
@@ -185,7 +185,7 @@ export default function AppsFunctionsCreateModal({
                                 name="active"
                                 value={form.active ? 'true' : 'false'}
                                 onChange={e => setForm(prev => ({ ...prev, active: e.target.value === 'true' }))}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496]"
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
                                 disabled={loading}
                             >
                                 <option value="true">ACTIVE</option>
@@ -201,7 +201,7 @@ export default function AppsFunctionsCreateModal({
                                 value={form.createdBy || ''}
                                 onChange={handleChange}
                                 // placeholder="system"
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496]"
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
                                 disabled={true}
                             />
                         </div> */}
@@ -214,14 +214,14 @@ export default function AppsFunctionsCreateModal({
                                 onChange={handleChange}
                                 // placeholder="e.g., Function description"
                                 rows={3}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] resize-none"
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] resize-none"
                                 disabled={loading}
                             />
                         </div>
                     </div>
                     <div className="flex justify-end space-x-4 mt-8 pt-6 border-t">
                         <button type="button" onClick={onClose} className="cursor-pointer px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" disabled={loading}>Cancel</button>
-                        <button type="button" onClick={handleSubmit} className="cursor-pointer px-6 py-3 bg-[#005496] text-white rounded-lg hover:bg-[#004080] transition-colors disabled:bg-gray-400" disabled={loading}>{loading ? 'Saving...' : 'Create'} Function</button>
+                        <button type="button" onClick={handleSubmit} className="cursor-pointer px-6 py-3 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-color-dark)] transition-colors disabled:bg-gray-400" disabled={loading}>{loading ? 'Saving...' : 'Create'} Function</button>
                     </div>
                 </div>
             </div>

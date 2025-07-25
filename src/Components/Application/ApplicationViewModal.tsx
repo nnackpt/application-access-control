@@ -1,5 +1,6 @@
 import React from "react"
 import { X } from "lucide-react"
+
 import { Application } from "@/types/Application"
 import getValue from "@/Utils/getValue"
 
@@ -58,7 +59,7 @@ export default function ViewModal({
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-[#005496] text-white p-6 rounded-t-xl flex justify-between items-center">
+        <div className="sticky top-0 bg-[var(--primary-color)] text-white p-6 rounded-t-xl flex justify-between items-center">
           <h2 className="text-xl font-semibold">Application Details</h2>
           <button 
             onClick={onClose}
@@ -72,7 +73,7 @@ export default function ViewModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">APP Code</label>
-              <p className="text-lg font-semibold text-[#005496]">{appCode || '-'}</p>
+              <p className="text-lg font-semibold text-[var(--primary-color)]">{appCode || '-'}</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Name</label>
@@ -130,10 +131,10 @@ export default function ViewModal({
             </div>
           </div>
           
-          <div className="flex justify-end mt-8 pt-6 border-t border-t-[#005496]">
+          <div className="flex justify-end mt-8 pt-6 border-t border-t-[var(--primary-color)]">
             <button
               onClick={onClose}
-              className="px-6 py-3 bg-[#005496] text-white rounded-lg hover:bg-[#004080] transition-colors cursor-pointer"
+              className="px-6 py-3 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-color-dark)] transition-colors cursor-pointer"
             >
               Close
             </button>

@@ -280,7 +280,7 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
                     <div className="hidden xl:block">
                         <div className="overflow-x-auto">
                             <table className="w-full">
-                                <thead className="bg-[#005496] text-white">
+                                <thead className="bg-[var(--primary-color)] text-white">
                                     <tr>
                                         {['RBAC Code', 'APP Code', 'Application Name', 'ROLE Code', 'ROLE Name',
                                             'FUNC Code', 'Created By', 'Create Date', 'Updated By', 'Updated Date', 'Actions'
@@ -325,7 +325,7 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
                                                     <div className="flex space-x-1">
                                                         <button
                                                             onClick={() => handleView(rbac)}
-                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[#005496] hover:border-[#005496] hover:bg-blue-50 hover:text-[#004080] transform hover:scale-110 transition-all duration-200"
+                                                            className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full border-3 border-gray-300 bg-transparent text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-blue-50 hover:text-[var(--primary-color-dark)] transform hover:scale-110 transition-all duration-200"
                                                             title="View Details"
                                                         >
                                                             <Eye size={16} />

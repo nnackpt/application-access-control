@@ -1,6 +1,6 @@
 "use client"
 
-import useCurrentUser from "@/hooks/useCurrentUser"
+// import useCurrentUser from "@/hooks/useCurrentUser"
 
 import { applicationApi } from "@/services/ApplicationApi"
 import { AppsRolesApi } from "@/services/AppsRolesApi"
@@ -9,7 +9,7 @@ import { Application } from "@/types/Application"
 import { AppsRoles } from "@/types/AppsRoles"
 import { UsersAuthorizeCreateRequestDto } from "@/types/User"
 
-import { ChevronDownIcon, ChevronLeft, Package, Users } from "lucide-react"
+import { ChevronLeft } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
@@ -20,7 +20,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 
 import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
 import RoleTitleSelect from "@/Components/UI/Select/RoleTitleSelect"
-import BackButton from "@/Components/UI/Button/BackButton"
+// import BackButton from "@/Components/UI/Button/BackButton"
 
 const initForm: UsersAuthorizeCreateRequestDto = {
     apP_CODE: "",
@@ -220,7 +220,7 @@ export default function UserCreate() {
                     {initialLoading ? (
                         <Skeleton width={300} height={32} />
                     ) : (
-                        <h1 className="text-2xl font-bold text-[#005496]">CREATE APPLICATION&apos;S USERS AUTHORIZED</h1>
+                        <h1 className="text-2xl font-bold text-[var(--primary-color)]">CREATE APPLICATION&apos;S USERS AUTHORIZED</h1>
                     )}
                     {initialLoading ? (
                         <Skeleton width={100} height={40} className="rounded-lg" />

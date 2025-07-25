@@ -184,7 +184,7 @@ function RBACContent() {
                                 title="Total RBAC"
                                 value={loading ? '...' : totalRbac}
                                 icon={<Calculator className="text-white" size={20} />}
-                                bgColor="bg-[#005496] bg-opacity-10"
+                                bgColor="bg-[var(--primary-color)] bg-opacity-10"
                                 delay={0}
                             />
 
@@ -242,9 +242,9 @@ function RBACContent() {
 
                                 <motion.button
                                     onClick={() => router.push("/RBAC/Create")}
-                                    className="flex items-center space-x-2 bg-[#005496] text-white px-6 py-2 rounded-lg
+                                    className="flex items-center space-x-2 bg-[var(--primary-color)] text-white px-6 py-2 rounded-lg
                                             shadow-lg cursor-pointer"
-                                    whileHover={{ scale: 1.05, backgroundColor: "#004080", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
+                                    whileHover={{ scale: 1.05, backgroundColor: "var(--primary-color-dark)", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
                                     whileTap={{ scale: 0.98 }}
                                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                                 >
@@ -274,7 +274,7 @@ function RBACContent() {
                                     placeholder="Search RBAC..."
                                     value={searchTerm}
                                     onChange={(e) => handleSearchTermChange(e.target.value)}
-                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#005496] focus:border-[#005496] outline-none w-64"
+                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] outline-none w-64"
                                 />
                             </div>
                             

@@ -54,7 +54,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
                 aria-current={currentPage === page ? 'page' : undefined}
                 className={`relative inline-flex items-center px-4 py-2 border rounded-md text-sm font-medium transition-colors duration-200 ${ // Added rounded-md here
                   currentPage === page
-                    ? 'bg-[#005495] text-white border-[#005496]'
+                    ? 'bg-[var(--primary-color)] text-white border-[var(--primary-color)]'
                     : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
                 }`}
               >
