@@ -64,16 +64,19 @@ export default function UserEditPage() {
                 setUser(userData)
 
                 if (userData && userData.userid) {
-                    const userAllAvailFacilities = await UserApi.getUserFacilitiesByUserId(userData.userid)
-                    setAllFacilities(userAllAvailFacilities)
-                    setSelectedFacilities(userAllAvailFacilities)
+                    const allAvailableFacilities = await UserApi.getAllAvailableFacilities()
+                    setAllFacilities(allAvailableFacilities)
+
+                    const currentUserFacilities = await UserApi.getUserFacilitiesByUserId(userData.userid)
+                    setSelectedFacilities(currentUserFacilities)
+
                     setFormData(prevForm => ({
                         ...prevForm,
-                        facilities: userAllAvailFacilities
+                        facilities: currentUserFacilities
                     }))
                 } else {
-                    console.warn("User data or User ID not available for fetching facilities.")
-                    setAllFacilities([])
+                    const allAvailableFacilities = await UserApi.getAllAvailableFacilities()
+                    setAllFacilities(allAvailableFacilities)
                     setSelectedFacilities([])
                     setFormData(prevForm => ({
                         ...prevForm,
