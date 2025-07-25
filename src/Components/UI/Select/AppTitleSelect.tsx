@@ -91,7 +91,7 @@ export default function AppTitleSelect({
                                 }}
                                 className={`cursor-pointer select-none px-4 py-2 flex items-center gap-2 ${
                                     selectedTitle === option.value
-                                        ? 'bg-[#005496] text-white font-semibold'
+                                        ? 'bg-[var(--primary-color)] text-white font-semibold'
                                         : 'text-gray-900 hover:bg-[#e6f0fa]'
                                     }`
                                 }
