@@ -1,10 +1,10 @@
 "use client"
 
-import useCurrentUser from "@/hooks/useCurrentUser";
+// import useCurrentUser from "@/hooks/useCurrentUser";
 import { UserApi } from "@/services/UserApi";
 import { FacilitySelectionDto, User, UsersAuthorizeUpdateRequestDto } from "@/types/User";
 import getValue from "@/Utils/getValue";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { motion } from 'framer-motion';
@@ -16,9 +16,15 @@ import { AppsRolesApi } from "@/services/AppsRolesApi";
 // import RoleTitleSelect from "@/Components/UI/Select/RoleTitleSelect";
 
 export default function UserEditPage() {
-    const { authCode } = useParams()
+    // const { authCode } = useParams()
     const router = useRouter()
+    const searchParams = useSearchParams()
     // const { userName } = useCurrentUser()
+
+    const authCode = searchParams.get("authCode")
+    const userIdFromUrl = searchParams.get("userid")
+    const appCodeFromUrl = searchParams.get("appCode")
+    const roleCodeFromUrl = searchParams.get("roleCode")
 
     const [user, setUser] = useState<User | null>(null)
     const [allFacilities, setAllFacilities] = useState<FacilitySelectionDto[]>([])
@@ -41,10 +47,15 @@ export default function UserEditPage() {
 
     useEffect(() => {
         if (!authCode) {
-            console.log("No code found in params, skipping fetch.")
+            console.log("No authCode found in query params, skipping fetch.")
+            setLoading(false)
+            setError("No authorization code provided in the URL. Can't load user data.")
             return
         }
-        console.log("Code from use Params:", authCode)
+        console.log("authCode from query params:", authCode)
+        console.log("UserID from query params:", userIdFromUrl)
+        console.log("AppCode from query params:", appCodeFromUrl)
+        console.log("RoleCode from query params:", roleCodeFromUrl)
 
         const fetchData = async () => {
             try {
@@ -52,16 +63,22 @@ export default function UserEditPage() {
                 console.log("Fetched user data:", userData)
                 setUser(userData)
 
-                // Fetch all available facilities for this user ID
                 if (userData && userData.userid) {
                     const userAllAvailFacilities = await UserApi.getUserFacilitiesByUserId(userData.userid)
-                    setAllFacilities(userAllAvailFacilities) // Populate allFacilities with facilities specific to the user
-                    // Initially, all facilities fetched by userId are considered selected
-                    setSelectedFacilities(userAllAvailFacilities) 
+                    setAllFacilities(userAllAvailFacilities)
+                    setSelectedFacilities(userAllAvailFacilities)
+                    setFormData(prevForm => ({
+                        ...prevForm,
+                        facilities: userAllAvailFacilities
+                    }))
                 } else {
                     console.warn("User data or User ID not available for fetching facilities.")
                     setAllFacilities([])
                     setSelectedFacilities([])
+                    setFormData(prevForm => ({
+                        ...prevForm,
+                        facilities: []
+                    }))
                 }
                 
                 // Fetch all available roles
@@ -75,7 +92,7 @@ export default function UserEditPage() {
                     lname: getValue(userData, ["lname"]) || '',
                     org: getValue(userData, ["org"]) || '',
                     active: getValue(userData, ["active"]) ?? true,
-                    facilities: selectedFacilities // This will be updated again after setSelectedFacilities if needed
+                    // facilities: selectedFacilities
                 })
 
                 const allApplication = await applicationApi.getApplications()
@@ -94,7 +111,7 @@ export default function UserEditPage() {
         }
 
         fetchData()
-    }, [authCode])
+    }, [authCode, userIdFromUrl, appCodeFromUrl, roleCodeFromUrl])
 
     const handleInputChange = (field: string, value: any) => {
         setFormData(prev => ({
@@ -130,7 +147,7 @@ export default function UserEditPage() {
             return
         }
 
-        if (!user) return
+        if (!user || !authCode) return
 
         setSaving(true)
         try {
@@ -462,7 +479,7 @@ export default function UserEditPage() {
                         <h3 className="text-lg font-semibold text-[#005496]">Select Facilities <span className="text-red-500">*</span></h3>
                     </div>
 
-                    {error && error.includes("facility") && ( // Display facility-specific error
+                    {error && error.includes("facility") && (
                         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
                             {error}
                         </div>
@@ -479,7 +496,7 @@ export default function UserEditPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {allFacilities.map((facility, index) => { // Map through all available facilities
+                                {allFacilities.map((facility) => {
                                     const isSelected = selectedFacilities.some(sf =>
                                         sf.sitE_CODE === facility.sitE_CODE &&
                                         sf.domaiN_CODE === facility.domaiN_CODE &&

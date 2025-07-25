@@ -182,19 +182,28 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
 
     const handleEdit = (user: User) => {
         const authCode = getValue(user, ['autH_CODE'])
-        if (authCode) {
+        const userId = getValue(user, ['userid'])
+        const appCode = getValue(user, ['apP_CODE'])
+        const roleCode = getValue(user, ['rolE_CODE'])
+
+        if (authCode && userId && appCode && roleCode) {
             const params = new URLSearchParams()
-            if (selectedTitle !== "all") params.set("app", selectedTitle)
-            if (selectedRole !== "all") params.set("role", selectedRole)
-            if (searchTerm.trim()) params.set("search", searchTerm)
+            params.set('userid', userId)
+            params.set('appCode', appCode)
+            params.set('roleCode', roleCode)
+            params.set('authCode', authCode)
 
             const queryString = params.toString()
-            const url = queryString ? `/Users/Edit/${authCode}?${queryString}` : `/Users/Edit/${authCode}`
-            console.log("Navigating to Edit URL:", url)
-
-            router.push(url)
+            const url = `/Users/Edit?${queryString}`;
+            
+            console.log("Navigating to Edit URL:", url);
+            router.push(url);
+        } else {
+            toast.error("Missing authorization code for user.");
+            console.warn("Missing details for users", user)
         }
     }
+
 
     const handleDelete = (user: User) => {
         setDeleteModal({ user: user, open: true })
