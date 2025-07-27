@@ -201,8 +201,17 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
             params.set('roleCode', roleCode)
             params.set('authCode', authCode)
 
+            params.set('fname', getValue(user, ['fname']) || '')
+            params.set('lname', getValue(user, ['lname']) || '')
+            params.set('org', getValue(user, ['org']) || '')
+            params.set('active', (getValue(user, ['org']) || false).toString())
+
+            if (Array.isArray(user.facilities) && user.facilities.length > 0) {
+                params.set('facilities', JSON.stringify(user.facilities))
+            }
+
             const queryString = params.toString()
-            const url = `/Users/Edit?${queryString}`;
+            const url = `/Users/Create?${queryString}`;
             
             console.log("Navigating to Edit URL:", url);
             router.push(url);

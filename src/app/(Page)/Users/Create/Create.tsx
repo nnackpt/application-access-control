@@ -7,13 +7,13 @@ import { AppsRolesApi } from "@/services/AppsRolesApi"
 import { UserApi } from "@/services/UserApi"
 import { Application } from "@/types/Application"
 import { AppsRoles } from "@/types/AppsRoles"
-import { UsersAuthorizeCreateRequestDto } from "@/types/User"
+import { FacilitySelectionDto, UsersAuthorizeCreateRequestDto } from "@/types/User"
 
 import { ChevronLeft } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from 'framer-motion'
 import { PlusIcon } from "@heroicons/react/24/outline"
 import 'react-loading-skeleton/dist/skeleton.css'
@@ -78,33 +78,77 @@ const FacilityTableSkeleton = () => (
 export default function UserCreate() {
     const router = useRouter()
     // const { currentUser } = useCurrentUser()
+    const searchParams = useSearchParams()
     const [form, setForm] = useState<UsersAuthorizeCreateRequestDto>(initForm)
     const [applications, setApplications] = useState<Application[]>([])
     const [roles, setRoles] = useState<AppsRoles[]>([])
     const [loading, setLoading] = useState(false)
     const [initialLoading, setInitialLoading] = useState(true)
     const [errors, setErrors] = useState<Record<string, string>>({})
+    const [isEditMode, setIsEditMode] = useState(false)
+    const [currentAuthCode, setCurrentAuthCode] = useState<string | null>(null)
+    const [allFacilities, setAllFacilities] = useState<FacilitySelectionDto[]>([])
 
     // Dummy data for facilities - replace with actual API call if available
-    const allFacilities: Facility[] = [
-        { sitE_CODE: "ATH_AB", domaiN_CODE: "ATHAB", facT_CODE: "ATA" },
-        { sitE_CODE: "ATH_SW", domaiN_CODE: "ATHSW", facT_CODE: "ATA" },
-        { sitE_CODE: "ATH_TE", domaiN_CODE: "ATHTE", facT_CODE: "ATA" },
-        { sitE_CODE: "ATH_EL", domaiN_CODE: "ATHEL", facT_CODE: "ATH" },
-        { sitE_CODE: "ATH_SB", domaiN_CODE: "ATHSB", facT_CODE: "ATH" },
-        { sitE_CODE: "ATH_SB", domaiN_CODE: "ATHSB", facT_CODE: "TCB" },
-        { sitE_CODE: "ATH_SP", domaiN_CODE: "ATHSP", facT_CODE: "TCS" },
-    ];
+    // const allFacilities: Facility[] = [
+    //     { sitE_CODE: "ATH_AB", domaiN_CODE: "ATHAB", facT_CODE: "ATA" },
+    //     { sitE_CODE: "ATH_SW", domaiN_CODE: "ATHSW", facT_CODE: "ATA" },
+    //     { sitE_CODE: "ATH_TE", domaiN_CODE: "ATHTE", facT_CODE: "ATA" },
+    //     { sitE_CODE: "ATH_EL", domaiN_CODE: "ATHEL", facT_CODE: "ATH" },
+    //     { sitE_CODE: "ATH_SB", domaiN_CODE: "ATHSB", facT_CODE: "ATH" },
+    //     { sitE_CODE: "ATH_SB", domaiN_CODE: "ATHSB", facT_CODE: "TCB" },
+    //     { sitE_CODE: "ATH_SP", domaiN_CODE: "ATHSP", facT_CODE: "TCS" },
+    // ];
 
     useEffect(() => {
-        const fetchDropdownData = async () => {
+        const fetchData = async () => {
+            setInitialLoading(true)
             try {
-                const [appRes, rolesRes] = await Promise.all([
+                const [appRes, rolesRes, allFacilitiesRes] = await Promise.all([
                     applicationApi.getApplications(),
-                    AppsRolesApi.getAppsRoles()
+                    AppsRolesApi.getAppsRoles(),
+                    UserApi.getAllAvailableFacilities()
                 ])
                 setApplications(appRes || [])
                 setRoles(rolesRes || [])
+                setAllFacilities(allFacilitiesRes || [])
+
+                const authCodeFromUrl = searchParams.get('authCode')
+                if (authCodeFromUrl) {
+                    setIsEditMode(true)
+                    setCurrentAuthCode(authCodeFromUrl)
+
+                    // const userId = searchParams.get('userid')
+                    // const appCode = searchParams.get('appCode')
+                    // const roleCode = searchParams.get('roleCode')
+                    // const fname = searchParams.get('fname')
+                    // const lname = searchParams.get('lname')
+                    // const org = searchParams.get('org')
+                    // const active = searchParams.get('active') === 'true'
+
+                    const userDataFromApi = await UserApi.getUserByCode(authCodeFromUrl) 
+                    // const activeStatus = userDataFromApi?.active ?? false
+
+                    let userFacilities: FacilitySelectionDto[] = []
+                    if (userDataFromApi?.userid) {
+                        userFacilities = await UserApi.getUserFacilitiesByUserId(userDataFromApi.userid) as unknown as FacilitySelectionDto[]
+                    }
+
+                    setForm({
+                        apP_CODE: userDataFromApi?.apP_CODE || "",
+                        rolE_CODE: userDataFromApi?.rolE_CODE || "",
+                        userid: userDataFromApi?.userid || "",
+                        fname: userDataFromApi?.fname || "",
+                        lname: userDataFromApi?.lname || "",
+                        org: userDataFromApi?.org || "",
+                        active: userDataFromApi?.active ?? false,
+                        facilities: userFacilities || []
+                    })
+                } else {
+                    setIsEditMode(false)
+                    setCurrentAuthCode(null)
+                    setForm(initForm)
+                }
             } catch (error) {
                 toast.error("Failed to load initial data.")
                 console.error("Error fetching dropdown data:", error)
@@ -112,8 +156,8 @@ export default function UserCreate() {
                 setInitialLoading(false)
             }
         }
-        fetchDropdownData()
-    }, [])
+        fetchData()
+    }, [searchParams])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target
@@ -138,7 +182,7 @@ export default function UserCreate() {
         setErrors(prev => ({ ...prev, rolE_CODE: '' }))
     }
 
-    const handleFacilityToggle = (facility: Facility) => {
+    const handleFacilityToggle = (facility: FacilitySelectionDto) => {
         setForm(prev => {
             const isSelected = prev.facilities?.some(f =>
                 f.sitE_CODE === facility.sitE_CODE &&
@@ -198,14 +242,25 @@ export default function UserCreate() {
                 active: form.active,
             }
 
-            await UserApi.createUser(payload);
-            
-            console.log("User authorization created successfully!", payload)
-            toast.success("User authorization created successfully!")
+            if (isEditMode && currentAuthCode) {
+                await UserApi.updateUser(currentAuthCode, payload)
+                toast.success("User authorization updated successfully!")
+                console.log("User authorization updated successfully!", payload)
+            } else {
+                await UserApi.createUser(payload)
+                toast.success("User authorization created successfully!")
+                console.log("User authorization created successfully!", payload)
+            }
+
             router.push("/Users") 
         } catch (error) {
-            toast.error("Failed to create user authorization.")
-            console.error("Error creating user authorization:", error)
+            if (isEditMode) {
+                toast.error("Failed tp updated user authorization.")
+                console.error("Error updated user authorization:", error)
+            } else {
+                toast.error("Failed to create user authorization.")
+                console.error("Error creating user authorization:", error)
+            }
         } finally {
             setLoading(false)
         }
@@ -220,7 +275,9 @@ export default function UserCreate() {
                     {initialLoading ? (
                         <Skeleton width={300} height={32} />
                     ) : (
-                        <h1 className="text-2xl font-bold text-[var(--primary-color)]">CREATE APPLICATION&apos;S USERS AUTHORIZED</h1>
+                        <h1 className="text-2xl font-bold text-[var(--primary-color)]">
+                            {isEditMode ? "EDIT APPLICATION'S USERS AUTHORIZED" : "CREATE APPLICATION'S USERS AUTHORIZED"}
+                        </h1>
                     )}
                     {initialLoading ? (
                         <Skeleton width={100} height={40} className="rounded-lg" />
@@ -272,6 +329,7 @@ export default function UserCreate() {
                                         selectedTitle={form.apP_CODE}
                                         setSelectedTitle={handleAppSelectChange}
                                         applications={applications}
+                                        // disabled={isEditMode}
                                     />
                                     {errors.apP_CODE && <p className="text-red-500 text-xs mt-1">{errors.apP_CODE}</p>}
                                 </div>
@@ -284,6 +342,7 @@ export default function UserCreate() {
                                         setSelectedRole={handleRoleSelectChange}
                                         roles={filteredRoles}
                                         selectedAppCode={form.apP_CODE}
+                                        // disabled={isEditMode}
                                     />
                                     {errors.rolE_CODE && <p className="text-red-500 text-xs mt-1">{errors.rolE_CODE}</p>}
                                 </div>
@@ -298,6 +357,7 @@ export default function UserCreate() {
                                         value={form.userid}
                                         onChange={handleInputChange}
                                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] sm:text-sm"
+                                        disabled={isEditMode}
                                     />
                                     {errors.userid && <p className="text-red-500 text-xs mt-1">{errors.userid}</p>}
                                 </div>
