@@ -57,6 +57,10 @@ export class UserAuthorizeApi {
         return this.fetchUserApi(`/api/CmUserAuthorize/facilities/all`)
     }
 
+    async getUserFacilitiesByUserIdAppCodeRoleCode(userId: string, appCode: string, roleCode: string): Promise<FacilitySelectionDto[]> {
+        return this.fetchUserApi(`/api/CmUserAuthorize/user/${userId}/facilities/${appCode}/${roleCode}`)
+    }
+
     async createUser(request: UsersAuthorizeCreateRequestDto): Promise<UsersAuthorizeCreateRequestDto[]> {
         return this.fetchUserApi('/api/CmUserAuthorize', {
             method: "POST",

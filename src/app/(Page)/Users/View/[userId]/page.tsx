@@ -47,12 +47,16 @@ export default function UserViewPage() {
         const userDetails = await UserApi.getUserByUserId(userId)
         if (userDetails && userDetails.length > 0) {
           setUser(userDetails[0])
+
+          const currentAppCode = getValue(userDetails[0], ["apP_CODE"]) || ""
+          const currentRoleCode = getValue(userDetails[0], ["rolE_CODE"]) || ""
+          
+          const userFacilities = await UserApi.getUserFacilitiesByUserIdAppCodeRoleCode(userId, currentAppCode, currentRoleCode)
+          setFacilities(userFacilities)
         } else {
           setUser(null)
+          setFacilities([])
         }
-
-        const userFacilities = await UserApi.getUserFacilitiesByUserId(userId)
-        setFacilities(userFacilities)
 
         const apps = await applicationApi.getApplications()
         const rolesData = await AppsRolesApi.getAppsRoles()

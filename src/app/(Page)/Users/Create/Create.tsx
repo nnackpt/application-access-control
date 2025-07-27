@@ -130,8 +130,12 @@ export default function UserCreate() {
                     // const activeStatus = userDataFromApi?.active ?? false
 
                     let userFacilities: FacilitySelectionDto[] = []
-                    if (userDataFromApi?.userid) {
-                        userFacilities = await UserApi.getUserFacilitiesByUserId(userDataFromApi.userid) as unknown as FacilitySelectionDto[]
+                    if (userDataFromApi?.userid && userDataFromApi?.apP_CODE && userDataFromApi?.rolE_CODE) {
+                        userFacilities = await UserApi.getUserFacilitiesByUserIdAppCodeRoleCode(
+                            userDataFromApi.userid,
+                            userDataFromApi.apP_CODE,
+                            userDataFromApi.rolE_CODE
+                        ) as unknown as FacilitySelectionDto[]
                     }
 
                     setForm({
