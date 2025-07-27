@@ -221,7 +221,6 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
         }
     }
 
-
     const handleDelete = (user: User) => {
         setDeleteModal({ user: user, open: true })
     }
@@ -229,15 +228,19 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
     const confirmDelete = async () => {
         if (!deleteModal.user) return
         const user = deleteModal.user
-        const authCode = getValue(user, ['autH_CODE'])
-        if (!authCode) {
-            toast.error("Invalid User Authorization Code")
+        const userId = getValue(user, ['userid'])
+        const appCode = getValue(user, ['apP_CODE'])
+        const roleCode = getValue(user, ['rolE_CODE'])
+
+        if (!userId || !appCode || !roleCode) {
+            toast.error("Missing required user information")
             return
         }
-        setDeleteLoading(authCode)
+
+        setDeleteLoading(`${userId}-${appCode}-${roleCode}`)
         try {
-            console.log("Deleting user with authCode:", authCode)
-            await UserApi.deleteUser(authCode)
+            console.log("Deleting user with userId, appCode, roleCode:", userId, appCode, roleCode)
+            await UserApi.deleteUserByUserIdAppCodeRoleCode(userId, appCode, roleCode)
             setDeleteModal({ user: null, open: false })
             toast.success("User deleted successfully")
             setDeleteSuccess(true)
@@ -369,9 +372,9 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
                                                                     text-red-600 hover:border-red-800 hover:bg-blue-50 hover:text-red-800 disabled:opacity-50 transform
                                                                     hover:scale-110 transition-all duration-200"
                                                         title="Delete"
-                                                        disabled={deleteLoading === authCode}
+                                                        disabled={deleteLoading === `${userId}-${getValue(user, ['apP_CODE'])}-${getValue(user, ['rolE_CODE'])}`}
                                                     >
-                                                        {deleteLoading === authCode ? (
+                                                        {deleteLoading === `${userId}-${getValue(user, ['apP_CODE'])}-${getValue(user, ['rolE_CODE'])}` ? (
                                                             <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-red-600"></div>
                                                         ) : (
                                                             <Trash2 size={16} />

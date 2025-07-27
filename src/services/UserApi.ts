@@ -80,6 +80,12 @@ export class UserAuthorizeApi {
             method: "DELETE"
         })
     }
+
+    async deleteUserByUserIdAppCodeRoleCode(userId: string, appCode: string, roleCode: string) {
+        return this.fetchUserApi(`/api/CmUserAuthorize/DeleteByUserIdAppCodeRoleCode/${userId}/${appCode}/${roleCode}`, {
+            method: "DELETE"
+        })
+    }
 }
 
 export const UserApi = new UserAuthorizeApi()
