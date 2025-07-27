@@ -8,7 +8,7 @@ import { AppsFunctionsApi } from "@/services/AppsFunctionsApi"
 import getValue from "@/Utils/getValue"
 import Pagination from "@/Components/UI/Pagination"
 import { motion } from 'framer-motion';
-import { ChevronLeft, Package, Users } from "lucide-react"
+import { ChevronLeft, Package, Users, UserX } from "lucide-react"
 import RowsPerPageSelect from "@/Components/UI/Select/RowsPerPageSelect"
 import { AppsFunctions } from "@/types/AppsFunctions"
 
@@ -155,7 +155,44 @@ export default function RbacViewPage() {
     )
   }
 
-  if (!rbac) return <div className="p-6 text-red-600">RBAC Not Found</div>
+  // if (!rbac) return <div className="p-6 text-red-600">RBAC Not Found</div>
+
+  if (!rbac) {
+    return (
+      <div className="container mx-auto p-8 mt-10 bg-gradient-to-br from-slate-100 via-white to-slate-50 rounded-2xl shadow-2xl max-w-2xl text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex justify-center mb-4">
+            <UserX className="h-12 w-12 text-red-500" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">RBAC Not Found</h1>
+          <p className="text-gray-600">
+            We couldn't find any RBAC details for ID: <span className="font-medium text-gray-800">{rbac}</span>
+          </p>
+        </motion.div>
+
+        <motion.button
+          whileHover={{
+            scale: 1.05,
+            backgroundColor: "#4B5563", // Slate-600
+            boxShadow: "0 10px 15px rgba(0, 0, 0, 0.15)",
+          }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          onClick={() => router.back()}
+          className="mt-8 inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg shadow-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-color)]"
+        >
+          <ChevronLeft className="mr-2 h-5 w-5" />
+          Go Back
+        </motion.button>
+      </div>
+    )
+  }
 
   const appCode = getValue(rbac, ["apP_CODE"]) || "-"
   const appName = rbac?.cM_APPLICATIONS?.name || "-"

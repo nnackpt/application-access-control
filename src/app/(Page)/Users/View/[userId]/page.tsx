@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ChevronLeft, Package, Users, User as UserIcon, Building } from "lucide-react"
+import { ChevronLeft, Package, Users, User as UserIcon, Building, UserX } from "lucide-react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { motion } from 'framer-motion'
 
@@ -10,20 +10,24 @@ import getValue from "@/Utils/getValue"
 import Pagination from "@/Components/UI/Pagination"
 import RowsPerPageSelect from "@/Components/UI/Select/RowsPerPageSelect"
 
-import { User } from "@/types/User"
+import { FacilitySelectionDto, User } from "@/types/User"
 import { Application } from '@/types/Application';
 import { AppsRoles } from "@/types/AppsRoles"
 import { UserApi } from "@/services/UserApi"
 import { applicationApi } from "@/services/ApplicationApi"
 import { AppsRolesApi } from "@/services/AppsRolesApi"
+import Skeleton from "react-loading-skeleton"
 
 export default function UserViewPage() {
-  const { authCode } = useParams()
+  // const { authCode } = useParams()
+  const params = useParams()
+  const userId = params.userId as string
+  
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const [user, setUser] = useState<User | null>(null)
-  const [facilities, setFacilities] = useState<User[]>([])
+  const [facilities, setFacilities] = useState<FacilitySelectionDto[]>([])
   const [loading, setLoading] = useState(true)
   const [applications, setApplications] = useState<Application[]>([])
   const [roles, setRoles] = useState<AppsRoles[]>([])
@@ -32,50 +36,48 @@ export default function UserViewPage() {
   const [rowsPerPage, setRowsPerPage] = useState(10)
 
   useEffect(() => {
-    if (!authCode) {
-        // console.warn("authCode is undefined or null, skipping data fetch.")
+    const fetchData = async () => {
+      if (!userId) {
         setLoading(false)
         return
-    } 
+      }
 
-    const fetchData = async () => {
+      setLoading(true)
       try {
-        // Get user by AUTH_CODE
-        const userData = await UserApi.getUserByCode(authCode as string)
-        setUser(userData)
-
-        // Get all facilities for this user ID
-        if (userData?.userid) {
-          const userFacilities = await UserApi.getUserByUserId(userData.userid)
-          setFacilities(userFacilities || [])
+        const userDetails = await UserApi.getUserByUserId(userId)
+        if (userDetails && userDetails.length > 0) {
+          setUser(userDetails[0])
         } else {
-            console.warn("User data found but no userid, no facilities to fetch.")
-            setFacilities([])
+          setUser(null)
         }
-        const allApplication = await applicationApi.getApplications()
-        setApplications(allApplication)
 
-        const allRoles = await AppsRolesApi.getAppsRoles()
-        setRoles(allRoles)
+        const userFacilities = await UserApi.getUserFacilitiesByUserId(userId)
+        setFacilities(userFacilities)
 
-      } catch (error) {
-        console.error("Failed to fetch User or facilities", error)
-        setUser(null)
-        setFacilities([])
-        setApplications([])
-        setRoles([])
+        const apps = await applicationApi.getApplications()
+        const rolesData = await AppsRolesApi.getAppsRoles()
+        setApplications(apps)
+        setRoles(rolesData)
+
+      } catch (err) {
+        console.error("Error fetching Data:", err)
       } finally {
         setLoading(false)
       }
     }
 
     fetchData()
-  }, [authCode])
+  }, [userId])
 
-  const startIndex = (currentPage - 1) * rowsPerPage
-  const endIndex = startIndex + rowsPerPage
-  const paginatedFacilities = facilities.slice(startIndex, endIndex)
+  const indexOfLastFacility = currentPage * rowsPerPage
+  const indexOfFirstFacility = indexOfLastFacility - rowsPerPage
+  const paginatedFacilities = facilities.slice(indexOfFirstFacility, indexOfLastFacility)
+
   const totalPages = Math.ceil(facilities.length / rowsPerPage)
+
+  // const handlePageChange = (page: number) => {
+  //   setCurrentPage(page)
+  // }
 
   const handleRowsPerPageChange = (value: number) => {
     setRowsPerPage(value)
@@ -196,7 +198,53 @@ export default function UserViewPage() {
     )
   }
 
-  if (!user) return <div className="p-6 text-red-600">User Not Found</div>
+  // if (loading) {
+  //   return (
+  //     <div className="container mx-auto p-6 bg-white rounded-lg shadow-md mt-6">
+  //       <Skeleton height={30} width="30%" className="mb-4" />
+  //       <Skeleton height={3} width={20} className="mb-2" />
+  //       <Skeleton height={200} className="mb-6" />
+  //       <Skeleton height={40} width="50%" className="mb-4" />
+  //     </div>
+  //   )
+  // }
+
+  if (!user) {
+    return (
+      <div className="container mx-auto p-8 mt-10 bg-gradient-to-br from-slate-100 via-white to-slate-50 rounded-2xl shadow-2xl max-w-2xl text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex justify-center mb-4">
+            <UserX className="h-12 w-12 text-red-500" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">User Not Found</h1>
+          <p className="text-gray-600">
+            We couldn't find any user details for ID: <span className="font-medium text-gray-800">{userId}</span>
+          </p>
+        </motion.div>
+
+        <motion.button
+          whileHover={{
+            scale: 1.05,
+            backgroundColor: "#4B5563", // Slate-600
+            boxShadow: "0 10px 15px rgba(0, 0, 0, 0.15)",
+          }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          onClick={() => router.back()}
+          className="mt-8 inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg shadow-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-color)]"
+        >
+          <ChevronLeft className="mr-2 h-5 w-5" />
+          Go Back
+        </motion.button>
+      </div>
+    )
+  }
 
   const getFullName = (fname: string | undefined, lname: string | undefined): string => {
     const firstName = fname ? fname.charAt(0).toUpperCase() + fname.slice(1).toLowerCase() : ''
@@ -241,7 +289,7 @@ export default function UserViewPage() {
   const appName = getAppName(user) || "-"
   const roleCode = getValue(user, ["rolE_CODE"]) || "-"
   const roleName = getRoleName(user) || "-"
-  const userId = getValue(user, ["userid"]) || "-"
+  const userid = getValue(user, ["userid"]) || "-"
   const fname = getValue(user, ["fname"]) || ""
   const lname = getValue(user, ["lname"]) || ""
   const fullName = getFullName(fname, lname)
@@ -318,7 +366,7 @@ export default function UserViewPage() {
             <UserIcon size={20} className="text-[var(--primary-color)]"/>
             <label className="text-sm font-semibold">USER ID</label>
           </div>
-          <p className="text-[var(--primary-color)] font-bold text-lg">{userId}</p>
+          <p className="text-[var(--primary-color)] font-bold text-lg">{userid}</p>
         </motion.div>
       </div>
 
@@ -394,18 +442,16 @@ export default function UserViewPage() {
             </thead>
             <tbody>
               {paginatedFacilities.map((facility, index) => {
-                const currentAuthCode = getValue(facility, ["autH_CODE"])
-                const isCurrentAuth = currentAuthCode === authCode
+                // const currentAuthCode = getValue(facility, ["autH_CODE"])
+                // const isCurrentAuth = currentAuthCode === authCode
                 return (
                   <tr
                     key={index}
-                    className={`border-b border-gray-100 ${
-                      isCurrentAuth ? "bg-blue-50 font-semibold text-[var(--primary-color)]" : "hover:bg-gray-50"
-                    }`}
+                    className="border-b border-gray-100 hover:bg-gray-50"
                   >
-                    <td className="px-4 py-3">{getValue(facility, ["sitE_CODE"]) || "-"}</td>
-                    <td className="px-4 py-3">{getValue(facility, ["domaiN_CODE"]) || "-"}</td>
-                    <td className="px-4 py-3">{getValue(facility, ["facT_CODE"]) || "-"}</td>
+                    <td className="px-4 py-3">{facility.sitE_CODE || "-"}</td>
+                    <td className="px-4 py-3">{facility.domaiN_CODE || "-"}</td>
+                    <td className="px-4 py-3">{facility.facT_CODE || "-"}</td>
                   </tr>
                 )
               })}

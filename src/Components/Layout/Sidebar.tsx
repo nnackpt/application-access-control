@@ -19,7 +19,7 @@ import {
   ChartBarIcon,
   ShieldCheckIcon,
   ChevronLeftIcon,
-  ChevronUpIcon,
+  // ChevronUpIcon,
   ArrowUpIcon
 } from "@heroicons/react/24/outline";
 import { motion, AnimatePresence, MotionGlobalConfig } from "framer-motion";
@@ -103,7 +103,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
   React.useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("https://10.83.51.52:7070/api/UserInfo/current", {
+        const res = await fetch("https://192.168.152.16:7070/api/UserInfo/current", {
           credentials: "include",
         });
         if (res.ok) {

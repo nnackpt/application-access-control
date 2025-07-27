@@ -77,7 +77,15 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
                 const roles = await AppsRolesApi.getAppsRoles()
                 setApplications(apps)
                 setRoles(roles)
-                setData(response || [])
+
+                const uniqueUsersMap = new Map<string, User>()
+                response.forEach(user => {
+                    if (!uniqueUsersMap.has(user.userid!)) {
+                        uniqueUsersMap.set(user.userid!, user)
+                    }
+                })
+
+                setData(Array.from(uniqueUsersMap.values()))
                 console.log("API Response:", response)
                 console.log("First item:", response[0])
             } catch (err) {
@@ -161,22 +169,22 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
     })
 
     const handleView = (user: User) => {
-        const authCode = getValue(user, ['autH_CODE'])
-        console.log("authCode from user in UsersTable:", authCode)
+        const userId = getValue(user, ['userid'])
+        console.log("userId from user in UsersTable:", userId)
 
-        if (authCode) {
+        if (userId) {
             const params = new URLSearchParams()
             if (selectedTitle !== "all") params.set('app', selectedTitle)
             if (selectedRole !== "all") params.set('role', selectedRole)
             if (searchTerm.trim()) params.set('search', searchTerm)
 
             const queryString = params.toString()
-            const url = queryString ? `/Users/View/${authCode}?${queryString}` : `/Users/View/${authCode}`
+            const url = queryString ? `/Users/View/${userId}?${queryString}` : `/Users/View/${userId}`
             console.log("Navigating to URL:", url)
 
             router.push(url)
         } else {
-            console.warn("authCode is missing for user:", user)
+            console.warn("userId is missing for user:", user)
         }
     }
 
