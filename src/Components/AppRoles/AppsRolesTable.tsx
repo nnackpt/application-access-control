@@ -1,16 +1,19 @@
 import { AppsRolesApi } from "@/services/AppsRolesApi"
 import { AppsRoles } from "@/types/AppsRoles"
+
 import getValue from "@/Utils/getValue"
+import formatDateTime from "@/Utils/formatDateTime"
+
 import { useEffect, useState } from "react"
 import toast, { Toaster } from "react-hot-toast"
-import Pagination from "../UI/Pagination"
-import formatDateTime from "@/Utils/formatDateTime"
+import Skeleton from 'react-loading-skeleton'
 import { ChevronDown, ChevronUp, Edit, Eye, Trash2 } from "lucide-react"
+
+import Pagination from "../UI/Pagination"
 import ViewModal from "./AppsRolesViewModal"
 import AppsRolesEditModal from "./AppsRolesEditModal"
 import DeleteConfirmModal from "../UI/DeleteConfirmModal"
 import RowsPerPageSelect from "../UI/Select/RowsPerPageSelect"
-import Skeleton from 'react-loading-skeleton'
 
 interface AppsRolesTableProps {
     refreshSignal: number
@@ -164,14 +167,32 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
     }
 
     if (loading) {
-    return (
-      <div className="space-y-3">
-      {[...Array(10)].map((_, i) => (
-        <Skeleton key={i} height={40} borderRadius={8} />
-      ))}
-    </div>
-    )
-  }
+        return (
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden p-4">
+            <Skeleton height={40} className="mb-4" /> 
+            <div className="hidden xl:block">
+              <Skeleton height={50} className="mb-2" /> 
+              {[...Array(rowsPerPage)].map((_, i) => (
+                <Skeleton key={i} height={40} className="mb-2" />
+              ))}
+            </div>
+            <div className="xl:hidden space-y-4">
+              {[...Array(rowsPerPage)].map((_, i) => (
+                <div key={i} className="border border-gray-200 rounded-lg p-4">
+                  <Skeleton height={20} width="60%" className="mb-2" />
+                  <Skeleton height={15} width="80%" className="mb-2" />
+                  <Skeleton height={15} width="40%" className="mb-4" />
+                  <div className="flex space-x-2">
+                    <Skeleton height={36} width="30%" />
+                    <Skeleton height={36} width="30%" />
+                    <Skeleton height={36} width="30%" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+    }
 
     return (
         <>

@@ -1,16 +1,19 @@
 import { AppsFunctionsApi } from "@/services/AppsFunctionsApi"
 import { AppsFunctions } from "@/types/AppsFunctions"
+
 import React, { useEffect, useState } from "react"
-import ViewModal from "./AppsFunctionsViewModal"
 import { ChevronDown, ChevronUp, Edit, Eye, Trash2 } from "lucide-react"
 import toast, { Toaster } from "react-hot-toast"
+import Skeleton from 'react-loading-skeleton'
+
+import ViewModal from "./AppsFunctionsViewModal"
 import AppsFunctionsEditModal from "./AppsFunctionsEditModal"
 import DeleteConfirmModal from "../UI/DeleteConfirmModal"
-import getValue from "@/Utils/getValue"
-import formatDateTime from "@/Utils/formatDateTime"
 import Pagination from "../UI/Pagination"
 import RowsPerPageSelect from "../UI/Select/RowsPerPageSelect"
-import Skeleton from 'react-loading-skeleton'
+
+import getValue from "@/Utils/getValue"
+import formatDateTime from "@/Utils/formatDateTime"
 
 interface AppsFunctionsTableProps {
     refreshSignal: number
@@ -171,13 +174,31 @@ export default function AppsFunctionsTable({ refreshSignal, onRefresh, searchTer
     })
 
     if (loading) {
-    return (
-        <div className="space-y-3">
-        {[...Array(10)].map((_, i) => (
-            <Skeleton key={i} height={40} borderRadius={8} />
-        ))}
-        </div>
-        )
+        return (
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden p-4">
+            <Skeleton height={40} className="mb-4" /> 
+            <div className="hidden xl:block">
+              <Skeleton height={50} className="mb-2" /> 
+              {[...Array(rowsPerPage)].map((_, i) => (
+                <Skeleton key={i} height={40} className="mb-2" />
+              ))}
+            </div>
+            <div className="xl:hidden space-y-4">
+              {[...Array(rowsPerPage)].map((_, i) => (
+                <div key={i} className="border border-gray-200 rounded-lg p-4">
+                  <Skeleton height={20} width="60%" className="mb-2" />
+                  <Skeleton height={15} width="80%" className="mb-2" />
+                  <Skeleton height={15} width="40%" className="mb-4" />
+                  <div className="flex space-x-2">
+                    <Skeleton height={36} width="30%" />
+                    <Skeleton height={36} width="30%" />
+                    <Skeleton height={36} width="30%" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
     }
 
     return (

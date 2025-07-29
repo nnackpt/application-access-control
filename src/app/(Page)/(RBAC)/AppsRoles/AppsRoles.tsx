@@ -25,16 +25,11 @@ import { AiFillFileExcel } from "react-icons/ai"
 
 export default function AppsRoles() {
     const [refresh, setRefresh] = useState(0)
-    // const [isModalOpen, setIsModalOpen] = useState(false)
-    // const [editRoles, setEditRoles] = useState<AppsRoles | null>(null)
     const [appsRoles, setAppsRoles] = useState<AppsRoles[]>([])
     const [loading, setLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedTitle, setSelectedTitle] = useState("all")
-    // const [applicationTitle, setApplicationTitle] = useState<Record<string, string>>({})
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-    // const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-    // const [editData, setEditData] = useState<AppsRoles | null>(null)
     const [applications, setApplications] = useState<Application[]>([])
     const { exportToExcel } = useExportData<AppsRoles>();
 
@@ -57,27 +52,6 @@ export default function AppsRoles() {
         });
     };
 
-    // const handleOpenCreateModal = () => {
-    //     setEditRoles(null)
-    //     setIsModalOpen(true)
-    // }
-
-    // const handleEditRole = (role: AppsRoles) => {
-    //     setEditRoles(role)
-    //     setIsModalOpen(true)
-    // }
-
-    // const handleModalClose = () => {
-    //     setIsModalOpen(false)
-    //     setEditRoles(null)
-    // }
-
-    // const handleSuccess = () => {
-    //     setIsModalOpen(false)
-    //     setEditRoles(null)
-    //     handleRefresh()
-    // }
-
     const handleRefresh = () => {
         setRefresh(prev => prev + 1)
     }
@@ -94,16 +68,6 @@ export default function AppsRoles() {
                 setAppsRoles(roleResponse)
                 setApplications(appResponse)
 
-                // const TitlesMap: Record<string, string> = {}
-                // appResponse.forEach((app: Application) => {
-                //     const appCode = getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE']) || ''
-                //     const appTitle = getValue(app, ['titLE', 'title']) || ''
-                //     if (appCode && appTitle) {
-                //         TitlesMap[appCode] = appTitle
-                //     }
-                // })
-                // setApplicationTitle(TitlesMap)
-
             } catch (error) {
                 console.error("Error fetching Apps and Roles:", error)
             } finally {
@@ -113,60 +77,6 @@ export default function AppsRoles() {
 
         fetchAppsAndRoles()
     }, [refresh])
-
-    // Calculate total, active, and inactive roles
-    // const totalRoles = appsRoles.length
-    // const activeRoles = appsRoles.filter(role => {
-    //     const active = getValue(role as unknown as Record<string, unknown>, ['active'])
-    //     return active === true
-    // }).length
-    // const inactiveRoles = totalRoles - activeRoles
-
-    // Get unique app titles and sort them
-    // const uniqueAppTitles = Array.from(new Set(appsRoles.map(role => {
-    //     return getValue(role, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE'])
-    // }).filter(Boolean))) as (string | number)[]
-    
-    // const sortedAppTitles = uniqueAppTitles.sort((a, b) => {
-    //     const numA = parseFloat(String(a))
-    //     const numB = parseFloat(String(b))
-
-    //     if (!isNaN(numA) && !isNaN(numB)) {
-    //         return numA - numB
-    //     } else {
-    //         return String(a).localeCompare(String(b))
-    //     }
-    // })
-
-    // const getLastUpdated = () => {
-    //     if (appsRoles.length === 0) return "No data available"
-
-    //     const latestUpdate = appsRoles.reduce((latest: string | null, role) => {
-    //         const updatedDate = getValue(role as unknown as Record<string, unknown>, ['updateD_DATETIME']) as string | undefined
-    //         const createdDate = getValue(role as unknown as Record<string, unknown>, ['createD_DATETIME']) as string | undefined
-          
-    //       const roleDate = updatedDate || createdDate
-    //       if (!roleDate) return latest
-
-    //       const roleDateTime = new Date(roleDate).getTime()
-    //       const latestDateTime = latest ? new Date(latest).getTime() : 0
-
-    //       return roleDateTime > latestDateTime ? roleDate : latest
-    //     }, null)
-
-    //     if (!latestUpdate) return "No updates available"
-
-    //     const today = new Date()
-    //     const updateDate = new Date(latestUpdate)
-    //     const diffTime = today.getTime() - updateDate.getTime()
-    //     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-
-    //     if (diffDays === 0) return 'Today'
-    //     if (diffDays === 1) return 'Yesterday'
-    //     if (diffDays < 7) return `${diffDays} days ago`
-
-    //     return updateDate.toLocaleDateString('th-TH')
-    // }
 
     const {
         total: totalRoles,
@@ -252,14 +162,13 @@ export default function AppsRoles() {
                         <div className="flex justify-between items-center">
                             {/* Skeleton ฝั่งซ้าย */}
                             <div className="flex space-x-3">
-                            <Skeleton height={40} width={180} borderRadius={8} />
-                            <Skeleton height={40} width={240} borderRadius={8} />
-                            <Skeleton height={40} width={220} borderRadius={8} />
+                                <Skeleton height={48} width={48} circle={true} />
+                                <Skeleton height={48} width={48} circle={true} />
                             </div>
             
                             {/* Skeleton Search */}
                             <div className="flex items-center space-x-3">
-                                <Skeleton height={40} width={180} borderRadius={8} />
+                                <Skeleton height={40} width={320} borderRadius={8} />
                                 <Skeleton height={40} width={240} borderRadius={8} />
                             </div>
                         </div>

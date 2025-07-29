@@ -72,38 +72,6 @@ export default function Applications() {
     fetchApplications()
   }, [refresh])
 
-  // const totalApplications = applications.length
-  // const activeApplications = applications.filter(app =>
-  //   getValue(app, ['active', 'Active', 'is_active', 'isActive', 'status']) === true
-  // ).length
-  // const inactiveApplications = totalApplications - activeApplications
-
-  // const getLastUpdated = () => {
-  //   if (applications.length === 0) return 'No data'
-
-  //   const latestUpdate = applications.reduce((latest, app) => {
-  //     const updatedDate = getValue(app, ['updateD_DATETIME', 'updatedDatetime', 'updated_datetime', 'updatedDate', 'updated_date'])
-  //     const createdDate = getValue(app, ['createD_DATETIME', 'createdDatetime', 'created_datetime', 'createdDate', 'created_date'])
-  //     const appDate = updatedDate || createdDate
-  //     if (!appDate) return latest
-  //     const appDateTime = new Date(appDate).getTime()
-  //     const latestDateTime = latest ? new Date(latest).getTime() : 0
-  //     return appDateTime > latestDateTime ? appDate : latest
-  //   }, null)
-
-  //   if (!latestUpdate) return 'No data'
-
-  //   const today = new Date()
-  //   const updateDate = new Date(latestUpdate)
-  //   const diffTime = today.getTime() - updateDate.getTime()
-  //   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-
-  //   if (diffDays === 0) return 'Today'
-  //   if (diffDays === 1) return 'Yesterday'
-  //   if (diffDays < 7) return `${diffDays} days ago`
-  //   return updateDate.toLocaleDateString('th-TH')
-  // }
-
   const {
     total: totalApplications,
     active: activeApplications,

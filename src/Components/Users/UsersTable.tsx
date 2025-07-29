@@ -261,12 +261,30 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
 
     if (loading) {
         return (
-            <div className="space-y-3">
-                {[...Array(10)].map((_, i) => (
-                    <Skeleton key={i} height={40} borderRadius={8} />
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden p-4">
+            <Skeleton height={40} className="mb-4" /> 
+            <div className="hidden xl:block">
+                <Skeleton height={50} className="mb-2" /> 
+                {[...Array(rowsPerPage)].map((_, i) => (
+                <Skeleton key={i} height={40} className="mb-2" />
                 ))}
             </div>
-        )
+            <div className="xl:hidden space-y-4">
+                {[...Array(rowsPerPage)].map((_, i) => (
+                <div key={i} className="border border-gray-200 rounded-lg p-4">
+                    <Skeleton height={20} width="60%" className="mb-2" />
+                    <Skeleton height={15} width="80%" className="mb-2" />
+                    <Skeleton height={15} width="40%" className="mb-4" />
+                    <div className="flex space-x-2">
+                    <Skeleton height={36} width="30%" />
+                    <Skeleton height={36} width="30%" />
+                    <Skeleton height={36} width="30%" />
+                    </div>
+                </div>
+                ))}
+            </div>
+            </div>
+        );
     }
 
     return (

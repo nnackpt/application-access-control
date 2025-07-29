@@ -8,7 +8,6 @@ import Skeleton from 'react-loading-skeleton'
 
 import AppsFunctionsTable from "@/Components/AppsFunctions/AppsFunctionsTable"
 import AppsFunctionsCreateModal from "@/Components/AppsFunctions/AppsFunctionsCreateModal"
-// import AppsFunctionsEditModal from "@/Components/AppsFunctions/AppsFunctionsEditModal"
 import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
 import StatsCard from "@/Components/UI/StatsCard"
 
@@ -18,23 +17,16 @@ import type { AppsFunctions } from "@/types/AppsFunctions"
 import { Application } from "@/types/Application"
 
 import { motion } from 'framer-motion';
-// import getValue from "@/Utils/getValue"
 import { useExportData } from "@/hooks/useExportData"
 import { getStats } from "@/Utils/getStats"
-// import { saveAs } from 'file-saver';
 
 export default function AppsFunctions() {
   const [refresh, setRefresh] = useState(0)
-  // const [isModalOpen, setIsModalOpen] = useState(false)
-  // const [editFunction, setEditFunction] = useState<AppsFunctions | null>(null)
   const [appsFunctions, setAppsFunctions] = useState<AppsFunctions[]>([])
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedAppTitle, setSelectedAppTitle] = useState("all")
-  // const [applicationTitle, setApplicationTitle] = useState<Record<string, string>>({})
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-  // const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  // const [editData, setEditData] = useState<AppsFunctions | null>(null)
   const [applications, setApplications] = useState<Application[]>([]);
   const { exportToExcel } = useExportData<AppsFunctions>()
 
@@ -58,27 +50,6 @@ export default function AppsFunctions() {
     });
   };
 
-  // const handleOpenCreateModal = () => {
-  //   setEditFunction(null)
-  //   setIsModalOpen(true)
-  // }
-
-  // const handleEditFunction = (func: AppsFunctions) => {
-  //   setEditFunction(func)
-  //   setIsModalOpen(true)
-  // }
-
-  // const handleModalClose = () => {
-  //   setIsModalOpen(false)
-  //   setEditFunction(null)
-  // }
-
-  // const handleSuccess = () => {
-  //   setIsModalOpen(false)
-  //   setEditFunction(null)
-  //   handleRefresh()
-  // }
-
   // ดึงข้อมูลสำหรับ stats
   useEffect(() => {
     const fetchAppsAndFunctions = async () => {
@@ -90,16 +61,6 @@ export default function AppsFunctions() {
         ])
         setAppsFunctions(functionsResponse)
         setApplications(applicationsResponse)
-
-        // const TitlesMap: Record<string, string> = {}
-        // applicationsResponse.forEach((app: Application) => {
-        //   const appCode = getValue(app, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE', 'code', 'id'])
-        //   const appTitle = getValue(app, ['title', 'TITLE'])
-        //   if (appCode && appTitle) {
-        //     TitlesMap[appCode] = appTitle
-        //   }
-        // })
-        // setApplicationTitle(TitlesMap)
 
       } catch (error) {
         console.error('Error fetching data:', error)
@@ -115,61 +76,6 @@ export default function AppsFunctions() {
     setRefresh(prev => prev + 1)
   }
 
-  // คำนวณ stats จากข้อมูล apps functions
-  // const totalFunctions = appsFunctions.length
-  // const activeFunctions = appsFunctions.filter(func => {
-  //   const active = getValue(func as unknown as Record<string, unknown>, ['active'])
-  //   return active === true
-  // }).length
-  // const inactiveFunctions = totalFunctions - activeFunctions
-
-  // นับจำนวน unique applications
-  // const uniqueAppTitles = Array.from(new Set(appsFunctions.map(func => {
-  //   return getValue(func, ['apP_CODE', 'appCode', 'app_code', 'AppCode', 'APP_CODE'])
-  // }).filter(Boolean))) as (string | number)[]
-
-  // const sortedAppTitles = uniqueAppTitles.sort((a, b) => {
-  //   const numA = parseFloat(String(a))
-  //   const numB = parseFloat(String(b))
-    
-  //   if (!isNaN(numA) && !isNaN(numB)) {
-  //     return numA - numB
-  //   } else {
-  //     return String(a).localeCompare(String(b))
-  //   }
-  // })
-
-  // หาวันที่ updated ล่าสุด
-  // const getLastUpdated = () => {
-  //   if (appsFunctions.length === 0) return 'No data'
-    
-  //   const latestUpdate = appsFunctions.reduce((latest: string | null, func) => {
-  //     const updatedDate = getValue(func as unknown as Record<string, unknown>, ['updateD_DATETIME']) as string | undefined
-  //     const createdDate = getValue(func as unknown as Record<string, unknown>, ['createD_DATETIME']) as string | undefined
-      
-  //     const funcDate = updatedDate || createdDate
-  //     if (!funcDate) return latest
-
-  //     const funcDateTime = new Date(funcDate).getTime()
-  //     const latestDateTime = latest ? new Date(latest).getTime() : 0
-
-  //     return funcDateTime > latestDateTime ? funcDate : latest
-  //   }, null as string | null)
-
-  //   if (!latestUpdate) return 'No data'
-    
-  //   const today = new Date()
-  //   const updateDate = new Date(latestUpdate)
-  //   const diffTime = today.getTime() - updateDate.getTime()
-  //   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-    
-  //   if (diffDays === 0) return 'Today'
-  //   if (diffDays === 1) return 'Yesterday'
-  //   if (diffDays < 7) return `${diffDays} days ago`
-    
-  //   return updateDate.toLocaleDateString('th-TH')
-  // }
-
   const {
     total: totalFunctions,
     active: activeFunctions,
@@ -183,7 +89,7 @@ export default function AppsFunctions() {
 
           <div className="flex justify-between items-start mb-6 -mt-4 px-2">
             <div className="text-[var(--primary-color)] text-xl font-bold">
-              APPLICATION&apos;S FUNCTION
+              {loading ? <Skeleton width={200} height={36} /> : "APPLICATION'S FUNCTION"}
             </div>
           </div>
 
@@ -191,10 +97,22 @@ export default function AppsFunctions() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           {loading ? (
             <>
-              <Skeleton height={100} borderRadius={12} />
-              <Skeleton height={100} borderRadius={12} />
-              <Skeleton height={100} borderRadius={12} />
-              <Skeleton height={100} borderRadius={12} />
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <Skeleton height={20} width="80%" className="mb-2" />
+                <Skeleton height={30} width="50%" />
+              </div>
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <Skeleton height={20} width="80%" className="mb-2" />
+                <Skeleton height={30} width="50%" />
+              </div>
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <Skeleton height={20} width="80%" className="mb-2" />
+                <Skeleton height={30} width="50%" />
+              </div>
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <Skeleton height={20} width="80%" className="mb-2" />
+                <Skeleton height={30} width="50%" />
+              </div>
             </>
           ) : (
             <>
@@ -242,14 +160,13 @@ export default function AppsFunctions() {
             <div className="flex justify-between items-center">
               {/* Skeleton ฝั่งซ้าย */}
               <div className="flex space-x-3">
-              <Skeleton height={40} width={180} borderRadius={8} />
-              <Skeleton height={40} width={240} borderRadius={8} />
-              <Skeleton height={40} width={220} borderRadius={8} />
+                <Skeleton height={48} width={48} circle={true} />
+                <Skeleton height={48} width={48} circle={true} />
               </div>
 
               {/* Skeleton Search */}
               <div className="flex items-center space-x-3">
-                  <Skeleton height={40} width={180} borderRadius={8} />
+                  <Skeleton height={40} width={320} borderRadius={8} />
                   <Skeleton height={40} width={240} borderRadius={8} />
               </div>
           </div>
@@ -261,8 +178,7 @@ export default function AppsFunctions() {
                           
                         <motion.button
                             onClick={() => setIsCreateModalOpen(true)}
-                            className="flex items-center space-x-2 bg-[var(--primary-color)] text-white px-6 py-2 rounded-lg
-                                    shadow-lg cursor-pointer"
+                            className="p-3 bg-[var(--primary-color)] text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200"
                             whileHover={{ scale: 1.05, backgroundColor: "var(--primary-color-dark)", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
                             whileTap={{ scale: 0.98 }}
                             transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -273,8 +189,7 @@ export default function AppsFunctions() {
 
                         <motion.button
                             onClick={handleExport}
-                            className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
-                                    shadow-lg cursor-pointer"
+                            className="p-3 bg-gray-500 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200"
                             whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
                             whileTap={{ scale: 0.98 }}
                             transition={{ type: "spring", stiffness: 400, damping: 17 }}

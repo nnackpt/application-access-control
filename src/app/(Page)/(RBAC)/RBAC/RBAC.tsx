@@ -165,7 +165,7 @@ function RBACContent() {
 
                 <div className="flex justify-between items-start mb-6 -mt-4 px-2">
                     <div className="text-[var(--primary-color)] text-xl font-bold">
-                        <span>RBAC: Role Base Access Control</span>
+                        {loading ? <Skeleton width={200} height={36} /> : "RBAC: Role Base Access Control"}
                     </div>
                 </div>
 
@@ -173,10 +173,22 @@ function RBACContent() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     {loading ? (
                         <>
-                            <Skeleton height={100} borderRadius={12} />
-                            <Skeleton height={100} borderRadius={12} />
-                            <Skeleton height={100} borderRadius={12} />
-                            <Skeleton height={100} borderRadius={12} />
+                            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                                <Skeleton height={20} width="80%" className="mb-2" />
+                                <Skeleton height={30} width="50%" />
+                            </div>
+                            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                                <Skeleton height={20} width="80%" className="mb-2" />
+                                <Skeleton height={30} width="50%" />
+                            </div>
+                            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                                <Skeleton height={20} width="80%" className="mb-2" />
+                                <Skeleton height={30} width="50%" />
+                            </div>
+                            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                                <Skeleton height={20} width="80%" className="mb-2" />
+                                <Skeleton height={30} width="50%" />
+                            </div>
                         </>
                     ) : (
                         <>
@@ -224,14 +236,16 @@ function RBACContent() {
                     {loading ? (
                         <div className="flex justify-between items-center">
                             <div className="flex space-x-3">
-                            <Skeleton height={40} width={180} borderRadius={8} />
-                            <Skeleton height={40} width={240} borderRadius={8} />
-                            <Skeleton height={40} width={220} borderRadius={8} />
+                                <Skeleton height={48} width={48} circle={true} />
+                                <Skeleton height={48} width={48} circle={true} />
                             </div>
             
-                            <div className="flex items-center space-x-3">
-                                <Skeleton height={40} width={180} borderRadius={8} />
-                                <Skeleton height={40} width={240} borderRadius={8} />
+                            <div className="flex items-start space-x-3">
+                                <Skeleton height={40} width={240} borderRadius={8} className="mt-8" />
+                                <div className="flex flex-col space-y-3">
+                                    <Skeleton height={40} width={290} borderRadius={8} />
+                                    <Skeleton height={40} width={290} borderRadius={8} />
+                                </div>
                             </div>
                         </div>
                     ) : (
@@ -242,8 +256,7 @@ function RBACContent() {
 
                                 <motion.button
                                     onClick={() => router.push("/RBAC/Create")}
-                                    className="flex items-center space-x-2 bg-[var(--primary-color)] text-white px-6 py-2 rounded-lg
-                                            shadow-lg cursor-pointer"
+                                    className="p-3 bg-[var(--primary-color)] text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200"
                                     whileHover={{ scale: 1.05, backgroundColor: "var(--primary-color-dark)", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
                                     whileTap={{ scale: 0.98 }}
                                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -254,8 +267,7 @@ function RBACContent() {
 
                                 <motion.button
                                     onClick={handleExport}
-                                    className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
-                                            shadow-lg cursor-pointer"
+                                    className="p-3 bg-gray-500 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200"
                                     whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
                                     whileTap={{ scale: 0.98 }}
                                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
