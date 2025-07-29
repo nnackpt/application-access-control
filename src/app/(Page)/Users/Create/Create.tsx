@@ -34,11 +34,11 @@ const initForm: UsersAuthorizeCreateRequestDto = {
 }
 
 // Define the structure for a Facility entry
-interface Facility {
-    sitE_CODE: string;
-    domaiN_CODE: string;
-    facT_CODE: string;
-}
+// interface Facility {
+//     sitE_CODE: string;
+//     domaiN_CODE: string;
+//     facT_CODE: string;
+// }
 
 // Skeleton Components
 const DropdownSkeleton = () => (

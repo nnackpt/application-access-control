@@ -160,7 +160,7 @@ export default function RbacEditPage() {
             </div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">RBAC Not Found</h1>
             <p className="text-gray-600">
-                We couldn't find any RBAC details for ID: <span className="font-medium text-gray-800">{rbac}</span>
+                We couldn&apos;t find any RBAC details for ID: <span className="font-medium text-gray-800">{rbac}</span>
             </p>
             </motion.div>
 

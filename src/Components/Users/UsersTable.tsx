@@ -80,12 +80,18 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
 
                 const uniqueUsersMap = new Map<string, User>()
                 response.forEach(user => {
-                    if (!uniqueUsersMap.has(user.userid!)) {
-                        uniqueUsersMap.set(user.userid!, user)
+                    const userId = user.userid || ''
+                    const appCode = user.apP_CODE || ''
+                    const roleCode = user.rolE_CODE || ''
+                    const uniqueKey = `${userId}-${appCode}-${roleCode}`
+                    
+                    if (!uniqueUsersMap.has(uniqueKey)) {
+                        uniqueUsersMap.set(uniqueKey, user)
                     }
                 })
 
                 setData(Array.from(uniqueUsersMap.values()))
+                
                 console.log("API Response:", response)
                 console.log("First item:", response[0])
             } catch (err) {
@@ -316,9 +322,15 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
                             <tbody>
                                 {/* Table Rows */}
                                 {getPaginatedData().map((user, index) => {
+                                    const appCode = getValue(user, ['apP_CODE']) || ''
+                                    const roleCode = getValue(user, ['rolE_CODE']) || ''
+                                    const userId = getValue(user, ['userid']) || ''
+                                    // const authCode = getValue(user, ['autH_CODE']) || ''
+                                    
+                                    const uniqueKey = `${userId}-${appCode}-${roleCode}-${index}`
+
                                     const appName = getAppName(user) || ''
                                     const roleName = getRoleName(user) || ''
-                                    const userId = getValue(user, ['userid']) || ''
                                     const fname = getValue(user, ['fname']) || ''
                                     const lname = getValue(user, ['lname']) || ''
                                     const fullName = getFullName(fname, lname)
@@ -327,10 +339,10 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
                                     const createdDate = getValue(user, ['createD_DATETIME']) || ''
                                     const updatedBy = getValue(user, ['updateD_BY']) || ''
                                     const updatedDate = getValue(user, ['updateD_DATETIME']) || ''
-                                    const authCode = getValue(user, ['autH_CODE'])
+                                    // const authCode = getValue(user, ['autH_CODE'])
 
                                     return (
-                                        <tr key={`${userId || index}-${index}`} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">
+                                        <tr key={uniqueKey} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">
                                             <td className="px-3 py-3 font-medium text-[var(--primary-color)] text-sm">{appName || '-'}</td>
                                             <td className="px-3 py-3 text-sm">{roleName || '-'}</td>
                                             <td className="px-3 py-3 text-sm">{userId || '-'}</td>

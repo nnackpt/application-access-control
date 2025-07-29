@@ -149,9 +149,9 @@ function UserContent() {
                     applicationApi.getApplications(),
                     AppsRolesApi.getAppsRoles()
                 ])
-                setApplications(appResponse),
-                setUser(userResponse),
-                setRoles(appsRolesResponse)
+                setApplications(appResponse);
+                setUser(userResponse);
+                setRoles(appsRolesResponse);
             
             } catch (error) {
                 console.error("Error fetching Users and Data:", error)

@@ -16,7 +16,7 @@ import { AppsRoles } from "@/types/AppsRoles"
 import { UserApi } from "@/services/UserApi"
 import { applicationApi } from "@/services/ApplicationApi"
 import { AppsRolesApi } from "@/services/AppsRolesApi"
-import Skeleton from "react-loading-skeleton"
+// import Skeleton from "react-loading-skeleton"
 
 export default function UserViewPage() {
   // const { authCode } = useParams()
@@ -226,7 +226,7 @@ export default function UserViewPage() {
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">User Not Found</h1>
           <p className="text-gray-600">
-            We couldn't find any user details for ID: <span className="font-medium text-gray-800">{userId}</span>
+            We couldn&apos;t find any user details for ID: <span className="font-medium text-gray-800">{userId}</span>
           </p>
         </motion.div>
 
