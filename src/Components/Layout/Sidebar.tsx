@@ -103,7 +103,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
   React.useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("https://192.168.152.16:7070/api/UserInfo/current", {
+        const res = await fetch("https://10.83.49.10:7070/api/UserInfo/current", {
           credentials: "include",
         });
         if (res.ok) {

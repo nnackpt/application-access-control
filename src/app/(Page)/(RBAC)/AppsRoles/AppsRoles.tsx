@@ -181,7 +181,7 @@ export default function AppsRoles() {
 
                 <div className="flex justify-between items-start mb-6 -mt-4 px-2">
                     <div className="text-[var(--primary-color)] text-xl font-bold">
-                        <span>APPLICATION&apos;s ROLES</span>
+                        {loading ? <Skeleton width={200} height={36} /> : "APPLICATION'S ROLES"}
                     </div>
                 </div>
 
@@ -189,10 +189,22 @@ export default function AppsRoles() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     {loading ? (
                         <>
-                            <Skeleton height={100} borderRadius={12} />
-                            <Skeleton height={100} borderRadius={12} />
-                            <Skeleton height={100} borderRadius={12} />
-                            <Skeleton height={100} borderRadius={12} />
+                            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                                <Skeleton height={20} width="80%" className="mb-2" />
+                                <Skeleton height={30} width="50%" />
+                            </div>
+                            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                                <Skeleton height={20} width="80%" className="mb-2" />
+                                <Skeleton height={30} width="50%" />
+                            </div>
+                            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                                <Skeleton height={20} width="80%" className="mb-2" />
+                                <Skeleton height={30} width="50%" />
+                            </div>
+                            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                                <Skeleton height={20} width="80%" className="mb-2" />
+                                <Skeleton height={30} width="50%" />
+                            </div>
                         </>
                     ) : (
                         <>
@@ -259,8 +271,7 @@ export default function AppsRoles() {
 
                                     <motion.button
                                         onClick={() => setIsCreateModalOpen(true)}
-                                        className="flex items-center space-x-2 bg-[var(--primary-color)] text-white px-6 py-2 rounded-lg
-                                                shadow-lg cursor-pointer"
+                                        className="p-3 bg-[var(--primary-color)] text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200"
                                         whileHover={{ scale: 1.05, backgroundColor: "var(--primary-color-dark)", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
                                         whileTap={{ scale: 0.98 }}
                                         transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -271,8 +282,7 @@ export default function AppsRoles() {
 
                                     <motion.button
                                         onClick={handleExport}
-                                        className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg
-                                                shadow-lg cursor-pointer"
+                                        className="p-3 bg-gray-500 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200"
                                         whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
                                         whileTap={{ scale: 0.98 }}
                                         transition={{ type: "spring", stiffness: 400, damping: 17 }}

@@ -164,7 +164,7 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
             if (searchTerm.trim()) params.set('search', searchTerm)
             
             const queryString = params.toString()
-            const url = queryString ? `/RBAC/view/${rbacCode}?${queryString}` : `/RBAC/view/${rbacCode}`
+            const url = queryString ? `/RBAC/view?code=${rbacCode}?${queryString}` : `/RBAC/view?code=${rbacCode}`
             
             router.push(url)
         }
@@ -179,7 +179,7 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
             if (searchTerm.trim()) params.set('search', searchTerm)
             
             const queryString = params.toString()
-            const url = queryString ? `/RBAC/Edit/${rbacCode}?${queryString}` : `/RBAC/Edit/${rbacCode}`
+            const url = queryString ? `/RBAC/Edit?code=${rbacCode}?${queryString}` : `/RBAC/Edit?code=${rbacCode}`
             
             router.push(url)
         }

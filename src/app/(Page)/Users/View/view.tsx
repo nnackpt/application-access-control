@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { ChevronLeft, Package, Users, User as UserIcon, Building, UserX } from "lucide-react"
-import { useParams, useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from 'framer-motion'
 
 import getValue from "@/Utils/getValue"
@@ -16,15 +16,11 @@ import { AppsRoles } from "@/types/AppsRoles"
 import { UserApi } from "@/services/UserApi"
 import { applicationApi } from "@/services/ApplicationApi"
 import { AppsRolesApi } from "@/services/AppsRolesApi"
-// import Skeleton from "react-loading-skeleton"
 
 export default function UserViewPage() {
-  // const { authCode } = useParams()
-  const params = useParams()
-  const userId = params.userId as string
-  
   const router = useRouter()
   const searchParams = useSearchParams()
+  const userId = searchParams.get('userId') 
 
   const [user, setUser] = useState<User | null>(null)
   const [facilities, setFacilities] = useState<FacilitySelectionDto[]>([])
@@ -79,10 +75,6 @@ export default function UserViewPage() {
 
   const totalPages = Math.ceil(facilities.length / rowsPerPage)
 
-  // const handlePageChange = (page: number) => {
-  //   setCurrentPage(page)
-  // }
-
   const handleRowsPerPageChange = (value: number) => {
     setRowsPerPage(value)
     setCurrentPage(1)
@@ -117,6 +109,44 @@ export default function UserViewPage() {
     const backUrl = queryString ? `/Users?${queryString}` : '/Users'
 
     router.push(backUrl)
+  }
+
+  // แสดง error ถ้าไม่มี userId parameter
+  if (!userId) {
+    return (
+      <div className="container mx-auto p-8 mt-10 bg-gradient-to-br from-slate-100 via-white to-slate-50 rounded-2xl shadow-2xl max-w-2xl text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex justify-center mb-4">
+            <UserX className="h-12 w-12 text-red-500" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Missing User ID</h1>
+          <p className="text-gray-600">
+            Please provide a valid user ID in the URL parameters.
+          </p>
+        </motion.div>
+
+        <motion.button
+          whileHover={{
+            scale: 1.05,
+            backgroundColor: "#4B5563",
+            boxShadow: "0 10px 15px rgba(0, 0, 0, 0.15)",
+          }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          onClick={() => router.back()}
+          className="mt-8 inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg shadow-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-color)]"
+        >
+          <ChevronLeft className="mr-2 h-5 w-5" />
+          Go Back
+        </motion.button>
+      </div>
+    )
   }
 
   if (loading) {
@@ -202,17 +232,6 @@ export default function UserViewPage() {
     )
   }
 
-  // if (loading) {
-  //   return (
-  //     <div className="container mx-auto p-6 bg-white rounded-lg shadow-md mt-6">
-  //       <Skeleton height={30} width="30%" className="mb-4" />
-  //       <Skeleton height={3} width={20} className="mb-2" />
-  //       <Skeleton height={200} className="mb-6" />
-  //       <Skeleton height={40} width="50%" className="mb-4" />
-  //     </div>
-  //   )
-  // }
-
   if (!user) {
     return (
       <div className="container mx-auto p-8 mt-10 bg-gradient-to-br from-slate-100 via-white to-slate-50 rounded-2xl shadow-2xl max-w-2xl text-center">
@@ -233,14 +252,14 @@ export default function UserViewPage() {
         <motion.button
           whileHover={{
             scale: 1.05,
-            backgroundColor: "#4B5563", // Slate-600
+            backgroundColor: "#4B5563",
             boxShadow: "0 10px 15px rgba(0, 0, 0, 0.15)",
           }}
           whileTap={{ scale: 0.95 }}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          onClick={() => router.back()}
+          onClick={handleBackToList}
           className="mt-8 inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg shadow-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-color)]"
         >
           <ChevronLeft className="mr-2 h-5 w-5" />
@@ -270,8 +289,6 @@ export default function UserViewPage() {
       if (app) appName = app.name
     }
 
-    // const appCode = userItem.apP_CODE || '-'
-    // return appName ? `${appCode} - ${appName}` : appCode
     return appName || 'Unknown Application'
   }
 
@@ -334,7 +351,7 @@ export default function UserViewPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
         >
           <div className="flex items-center space-x-2 text-gray-600 mb-2">
             <Package size={20} className="text-[var(--primary-color)]" />
@@ -349,7 +366,7 @@ export default function UserViewPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
         >
           <div className="flex items-center space-x-2 text-gray-600 mb-2">
             <Users size={20} className="text-[var(--primary-color)]"/>
@@ -364,7 +381,7 @@ export default function UserViewPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
         >
           <div className="flex items-center space-x-2 text-gray-600 mb-2">
             <UserIcon size={20} className="text-[var(--primary-color)]"/>
@@ -381,7 +398,7 @@ export default function UserViewPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
         >
           <div className="flex items-center space-x-2 text-gray-600 mb-2">
             <UserIcon size={20} className="text-[var(--primary-color)]"/>
@@ -395,7 +412,7 @@ export default function UserViewPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
         >
           <div className="flex items-center space-x-2 text-gray-600 mb-2">
             <Building size={20} className="text-[var(--primary-color)]"/>
@@ -446,8 +463,6 @@ export default function UserViewPage() {
             </thead>
             <tbody>
               {paginatedFacilities.map((facility, index) => {
-                // const currentAuthCode = getValue(facility, ["autH_CODE"])
-                // const isCurrentAuth = currentAuthCode === authCode
                 return (
                   <tr
                     key={index}

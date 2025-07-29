@@ -185,7 +185,7 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
             if (searchTerm.trim()) params.set('search', searchTerm)
 
             const queryString = params.toString()
-            const url = queryString ? `/Users/View/${userId}?${queryString}` : `/Users/View/${userId}`
+            const url = queryString ? `/Users/View?userId=${userId}?${queryString}` : `/Users/View?userId=${userId}`
             console.log("Navigating to URL:", url)
 
             router.push(url)

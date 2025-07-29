@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams, useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Rbac } from "@/types/Rbac"
 import { rbacApi } from "@/services/RbacApi"
 import { AppsFunctionsApi } from "@/services/AppsFunctionsApi"
@@ -13,9 +13,9 @@ import RowsPerPageSelect from "@/Components/UI/Select/RowsPerPageSelect"
 import { AppsFunctions } from "@/types/AppsFunctions"
 
 export default function RbacViewPage() {
-  const { code } = useParams()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const code = searchParams.get('code')
 
   const [rbac, setRbac] = useState<Rbac | null>(null)
   const [functions, setFunctions] = useState<AppsFunctions[]>([])
@@ -25,7 +25,10 @@ export default function RbacViewPage() {
   const [rowsPerPage, setRowsPerPage] = useState(10)
 
   useEffect(() => {
-    if (!code) return
+    if (!code) {
+      setLoading(false)
+      return
+    }
 
     const fetchData = async () => {
       try {
@@ -84,6 +87,44 @@ export default function RbacViewPage() {
     const backUrl = queryString ? `/RBAC?${queryString}` : '/RBAC'
 
     router.push(backUrl)
+  }
+
+  // แสดง error ถ้าไม่มี code parameter
+  if (!code) {
+    return (
+      <div className="container mx-auto p-8 mt-10 bg-gradient-to-br from-slate-100 via-white to-slate-50 rounded-2xl shadow-2xl max-w-2xl text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex justify-center mb-4">
+            <UserX className="h-12 w-12 text-red-500" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Missing RBAC Code</h1>
+          <p className="text-gray-600">
+            Please provide a valid RBAC code in the URL parameters.
+          </p>
+        </motion.div>
+
+        <motion.button
+          whileHover={{
+            scale: 1.05,
+            backgroundColor: "#4B5563",
+            boxShadow: "0 10px 15px rgba(0, 0, 0, 0.15)",
+          }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          onClick={() => router.back()}
+          className="mt-8 inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg shadow-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-color)]"
+        >
+          <ChevronLeft className="mr-2 h-5 w-5" />
+          Go Back
+        </motion.button>
+      </div>
+    )
   }
 
   if (loading) {
@@ -155,8 +196,6 @@ export default function RbacViewPage() {
     )
   }
 
-  // if (!rbac) return <div className="p-6 text-red-600">RBAC Not Found</div>
-
   if (!rbac) {
     return (
       <div className="container mx-auto p-8 mt-10 bg-gradient-to-br from-slate-100 via-white to-slate-50 rounded-2xl shadow-2xl max-w-2xl text-center">
@@ -170,21 +209,21 @@ export default function RbacViewPage() {
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">RBAC Not Found</h1>
           <p className="text-gray-600">
-            We couldn&apos;t find any RBAC details for ID: <span className="font-medium text-gray-800">{rbac}</span>
+            We couldn&apos;t find any RBAC details for code: <span className="font-medium text-gray-800">{code}</span>
           </p>
         </motion.div>
 
         <motion.button
           whileHover={{
             scale: 1.05,
-            backgroundColor: "#4B5563", // Slate-600
+            backgroundColor: "#4B5563",
             boxShadow: "0 10px 15px rgba(0, 0, 0, 0.15)",
           }}
           whileTap={{ scale: 0.95 }}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          onClick={() => router.back()}
+          onClick={handleBackToList}
           className="mt-8 inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-[var(--primary-color)] rounded-lg shadow-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-color)]"
         >
           <ChevronLeft className="mr-2 h-5 w-5" />
@@ -212,7 +251,6 @@ export default function RbacViewPage() {
             scale: 1.05, 
             backgroundColor: "#6B7280", 
             boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)",
-            // x: -3
           }}
           whileTap={{ scale: 0.98 }}
           transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -220,10 +258,10 @@ export default function RbacViewPage() {
           animate={{ opacity: 1, x: 0 }}
         >
           <motion.span
-          whileHover={{   x: -5 }}
-          transition={{ type: "spring", stiffness: 500, damping: 20 }}
+            whileHover={{ x: -5 }}
+            transition={{ type: "spring", stiffness: 500, damping: 20 }}
           >  
-          <ChevronLeft size={20} className="-ml-1" />
+            <ChevronLeft size={20} className="-ml-1" />
           </motion.span>
           <span>Back</span>
         </motion.button>
@@ -236,16 +274,14 @@ export default function RbacViewPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
         >
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
-            <div className="flex items-center space-x-2 text-gray-600 mb-2">
-              <Package size={20} className="text-[#005496]" />
-              <label className="text-sm font-semibold">APPLICATION</label>
-            </div>
-            <p className="text-[#005496] font-bold text-lg">{appCode}</p>
-            <p className="text-sm text-gray-800 mt-1">{appName}</p>
+          <div className="flex items-center space-x-2 text-gray-600 mb-2">
+            <Package size={20} className="text-[#005496]" />
+            <label className="text-sm font-semibold">APPLICATION</label>
           </div>
+          <p className="text-[#005496] font-bold text-lg">{appCode}</p>
+          <p className="text-sm text-gray-800 mt-1">{appName}</p>
         </motion.div>
 
         <motion.div
@@ -253,16 +289,14 @@ export default function RbacViewPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
         >
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
-            <div className="flex items-center space-x-2 text-gray-600 mb-2">
-              <Users size={20} className="text-[#005496]"/>
-              <label className="text-sm font-semibold">ROLE</label>
-            </div>
-            <p className="text-[#005496] font-bold text-lg">{roleCode}</p>
-            <p className="text-sm text-gray-800 mt-1">{roleName}</p>
+          <div className="flex items-center space-x-2 text-gray-600 mb-2">
+            <Users size={20} className="text-[#005496]"/>
+            <label className="text-sm font-semibold">ROLE</label>
           </div>
+          <p className="text-[#005496] font-bold text-lg">{roleCode}</p>
+          <p className="text-sm text-gray-800 mt-1">{roleName}</p>
         </motion.div>
       </div>
 

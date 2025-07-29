@@ -118,7 +118,7 @@ export default function Applications() {
         {/* Header: Title */}
         <div className="flex justify-between items-start mb-6 -mt-4 px-2">
           <div className="text-[var(--primary-color)] text-xl font-bold">
-            APPLICATION&apos;S LIST
+            {loading ? <Skeleton width={200} height={36} /> : "APPLICATION'S LIST"}
           </div>
         </div>
 
@@ -126,87 +126,119 @@ export default function Applications() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           {loading ? (
             <>
-              <Skeleton height={100} borderRadius={12} />
-              <Skeleton height={100} borderRadius={12} />
-              <Skeleton height={100} borderRadius={12} />
-              <Skeleton height={100} borderRadius={12} />
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <Skeleton height={20} width="80%" className="mb-2" />
+                <Skeleton height={30} width="50%" />
+              </div>
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <Skeleton height={20} width="80%" className="mb-2" />
+                <Skeleton height={30} width="50%" />
+              </div>
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <Skeleton height={20} width="80%" className="mb-2" />
+                <Skeleton height={30} width="50%" />
+              </div>
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <Skeleton height={20} width="80%" className="mb-2" />
+                <Skeleton height={30} width="50%" />
+              </div>
             </>
           ) : (
             <>
-              <StatsCard
-                title="Total Applications"
-                value={totalApplications}
-                icon={<Calculator className="text-white" size={20} />}
-                bgColor="bg-[var(--primary-color)] bg-opacity-10"
-                delay={0}
-              />
-              <StatsCard
-                title="Active Applications"
-                value={activeApplications}
-                bgColor="bg-green-100"
-                pulseColor="bg-green-500"
-                valueColor="text-green-600"
-                delay={0.1}
-              />
-              <StatsCard
-                title="Inactive Applications"
-                value={inactiveApplications}
-                bgColor="bg-red-100"
-                pulseColor="bg-red-500"
-                valueColor="text-red-600"
-                delay={0.2}
-              />
-              <StatsCard
-                title="Last Updated"
-                value={getLastUpdated()}
-                bgColor="bg-blue-100"
-                pulseColor="bg-blue-500"
-                valueColor="text-gray-900"
-                delay={0.3}
-              />
+              {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"> */}
+                <StatsCard
+                  title="Total Applications"
+                  value={totalApplications}
+                  icon={<Calculator className="text-white" size={20} />}
+                  bgColor="bg-[var(--primary-color)] bg-opacity-10"
+                  delay={0}
+                />
+                <StatsCard
+                  title="Active Applications"
+                  value={activeApplications}
+                  bgColor="bg-green-100"
+                  pulseColor="bg-green-500"
+                  valueColor="text-green-600"
+                  delay={0.1}
+                />
+                <StatsCard
+                  title="Inactive Applications"
+                  value={inactiveApplications}
+                  bgColor="bg-red-100"
+                  pulseColor="bg-red-500"
+                  valueColor="text-red-600"
+                  delay={0.2}
+                />
+                <StatsCard
+                  title="Last Updated"
+                  value={getLastUpdated()}
+                  bgColor="bg-blue-100"
+                  pulseColor="bg-blue-500"
+                  valueColor="text-gray-900"
+                  delay={0.3}
+                />
+              {/* </div> */}
             </>
           )}
         </div>
 
         {/* Search Bar + Action Buttons */}
-        <div className="flex items-center space-x-4 mb-6 px-2 justify-between"> {/* Added justify-between */}
-          <motion.button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center space-x-2 bg-[var(--primary-color)] text-white px-6 py-2 rounded-lg shadow-lg cursor-pointer"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          >
-            <Plus size={20} />
-          </motion.button>
+        <div className="flex items-center space-x-4 mb-6 px-2 justify-between">
+          {loading ? (
+            <Skeleton height={48} width={48} circle={true} /> 
+          ) : (
+            <motion.button
+              onClick={() => setIsCreateModalOpen(true)}
+              className={`p-3 bg-[var(--primary-color)] text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            >
+              {/* {loading ? <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div> : <Plus size={20} />} */}
+              <Plus size={20} />
+            </motion.button>
+          )}
 
-          <motion.button
-            onClick={handleExport}
-            className="flex items-center space-x-2 bg-gray-400 text-white px-6 py-2 rounded-lg shadow-lg cursor-pointer"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          >
-            <AiFillFileExcel size={20} />
-          </motion.button>
+          {loading ? (
+            <Skeleton height={48} width={48} circle={true} />
+          ) : (
+            <motion.button
+              onClick={handleExport}
+              className={`p-3 bg-gray-500 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            >
+              {/* {loading ? <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div> : <AiFillFileExcel size={20} />} */}
+              <AiFillFileExcel size={20} />
+            </motion.button>
+          )}
 
-          <div className="relative ml-auto"> {/* Added ml-auto to push search to the right */}
-            <motion.div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-              <Search size={16} />
-            </motion.div>
-            <motion.input
-              type="text"
-              placeholder="Search Applications..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] outline-none w-64 md:w-72 lg:w-80 transition-all duration-300 ease-in-out"
-              whileFocus={{
-                borderColor: "var(--primary-color)",
-                boxShadow: "0 0 0 2px rgba(0, 84, 150, 0.2)",
-                width: "min(320px, 90vw)",
-              }}
-              whileHover={{ borderColor: "var(--primary-color)" }}
-            />
+          <div className="relative ml-auto">
+            {loading ? (
+              <Skeleton height={40} width={320} borderRadius={8} />
+            ) : (
+              <>
+                <motion.div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                  {/* {loading ? <Skeleton circle={true} height={16} width={16} /> : <Search size={16} />} */}
+                  <Search size={16} />
+                </motion.div>
+                <motion.input
+                  type="text"
+                  placeholder={loading ? "" : "Search Applications..."}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] outline-none w-64 md:w-72 lg:w-80 transition-all duration-300 ease-in-out"
+                  whileFocus={{
+                    borderColor: "var(--primary-color)",
+                    boxShadow: "0 0 0 2px rgba(0, 84, 150, 0.2)",
+                    width: "min(320px, 90vw)",
+                  }}
+                  whileHover={{ borderColor: "var(--primary-color)" }}
+                  disabled={loading}
+                />
+              </>
+            )}
           </div>
         </div>
 
