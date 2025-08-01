@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && npm run copy-static",
-    "copy-static": "cpx \"./out/**\" \"../RBACapi/wwwroot\" --clean",
+    "copy-static": "cpx \"./out/**\" \"../wwwroot\" --clean",
     "start": "next start",
     "lint": "next lint",
     "export": "next export"

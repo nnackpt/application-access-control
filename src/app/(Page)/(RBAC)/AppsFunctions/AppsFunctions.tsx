@@ -11,7 +11,7 @@ import AppsFunctionsCreateModal from "@/Components/AppsFunctions/AppsFunctionsCr
 import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
 import StatsCard from "@/Components/UI/StatsCard"
 
-import { AppsFunctionsApi } from "@/services/AppsFunctionsApi"
+import { AppsFunctionsApi } from "@/services/AppsFunctionsApi";
 import { applicationApi } from "@/services/ApplicationApi"
 import type { AppsFunctions } from "@/types/AppsFunctions"
 import { Application } from "@/types/Application"

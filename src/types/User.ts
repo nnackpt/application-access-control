@@ -20,6 +20,17 @@ export interface User {
 
     cM_APPLICATIONS?: Application
     cM_APPS_ROLES?: AppsRoles
+
+    applicationTitle?: string
+    roleName?: string
+    userId?: string
+    name?: string
+    siteFacility?: string
+    createdBy?: string
+    createdDateTime?: string
+    updatedBy?: string
+    updatedDateTime?: string
+    
     [key: string]: string | number | boolean | object | undefined
 }
 

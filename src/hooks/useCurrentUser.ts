@@ -5,7 +5,7 @@ export default function useCurrentUser() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        fetch("https://localhost:7070/api/UserInfo/current", { credentials: "include" })
+        fetch("https://alvs-thappdev01:44324/api/UserInfo/current", { credentials: "include" })
         .then(res => res.ok ? res.json() : null)
         .then(data => {
             setUserName(data?.UserName || "system")

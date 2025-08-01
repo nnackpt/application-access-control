@@ -69,7 +69,7 @@ const UserInfo = () => {
   React.useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("https://localhost:7070/api/UserInfo/current", {
+        const res = await fetch("https://alvs-thappdev01:44324/api/UserInfo/current", {
           credentials: "include",
         })
         if (res.ok) {

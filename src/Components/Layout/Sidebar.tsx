@@ -103,7 +103,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
   React.useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("https://10.83.49.10:7070/api/UserInfo/current", {
+        const res = await fetch("https://alvs-thappdev01:44324/api/UserInfo/current", {
           credentials: "include",
         });
         if (res.ok) {
@@ -193,7 +193,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
   const availableColors = {
     'blue': '#005496',
     'gray': '#4e5f6e',
-    'brown': '#c49d7c',
+    'sky': '#7fb0d4',
   }
 
   const [primaryColor, setPrimaryColor] = React.useState<string>(() => {
@@ -208,13 +208,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
     const darkShades: { [key: string]: string } = {
       '#005496': '#003d73',
       '#4e5f6e': '#1d252b',
-      '#c49d7c': '#9a6d5b',
+      '#7fb0d4': '#62a9dd',
     };
   
     const lightShades: { [key: string]: string } = {
       '#005496': '#009EE3', 
       '#4e5f6e': '#a3b1bc',
-      '#c49d7c': '#ede6dd'
+      '#7fb0d4': '#9ec5e1',
     };
     const cleanColor = primaryColor.trim().replace(/^##/, '#');
     const darkColor = darkShades[cleanColor] || '#003d73';
@@ -260,7 +260,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
       label: 'Report',
       icon: ChartBarIcon,
       items: [
-        { label: 'Authorized User', href: '/Report' }
+        { label: 'Authorized User', href: '/AppAuthUsers' }
       ]
     }
   ];

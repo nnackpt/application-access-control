@@ -1,7 +1,7 @@
-import Users from "./Users";
+import User from './Users';
 
 export default function UsersPage() {
     return (
-        <Users />
+        <User />
     )
 }
