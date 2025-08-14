@@ -1,10 +1,10 @@
 import React, { useState } from "react"
-import { Trash2, X } from "lucide-react"
+import { CheckCircle, Code, FileText, Globe, Link, Trash2, Type, User, X } from "lucide-react"
 import toast from "react-hot-toast"
 
 import { Application } from "@/types/Application"
 import { applicationApi } from "@/services/ApplicationApi"
-// import useCurrentUser from "@/hooks/useCurrentUser"
+import StatusToggleButton from "../UI/Button/StatusToggleButton"
 
 const initForm: Application = {
   apP_CODE: '',
@@ -19,12 +19,6 @@ const initForm: Application = {
   updateD_BY: ''
 }
 
-// function getBangkokISOString() {
-//   const now = new Date()
-//   const bangkok = new Date(now.getTime() + (7 * 60 * 60 * 1000))
-//   return bangkok.toISOString().slice(0, 19)
-// }
-
 export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
   isOpen: boolean
   onClose: () => void
@@ -34,7 +28,6 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
   const [errors, setErrors] = useState<{[key: string]: string}>({})
   const [loading, setLoading] = useState(false)
   const [appCodeInput, setAppCodeInput] = useState('')
-  // const { userName } = useCurrentUser()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -88,22 +81,31 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
     }
   }
 
+  // Handle status toggle
+  const handleStatusToggle = () => {
+    // setLoading(true)
+    setForm(prev => ({ ...prev, active: !prev.active }))
+    // setTimeout(() => setLoading(false), 500)
+  }
+
   if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="sticky top-0 bg-[var(--primary-color)] text-white p-6 rounded-t-xl flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Create New Application Code</h2>
+        <div className="sticky top-0 p-6 rounded-t-xl flex justify-between items-center bg-gradient-to-r from-[var(--primary-color-dark)] to-[var(--primary-color)] animate-gradient-xy text-white">
+          <h2 className="text-xl font-semibold">CREATE NEW APPLICATION</h2>
           <button onClick={onClose} className="text-white hover:text-blue-200 transition-colors cursor-pointer" disabled={loading}>
             <X size={24} />
           </button>
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
             {/* APP Code */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <Code size={16} /> 
                 APP Code <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -115,7 +117,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                   value={appCodeInput}
                   onChange={handleAppCodeChange}
                   // placeholder="01"
-                  className={`w-full pl-24 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] ${errors.appCode ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full pl-24 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] ${errors.appCode ? 'border-red-500' : 'border-gray-300'}`}
                   disabled={loading}
                 />
                 {appCodeInput && (
@@ -133,11 +135,15 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                 )}
               </div>
               {errors.appCode && <p className="text-red-500 text-sm mt-1">{errors.appCode}</p>}
-              <p className="text-xs text-gray-500 mt-1">Enter numbers only (e.g., 01, 123)</p>
+              {/* <p className="text-xs text-gray-500 mt-1">Enter numbers only (e.g., 01, 123)</p> */}
             </div>
+            
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Name <span className="text-red-500">*</span></label>
+              <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <User size={16} />
+                Name <span className="text-red-500">*</span>
+              </label>
               <div className="relative">
                 <input
                   type="text"
@@ -145,7 +151,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                   value={form.name}
                   onChange={handleChange}
                   // placeholder="e.g., TEST"
-                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                   disabled={loading}
                 />
                 {form.name && (
@@ -161,9 +167,13 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
               </div>
               {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
             </div>
+
             {/* Title */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Title <span className="text-red-500">*</span></label>
+              <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <Type size={16} />
+                Title <span className="text-red-500">*</span>
+              </label>
               <div className="relative">
                 <input
                   type="text"
@@ -171,7 +181,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                   value={form.title}
                   onChange={handleChange}
                   // placeholder="e.g., TEST API"
-                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] ${errors.title ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] ${errors.title ? 'border-red-500' : 'border-gray-300'}`}
                   disabled={loading}
                 />
                 {form.title && (
@@ -187,9 +197,13 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
               </div>
               {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
             </div>
+
             {/* Base URL */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Base URL</label>
+              <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <Globe size={16} />
+                Base URL
+              </label>
               <div className="relative">
                 <input
                   type="url"
@@ -197,7 +211,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                   value={form.basE_URL || ''}
                   onChange={handleChange}
                   // placeholder="https://example.com"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
                   disabled={loading}
                 />
                 {form.basE_URL && (
@@ -212,9 +226,13 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                 )}
               </div>
             </div>
+            
             {/* Login URL */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Login URL</label>
+              <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <Link size={16} />
+                Login URL
+              </label>
               <div className="relative">
                 <input
                   type="url"
@@ -222,7 +240,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                   value={form.logiN_URL || ''}
                   onChange={handleChange}
                   // placeholder="https://example.com/login"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
                   disabled={loading}
                 />
                 {form.logiN_URL && (
@@ -237,51 +255,40 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                 )}
               </div>
             </div>
+
             {/* Active Status */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-              <select 
-                name="active"
-                value={form.active ? "true" : "false"}
-                onChange={e => setForm(prev => ({ ...prev, active: e.target.value === "true" }))}
-                className="cursor-pointer w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
-                disabled={loading}  
+              <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <CheckCircle size={16} />
+                Status
+              </label>
+              
+              {/* <button
+                type="button"
+                onClick={handleStatusToggle}
+                className={`cursor-pointer w-full p-3 rounded-xl font-semibold transition-all transform active:scale-95 border ${
+                  form.active 
+                    ? ' text-green-600 border-gray-300 hover:bg-green-100' 
+                    : ' text-red-600 border-gray-300 hover:bg-red-100'
+                }`}
+                disabled={loading}
               >
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
-              </select>
+                {form.active ? 'Active' : 'Inactive'}
+              </button> */}
+
+                <StatusToggleButton 
+                  active={form.active}
+                  onClick={handleStatusToggle}
+                  disabled={loading}
+                />
             </div>
-            {/* Created By */}
-            {/* <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Created By</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="createD_BY"
-                  value={form.createD_BY || ''}
-                  readOnly
-                  className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
-                  tabIndex={-1}
-                />
-              </div>
-            </div> */}
-            {/* Updated By */}
-            {/* <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Updated By</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="updateD_BY"
-                  value={form.updateD_BY || ''}
-                  readOnly
-                  className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
-                  tabIndex={-1}
-                />
-              </div>
-            </div> */}
+            
             {/* Description */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+              <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <FileText size={16} />
+                Description
+              </label>
               <div className="relative">
                 <textarea
                   name="desc"
@@ -289,7 +296,7 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
                   onChange={handleChange}
                   // placeholder="e.g., Application description"
                   rows={3}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] resize-none"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] resize-none"
                   disabled={loading}
                 />
                 {form.desc && (
@@ -306,8 +313,8 @@ export default function ApplicationCreateModal({ isOpen, onClose, onSuccess }: {
             </div>
           </div>
           <div className="flex justify-end space-x-4 mt-6 pt-2">
-            <button type="button" onClick={onClose} className="cursor-pointer px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" disabled={loading}>Cancel</button>
-            <button type="button" onClick={handleSubmit} className="cursor-pointer px-6 py-3 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-color-dark)] transition-colors disabled:bg-gray-400" disabled={loading}>{loading ? 'Saving...' : 'Create'} Application</button>
+            <button type="button" onClick={onClose} className="cursor-pointer px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" disabled={loading}>CANCEL</button>
+            <button type="button" onClick={handleSubmit} className="cursor-pointer px-6 py-3 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-color-dark)] transition-colors disabled:bg-gray-400 font-semibold" disabled={loading}>{loading ? 'SAVING...' : 'CREATE'} APPLICATION</button>
           </div>
         </div>
       </div>

@@ -74,3 +74,10 @@ export interface UsersAuthorizeUpdateRequestDto {
     active?: boolean
     facilities?: FacilitySelectionDto[]
 }
+
+export type UserProfileDto = {
+    userid?: string | null
+    fname?: string | null
+    lname?: string | null
+    org?: string | null
+}

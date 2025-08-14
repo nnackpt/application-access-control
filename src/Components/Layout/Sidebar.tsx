@@ -10,9 +10,9 @@ import {
   ChevronRightIcon,
   UserIcon,
   Cog6ToothIcon,
-  SunIcon,
-  MoonIcon,
-  ComputerDesktopIcon,
+  // SunIcon,
+  // MoonIcon,
+  // ComputerDesktopIcon,
   // HomeIcon,
   DocumentTextIcon,
   UsersIcon,
@@ -54,18 +54,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
 
   const [fontSizeOpen, setFontSizeOpen] = useState(false);
   const fontSizeRef = useRef<HTMLDivElement>(null);
+  const lastScrollY = useRef(0)
 
   // User info state
   const [user, setUser] = React.useState<{ userName: string } | null>(null);
   const [loading, setLoading] = React.useState(true);
-
-  // Settings states
-  const [theme, setTheme] = React.useState<string>(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("theme") || "system";
-    }
-    return "system";
-  });
 
   const [fontSize, setFontSize] = React.useState<string>(() => {
     if (typeof window !== "undefined") {
@@ -84,11 +77,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
   // Scroll to top functionality
   React.useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      setShowScrollToTop(scrollTop > 300);
+      const y = window.pageYOffset || document.documentElement.scrollTop
+      const prev = lastScrollY.current
+      const scrollingDown = y > prev
+
+      if (y <= 300) {
+        setShowScrollToTop(false)
+      } else if (scrollingDown) { 
+        setShowScrollToTop(true) // >300 Show BTN
+      } else {
+        setShowScrollToTop(false)
+      }
+
+      lastScrollY.current = y
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -120,39 +124,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
     };
     fetchUser();
   }, []);
-
-  // Theme effect
-  React.useEffect(() => {
-    const root = document.documentElement;
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const applyTheme = (value: string) => {
-      if (value === "dark") {
-        root.classList.add("dark");
-      } else {
-        root.classList.remove("dark");
-      }
-    };
-
-    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
-    if (theme === "system") {
-      if (e.matches) {
-        root.classList.add("dark");
-      } else {
-        root.classList.remove("dark");
-      }
-    }
-  };
-
-    applyTheme(theme === "system" ? mediaQuery.matches ? "dark" : "light" : theme);
-    localStorage.setItem("theme", theme);
-
-    mediaQuery.addEventListener("change", handleSystemThemeChange);
-
-    return () => {
-      mediaQuery.removeEventListener("change", handleSystemThemeChange);
-    };
-  }, [theme]);
 
   // เพิ่ม useEffect สำหรับ Font Size dropdown
   useEffect(() => {
@@ -549,10 +520,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
                 animate={{ height: 'auto', opacity: 1, y: 0 }}
                 exit={{ height: 0, opacity: 0, y: -10 }} 
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="overflow-hidden mt-2 p-2 bg-white/10 rounded-lg space-y-4 text-white"
+                className="overflow-visible mt-2 p-2 bg-white/10 rounded-lg space-y-4 text-white"
               >
                 {/* Theme Selection */}
-                <div>
+                {/* <div>
                   <h4 className="text-xs font-semibold text-white/70 mb-2">Theme</h4>
                   <div className="grid grid-cols-3 gap-1">
                     {[
@@ -574,7 +545,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse 
                       </button>
                     ))}
                   </div>
-                </div>
+                </div> */}
 
                 {/* Color Picking */}
                 <div>

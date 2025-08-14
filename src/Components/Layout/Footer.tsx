@@ -7,9 +7,13 @@
 // }
 
 export default function Footer() {
+  const version = process.env.NEXT_PUBLIC_APP_VERSION
   return (
     <footer className="w-full fixed bottom-0 px-4 py-2 text-xs text-left text-gray/20 bg-transparent font-inter">
-      <p>&copy; {new Date().getFullYear()} - Autoliv (Thailand) Co., Ltd. All rights reserved.</p>
+      <p>
+        &copy; {new Date().getFullYear()} - Autoliv (Thailand) Co., Ltd. All rights reserved.
+        {version && <span className="ml-2 text-gray-400">(V.{version})</span>}
+      </p>
     </footer>
   );
 }

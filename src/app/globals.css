@@ -49,22 +49,13 @@
   animation: gradientAnimation 5s ease infinite;
 }
 
-@keyframes shine {
-  0% { background-position: 200% center; }
-  100% { background-position: -200% center; }
+.animate-gradient-xy {
+  background-size: 400% 400%;
+  animation: gradientAnimation 4s ease infinite;
 }
-
-/* .dark {
-  background-color: #333;
-  color: #fff;
-}
-
-.dark .some-element {
-  background-color: #555;
-} */
 
 :root {
-  --primary-color: #005496; /* ค่าเริ่มต้น */
+  --primary-color: #005496;
 }
 
 .bg-primary {
@@ -73,4 +64,38 @@
 
 .text-primary {
   color: var(--primary-color);
+}
+
+/* input::placeholder {
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+} */
+
+/* body {
+  font-family: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif, '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"',;
+} */
+
+@layer components {
+  .cc-select > div.relative { width: 100% !important; }
+
+  /* Unify button style & focus to match inputs */
+  .cc-select button {
+    @apply rounded-xl border border-gray-200 px-4 py-2.5 shadow-sm text-sm bg-white
+            focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] transition
+  }
+
+  /* Dropdown panel look */
+  .cc-select ul { @apply rounded-xl border border-gray-200 shadow-lg ring-1 ring-black/5 text-sm }
+  .cc-select li { @apply px-4 py-2 cursor-pointer select-none }
+  .cc-select li:hover { @apply bg-[#e6f0fa] }
+
+  .cc-select li[class*="bg-[var(--primary-color)]"] { color: #fff; font-weight: 600;}
+
+  /* Status Toggle Button */
+  .cc-toggle > button {
+    height: 42px;
+    border-color: rgba(229 231 235 / 1) !important;
+    @apply rounded-xl shadow-sm text-sm focus:outline-none transition
+  }
+  .cc-toggle > button:focus-visible { @apply ring-2 ring-[var(--primary-color)] }
+  .cc-toggle > button[disabled] { @apply opacity-60 cursor-not-allowed }
 }

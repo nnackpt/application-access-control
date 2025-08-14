@@ -52,7 +52,7 @@ export default function AppRoleSelect({
             >
                 <span>{current.label}</span>
                 <span className="absolute inset-y-0 right-0 flex items-center pr-2">
-                    <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                    <motion.div animate={{ rotate: open ? 0 : -90 }} transition={{ duration: 0.2 }}>
                         <ChevronDownIcon className="h-5 w-5 text-gray-400" />
                     </motion.div>
                 </span>

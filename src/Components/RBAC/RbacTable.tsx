@@ -29,6 +29,18 @@ interface RbacTableProps {
     selectedRole: string
 }
 
+type MaybeApp = Partial<Application> & {
+    name?: string
+    title?: string
+    apP_TITLE?: string
+    apP_NAME?: string
+}
+
+const extractAppName = (app?: MaybeApp | null): string => {
+    if (!app) return ""
+    return app.apP_NAME ?? app.name ?? app.apP_TITLE ?? app.title ?? ""
+}
+
 export default function RbacTable({ refreshSignal, onRefresh, searchTerm, selectedTitle, selectedRole }: RbacTableProps) {
     const [data, setData] = useState<Rbac[]>([])
     const [loading, setLoading] = useState(false)
@@ -100,12 +112,24 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
     }, [refreshSignal])
 
     const getAppName = (rbacItem: Rbac) => {
-        if (rbacItem.cM_APPLICATIONS && rbacItem.cM_APPLICATIONS.apP_NAME) return rbacItem.cM_APPLICATIONS.apP_NAME;
-        if (rbacItem.cM_APPS_ROLES?.cM_APPLICATIONS?.apP_NAME) return rbacItem.cM_APPS_ROLES.cM_APPLICATIONS.apP_NAME;
-        const app = applications.find(app => app.apP_CODE === rbacItem.apP_CODE);
-        if (app) return app.apP_NAME;
-        return "";
-    };
+        const direct = 
+            (rbacItem as Rbac & { cM_APPLICATIONS?: MaybeApp | null })
+                .cM_APPLICATIONS
+        if (direct) return extractAppName(direct)
+
+        const viaRole =
+            (
+                rbacItem as Rbac & {
+                    cM_APPS_ROLES?: { cM_APPLICATION?: MaybeApp | null } | null
+                }
+            ).cM_APPS_ROLES?.cM_APPLICATION
+        if (viaRole) return extractAppName(viaRole)
+
+        const app = applications.find((a) => a.apP_CODE === rbacItem.apP_CODE)
+        if (app) return extractAppName(app)
+
+        return ""
+    }
 
     const getRoleName = (rbac: Rbac) => {
         if (rbac.cM_APPS_ROLES && rbac.cM_APPS_ROLES.name) return rbac.cM_APPS_ROLES.name;
@@ -164,7 +188,7 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
             if (searchTerm.trim()) params.set('search', searchTerm)
             
             const queryString = params.toString()
-            const url = queryString ? `/RBAC/view?code=${rbacCode}?${queryString}` : `/RBAC/view?code=${rbacCode}`
+            const url = queryString ? `/RBAC/view?code=${rbacCode}&${queryString}` : `/RBAC/view?code=${rbacCode}`
             
             router.push(url)
         }
@@ -179,7 +203,7 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
             if (searchTerm.trim()) params.set('search', searchTerm)
             
             const queryString = params.toString()
-            const url = queryString ? `/RBAC/Edit?code=${rbacCode}?${queryString}` : `/RBAC/Edit?code=${rbacCode}`
+            const url = queryString ? `/RBAC/Edit?code=${rbacCode}&${queryString}` : `/RBAC/Edit?code=${rbacCode}`
             
             router.push(url)
         }
@@ -278,14 +302,17 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                     {/* {Desktop View} */}
                     <div className="hidden xl:block">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-[var(--primary-color)] text-white">
+                        <div className="overflow-x-auto rounded-b-xl">
+                            <table className="w-full min-w-[1200px] border-separate border-spacing-0 text-sm">
+                                <thead className="sticky top-0 z-10 bg-gradient-to-r from-[var(--primary-color-dark)] to-[var(--primary-color)] text-white shadow-sm">
                                     <tr>
                                         {['RBAC Code', 'APP Code', 'Application Name', 'ROLE Code', 'ROLE Name',
                                             'FUNC Code', 'Created By', 'Create Date', 'Updated By', 'Updated Date', 'Actions'
                                         ].map(header => (
-                                            <th key={header} className="px-3 py-3 text-left text-sm font-semibold whitespace-nowrap">
+                                            <th 
+                                                key={header} 
+                                                className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide whitespace-nowrap border-b border-white/10"
+                                            >
                                                 {header}
                                             </th>
                                         ))}
@@ -306,22 +333,48 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
                                         const updatedDate = getValue(rbac, ['updateD_DATETIME']) || ''
 
                                         return (
-                                            <tr key={`${rbacCode || index}-${index}`} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">
-                                                <td className="px-3 py-3 font-medium text-[#005486] text-sm">{rbacCode || '-'}</td>
-                                                <td className="px-3 py-3 text-sm">{appCode || '-'}</td>
-                                                <td className="px-3 py-3 text-sm">{appName || '-'}</td>
-                                                <td className="px-3 py-3 text-sm">{roleCode || '-'}</td>
-                                                <td className="px-3 py-3 text-sm">{roleName || '-'}</td>
-                                                <td className="px-3 py-3 text-sm">{funcCode || '-'}</td>
-                                                <td className="px-3 py-3 text-sm">{createdBy || '-'}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm">
+                                            <tr 
+                                                key={`${rbacCode || index}-${index}`} 
+                                                className="group odd:bg-white even:bg-slate-50/60 hover:bg-[var(--primary-color-light)]/10 transition-colors"
+                                            >
+                                                <td className="px-4 py-3 font-mono text-sm text-slate-900 border-b border-gray-100">{rbacCode || '-'}</td>
+
+                                                <td className="px-4 py-3 font-medium text-[var(--primary-color)] text-sm border-b border-gray-100">{appCode || '-'}</td>
+
+                                                <td className="px-4 py-3 text-sm border-b border-gray-100">{appName || '-'}</td>
+
+                                                <td className="px-4 py-3 font-mono text-sm text-slate-900 border-b border-gray-100">{roleCode || '-'}</td>
+
+                                                {/* <td className="px-4 py-3 text-sm border-b border-gray-100">{roleName || '-'}</td> */}
+
+                                                <td className="px-4 py-3 border-b border-gray-100">
+                                                    <span className='inline-flex items-center rounded-full border border-slate-300 bg-white px-2 py-0.5 text-xs font-medium 
+                                                                    text-slate-700 group-hover:border-[var(--primary-color-light)]/60 group-hover:text-[var(--primary-color)]'
+                                                    >
+                                                        {roleName || '-'}
+                                                    </span>
+                                                </td>
+
+                                                <td className="px-4 py-3 text-sm border-b border-gray-100">
+                                                    {funcCode 
+                                                        ? <span className="px-4 py-3 font-mono text-sm text-slate-900 border-b border-gray-100">{funcCode}</span>
+                                                        : '-'
+                                                    }
+                                                </td>
+
+                                                <td className="px-4 py-3 text-sm border-b border-gray-100">{createdBy || '-'}</td>
+
+                                                <td className="px-4 py-3 whitespace-nowrap text-sm border-b border-gray-100">
                                                     {formatDateTime(createdDate)}
                                                 </td>
-                                                <td className="px-3 py-3 text-sm">{updatedBy || '-'}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm">
+
+                                                <td className="px-4 py-3 text-sm border-b border-gray-100">{updatedBy || '-'}</td>
+
+                                                <td className="px-4 py-3 whitespace-nowrap text-sm border-b border-gray-100">
                                                     {formatDateTime(updatedDate)}
                                                 </td>
-                                                <td className="px-3 py-3">
+
+                                                <td className="px-4 py-3 border-b border-gray-100">
                                                     <div className="flex space-x-1">
                                                         <button
                                                             onClick={() => handleView(rbac)}
@@ -351,6 +404,7 @@ export default function RbacTable({ refreshSignal, onRefresh, searchTerm, select
                                                         </button>
                                                     </div>
                                                 </td>
+
                                             </tr>
                                         )
                                     })}

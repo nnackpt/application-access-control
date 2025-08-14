@@ -1,9 +1,10 @@
 import { Application } from "@/types/Application"
-// import { Listbox, Transition } from "@headlessui/react"
+
 import { ChevronDownIcon } from "@heroicons/react/20/solid"
 import { useEffect, useRef, useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
 import { ChevronRight } from 'lucide-react';
+
+import { AnimatePresence, motion } from "framer-motion"
 
 interface AppTitleSelectProps {
     selectedTitle: string
@@ -18,26 +19,15 @@ export default function AppTitleSelect({
 }: AppTitleSelectProps) {
     const [open, setOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
+    const [hoverLabel, setHoverLabel] = useState<string>('')
     
-    // const filterApp = applications.filter(app =>
-    //     selectedTitle === 'all' ? true : app.apP_CODE === selectedTitle
-    // )
-    
-    // const options = [
-    //     { value: 'all', label: "All Application" },
-    //     ...filterApp.map(app => ({
-    //         value: app.apP_CODE?.toString() || '',
-    //         label:
-    //     }))
-    // ]
-
     const sortedAppOptions = applications
         .map(app => ({
             value: app.apP_CODE?.toString() || '',
             label: app.title || `Unknown App ${app.apP_CODE}`
         }))
         .filter(option => option.value !== '')
-        .sort((a, b) => a.label.localeCompare(b.label))
+        .sort((a, b) => Number(a.value) - Number(b.value))
 
     const options = [
         { value: 'all', label: 'All Application' },
@@ -65,9 +55,11 @@ export default function AppTitleSelect({
                 className="w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md
                             focus:outline-none border border-gray-300 hover:border-gray-400 transition-colors duration-200 text-sm relative"
             >
-                <span>{current.label}</span>
+                <span className={hoverLabel ? "text-gray-400" : ""}>
+                    {hoverLabel || current.label}
+                </span>
                 <span className="absolute inset-y-0 right-0 flex items-center pr-2">
-                    <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                    <motion.div animate={{ rotate: open ? 0 : -90 }} transition={{ duration: 0.2 }}>
                         <ChevronDownIcon className="h-5 w-5 text-gray-400" />
                     </motion.div>
                 </span>
@@ -88,7 +80,10 @@ export default function AppTitleSelect({
                                 onClick={() => {
                                     setSelectedTitle(option.value)
                                     setOpen(false)
+                                    setHoverLabel("")
                                 }}
+                                onMouseEnter={() => setHoverLabel(option.label)}
+                                onMouseLeave={() => setHoverLabel("")}
                                 className={`cursor-pointer select-none px-4 py-2 flex items-center gap-2 ${
                                     selectedTitle === option.value
                                         ? 'bg-[var(--primary-color)] text-white font-semibold'

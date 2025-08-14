@@ -4,8 +4,16 @@ import { AppAuthApi } from "@/services/AppAuthUserApi"
 import { User } from "@/types/User"
 
 import { useEffect, useState, Suspense } from "react"
-import { Users, Building2, MapPin, Search, UserCheck, Calendar, TrendingUp } from "lucide-react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { 
+    Users, 
+    Building2, 
+    MapPin, 
+    Search, 
+    UserCheck, 
+    // Calendar, 
+    // TrendingUp 
+} from "lucide-react"
+import { useSearchParams } from "next/navigation"
 
 import AppAuthUserTable from "@/Components/AppAuthUsers/AppAuthUserTable"
 import StatsCard from "@/Components/UI/StatsCard"
@@ -17,16 +25,18 @@ import Skeleton from 'react-loading-skeleton'
 import { AiFillFileExcel } from "react-icons/ai"
 import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
 import AppRoleSelect from "@/Components/UI/Select/RoleNameSelect"
+import { GrDocumentExcel } from "react-icons/gr"
+import { UserReviewFormService } from "@/services/UserReviewFormApi"
 
 function AppAuthUserContent() {
     const [refresh, setRefresh] = useState(0)
     const [users, setUsers] = useState<User[]>([])
     const [loading, setLoading] = useState(false)
+    const [isDownloading, setIsDownloading] = useState(false)
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedApp, setSelectedApp] = useState("all")
     const [selectedRole, setSelectedRole] = useState("all")
     const [selectedOrg, setSelectedOrg] = useState("all")
-    // const router = useRouter()
     const searchParams = useSearchParams()
     const { exportToExcel } = useExportData<User>()
 
@@ -43,20 +53,6 @@ function AppAuthUserContent() {
         if (searchParam) setSearchTerm(searchParam)
     }, [searchParams])
 
-    // const updateURLParams = (app?: string, role?: string, org?: string, search?: string) => {
-    //     const params = new URLSearchParams()
-        
-    //     if (app && app !== "all") params.set('app', app)
-    //     if (role && role !== "all") params.set('role', role)
-    //     if (org && org !== "all") params.set('org', org)
-    //     if (search && search.trim()) params.set('search', search)
-        
-    //     const queryString = params.toString()
-    //     const newUrl = queryString ? `/AppAuthUser?${queryString}` : '/AppAuthUser'
-        
-    //     router.replace(newUrl)
-    // }
-
     // Handlers for filter and search changes
     const handleSelectedAppChange = (app: string) => {
         setSelectedApp(app)
@@ -68,11 +64,6 @@ function AppAuthUserContent() {
         setSelectedRole(role)
         // updateURLParams(selectedApp, role, selectedOrg, searchTerm)
     }
-
-    // const handleSelectedOrgChange = (org: string) => {
-    //     setSelectedOrg(org)
-        // updateURLParams(selectedApp, selectedRole, org, searchTerm)
-    // }
 
     const handleSearchTermChange = (search: string) => {
         setSearchTerm(search)
@@ -98,6 +89,54 @@ function AppAuthUserContent() {
             ]
         });
     };
+
+    const handleDownloadForm = async () => {
+        setIsDownloading(true);
+        try {
+            console.log('Downloading form for:', { selectedApp, selectedRole })
+
+            const blob = await UserReviewFormService.downloadUserReviewForm(
+                selectedApp === "all" ? undefined : selectedApp,
+                selectedRole === "all" ? undefined : selectedRole
+            )
+
+            if (blob.size === 0) {
+                throw new Error("Downloaded file is empty")
+            }
+
+            // Create filename with filter info
+            const filenameParts = ['Application_User_Review']
+            if (selectedApp !== "all") {
+                filenameParts.push(selectedApp.replace(/[^a-zA-Z0-9]/g, '_'))
+            }
+            if (selectedRole !== "all") {
+                filenameParts.push(selectedRole.replace(/[^a-zA-Z0-9]/g, '_'))
+            }
+            filenameParts.push(new Date().toISOString().slice(0, 10))
+
+            const filename = `${filenameParts.join('_')}.xlsx`
+
+            // Download file
+            const urlBlob = window.URL.createObjectURL(blob)
+            const link = document.createElement("a")
+            link.href = urlBlob
+            link.setAttribute("download", filename)
+            document.body.appendChild(link)
+            link.click()
+            link.parentNode?.removeChild(link)
+
+            // Clean up the url object
+            window.URL.revokeObjectURL(urlBlob)
+
+            console.log("File downloaded successfully:", filename)
+
+        } catch (err) {
+            console.error("Error downloading the file:", err)
+            alert(`Error downloading file: ${err instanceof Error ? err.message : 'Unknown error'}`)
+        } finally {
+            setIsDownloading(false)
+        }
+    }
 
     const handleRefresh = () => {
         setRefresh(prev => prev + 1)
@@ -254,10 +293,11 @@ function AppAuthUserContent() {
                 </div>
 
                 {/* Header with Search and Filters */}
-                <div className="mb-8">
-                    {loading ? (
+                <div className="mb-8 relative z-20">
+                    {loading || isDownloading ? (
                         <div className="flex justify-between items-center">
                             <div className="flex space-x-3">
+                                <Skeleton height={48} width={48} circle={true} />
                                 <Skeleton height={48} width={48} circle={true} />
                             </div>
             
@@ -275,16 +315,54 @@ function AppAuthUserContent() {
                             <div className="flex items-center space-x-4">
                                 <motion.button
                                     onClick={handleExport}
-                                    className="p-3 bg-gray-500 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
-                                    whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
-                                    whileTap={{ scale: 0.98 }}
-                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                                    title="Export users to Excel"
+                                    className="group relative grid h-12 w-12 place-items-center rounded-full text-white shadow-sm ring-1 ring-black/5 bg-gradient-to-br
+                                                from-[var(--primary-color)] to-[color-mix(in_oklch,var(--primary-color)_70%,white)] transition-all focus:outline-none
+                                                focus-visible:ring-2 focus-visible:ring-[var(--primary-color)]/60 hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+                                    whileHover={{ 
+                                        scale: 1.06,
+                                        rotate: 1, 
+                                        opacity: 0.95
+                                    }}
+                                    whileTap={{ scale: 0.95, rotate: -2 }}
+                                    transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
                                 >
+                                    <span className="pointer-events-none absolute -indent-1 rounded-full bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.35),transparent_60%)] 
+                                                    opacity-0 blur-sm transition-opacity group-hover:opacity-100" />
                                     <AiFillFileExcel size={20} />
+                                    <span className="sr-only">Export users</span>
+                                </motion.button>
+
+                                <motion.button
+                                    onClick={handleDownloadForm}
+                                    aria-label="Download user review form"
+                                    title="Download user review form"
+                                    className="group relative grid h-12 w-12 place-items-center rounded-full text-white shadow-sm ring-1 ring-black/5 bg-gradient-to-br
+                                                from-[var(--primary-color-light)] to-[color-mix(in_oklch,var(--primary-color)_70%,white)] transition-all focus:outline-none
+                                                focus-visible:ring-2 focus-visible:ring-[var(--primary-color)]/60 hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+                                    whileHover={{ 
+                                        scale: 1.06,
+                                        rotate: 1, 
+                                        opacity: 0.95
+                                    }}
+                                    whileTap={{ scale: 0.95, rotate: -2 }}
+                                    transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
+                                >
+                                    <span className="pointer-events-none absolute -inset-1 rounded-full bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.35),transparent_60%)] 
+                                                    opacity-0 blur-sm transition-opacity group-hover:opacity-100" />
+                                    {isDownloading ? (
+                                        <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden>
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                                        </svg>
+                                    ) : (
+                                        <GrDocumentExcel size={20} />
+                                    )}
+                                    <span className="sr-only">Download review form</span>
                                 </motion.button>
                             </div>
 
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-3 relative z-30">
                                 <div className="relative">
                                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                                     <input
@@ -296,26 +374,16 @@ function AppAuthUserContent() {
                                     />
                                 </div>
                                 
-                                <div className="flex flex-col space-y-3 ml-4">
-                                    {/* <select
-                                        value={selectedApp}
-                                        onChange={(e) => handleSelectedAppChange(e.target.value)}
-                                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] outline-none w-64"
-                                    >
-                                        <option value="all">All Applications</option>
-                                        {uniqueApplications.map(app => (
-                                            <option key={app} value={app}>{app}</option>
-                                        ))}
-                                    </select> */}
+                                <div className="flex flex-col space-y-3 ml-4 relative z-30">
 
                                     <AppTitleSelect
                                         selectedTitle={selectedApp}
                                         setSelectedTitle={handleSelectedAppChange}
                                         applications={users.map(user => ({
-                                            apP_CODE: user.applicationTitle || '', // Ensure apP_CODE is a string
-                                            title: user.applicationTitle || '', // Ensure title is a string
-                                            name: user.applicationTitle || '', // Add name property
-                                            active: true, // Add active property
+                                            apP_CODE: user.applicationTitle || '', 
+                                            title: user.applicationTitle || '', 
+                                            name: user.applicationTitle || '', 
+                                            active: true,
                                         })).filter((app, index, self) => 
                                             index === self.findIndex(a => a.apP_CODE === app.apP_CODE)
                                         )}
@@ -327,27 +395,6 @@ function AppAuthUserContent() {
                                         roles={uniqueRoles}
                                     />
 
-                                    {/* <select
-                                        value={selectedRole}
-                                        onChange={(e) => handleSelectedRoleChange(e.target.value)}
-                                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] outline-none w-64"
-                                    >
-                                        <option value="all">All Roles</option>
-                                        {uniqueRoles.map(role => (
-                                            <option key={role} value={role}>{role}</option>
-                                        ))}
-                                    </select> */}
-
-                                    {/* <select
-                                        value={selectedOrg}
-                                        onChange={(e) => handleSelectedOrgChange(e.target.value)}
-                                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] outline-none w-64"
-                                    >
-                                        <option value="all">All Organizations</option>
-                                        {uniqueOrganizations.map(org => (
-                                            <option key={org} value={org}>{org}</option>
-                                        ))}
-                                    </select> */}
                                 </div>
                             </div>
                         </div>

@@ -185,7 +185,7 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
             if (searchTerm.trim()) params.set('search', searchTerm)
 
             const queryString = params.toString()
-            const url = queryString ? `/Users/View?userId=${userId}?${queryString}` : `/Users/View?userId=${userId}`
+            const url = queryString ? `/Users/View?userId=${userId}&${queryString}` : `/Users/View?userId=${userId}`
             console.log("Navigating to URL:", url)
 
             router.push(url)
@@ -324,14 +324,17 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 {/* Desktop View */}
                 <div className="hidden xl:block">
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-[var(--primary-color)] text-white">
+                    <div className="overflow-x-auto rounded-b-xl">
+                        <table className="w-full min-w-[1200px] border-separate border-spacing-0 text-sm">
+                            <thead className="sticky top-0 z-10 bg-gradient-to-r from-[var(--primary-color-dark)] to-[var(--primary-color)] text-white shadow-sm">
                                 <tr>
                                     {['Application', 'Role', 'User ID', 'Name', 'Organization',
                                         'Created By', 'Create Date', 'Updated By', 'Updated Date', 'Actions'
                                     ].map(header => (
-                                        <th key={header} className="px-3 py-3 text-left text-sm font-semibold whitespace-nowrap">
+                                        <th 
+                                            key={header} 
+                                            className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide whitespace-nowrap border-b border-white/10"
+                                        >
                                             {header}
                                         </th>
                                     ))}
@@ -360,23 +363,46 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
                                     // const authCode = getValue(user, ['autH_CODE'])
 
                                     return (
-                                        <tr key={uniqueKey} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">
-                                            <td className="px-3 py-3 font-medium text-[var(--primary-color)] text-sm">{appName || '-'}</td>
-                                            <td className="px-3 py-3 text-sm">{roleName || '-'}</td>
-                                            <td className="px-3 py-3 text-sm">{userId || '-'}</td>
+                                        <tr key={uniqueKey} className="group odd:bg-white even:bg-slate-50/60 hover:bg-[var(--primary-color-light)]/10 transition-colors">
+
+                                            <td className="px-4 py-3 font-medium text-[var(--primary-color)] text-sm border-b border-gray-100">{appName || '-'}</td>
+
+                                            <td className="px-4 py-3 border-b border-gray-100">
+                                                <span className='inline-flex items-center rounded-full border border-slate-300 bg-white px-2 py-0.5 text-xs font-medium 
+                                                                text-slate-700 group-hover:border-[var(--primary-color-light)]/60 group-hover:text-[var(--primary-color)]'
+                                                >
+                                                    {roleName || '-'}
+                                                </span>
+                                            </td>
+
+                                            <td className="px-4 py-3 font-mono text-sm text-slate-900 border-b border-gray-100">{userId || '-'}</td>
+
                                             {/* <td className="px-3 py-3 text-sm">{fname || '-'}</td>
                                             <td className="px-3 py-3 text-sm">{lname || '-'}</td> */}
-                                            <td className="px-3 py-3 text-sm">{fullName || '-'}</td>
-                                            <td className="px-3 py-3 text-sm">{org || '-'}</td>
-                                            <td className="px-3 py-3 text-sm">{createdBy || '-'}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm">
+
+                                            <td className="px-4 py-3 text-sm border-b border-gray-100">{fullName || '-'}</td>
+
+                                            <td className="px-4 py-3 border-b border-gray-100">
+                                                <span className='inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 
+                                                                    text-xs font-medium text-emerald-700'
+                                                >
+                                                    {org || '-'}
+                                                </span>
+                                            </td>
+
+                                            <td className="px-4 py-3 text-sm border-b border-gray-100">{createdBy || '-'}</td>
+
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm border-b border-gray-100">
                                                 {formatDateTime(createdDate)}
                                             </td>
-                                            <td className="px-3 py-3 text-sm">{updatedBy || '-'}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm">
+
+                                            <td className="px-4 py-3 text-sm border-b border-gray-100">{updatedBy || '-'}</td>
+
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm border-b border-gray-100">
                                                 {formatDateTime(updatedDate)}
                                             </td>
-                                            <td className="px-3 py-3">
+
+                                            <td className="px-4 py-3 border-b border-gray-100">
                                                 <div className="flex space-x-1">
                                                     <button
                                                         onClick={() => handleView(user)}
@@ -412,6 +438,7 @@ export default function UsersTable({ refreshSignal, onRefresh, searchTerm, selec
                                                     </button>
                                                 </div>
                                             </td>
+
                                         </tr>
                                     )
                                 })}

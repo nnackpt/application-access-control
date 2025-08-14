@@ -10,7 +10,7 @@ import { AppsRoles } from "@/types/AppsRoles"
 import { FacilitySelectionDto, UsersAuthorizeCreateRequestDto } from "@/types/User"
 
 import { ChevronLeft } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import { useRouter, useSearchParams } from "next/navigation"
@@ -20,6 +20,9 @@ import 'react-loading-skeleton/dist/skeleton.css'
 
 import AppTitleSelect from "@/Components/UI/Select/AppTitleSelect"
 import RoleTitleSelect from "@/Components/UI/Select/RoleTitleSelect"
+import CustomCheckbox from "@/Components/UI/Checkbox/CustomCheckbox"
+import UserIdAutoComplete from "@/Components/Users/UserIdAutocomplete"
+import StatusToggleButton from "@/Components/UI/Button/StatusToggleButton"
 // import BackButton from "@/Components/UI/Button/BackButton"
 
 const initForm: UsersAuthorizeCreateRequestDto = {
@@ -32,13 +35,6 @@ const initForm: UsersAuthorizeCreateRequestDto = {
     org: "",
     active: true, 
 }
-
-// Define the structure for a Facility entry
-// interface Facility {
-//     sitE_CODE: string;
-//     domaiN_CODE: string;
-//     facT_CODE: string;
-// }
 
 // Skeleton Components
 const DropdownSkeleton = () => (
@@ -77,7 +73,6 @@ const FacilityTableSkeleton = () => (
 
 export default function UserCreate() {
     const router = useRouter()
-    // const { currentUser } = useCurrentUser()
     const searchParams = useSearchParams()
     const [form, setForm] = useState<UsersAuthorizeCreateRequestDto>(initForm)
     const [applications, setApplications] = useState<Application[]>([])
@@ -88,17 +83,8 @@ export default function UserCreate() {
     const [isEditMode, setIsEditMode] = useState(false)
     const [currentAuthCode, setCurrentAuthCode] = useState<string | null>(null)
     const [allFacilities, setAllFacilities] = useState<FacilitySelectionDto[]>([])
-
-    // Dummy data for facilities - replace with actual API call if available
-    // const allFacilities: Facility[] = [
-    //     { sitE_CODE: "ATH_AB", domaiN_CODE: "ATHAB", facT_CODE: "ATA" },
-    //     { sitE_CODE: "ATH_SW", domaiN_CODE: "ATHSW", facT_CODE: "ATA" },
-    //     { sitE_CODE: "ATH_TE", domaiN_CODE: "ATHTE", facT_CODE: "ATA" },
-    //     { sitE_CODE: "ATH_EL", domaiN_CODE: "ATHEL", facT_CODE: "ATH" },
-    //     { sitE_CODE: "ATH_SB", domaiN_CODE: "ATHSB", facT_CODE: "ATH" },
-    //     { sitE_CODE: "ATH_SB", domaiN_CODE: "ATHSB", facT_CODE: "TCB" },
-    //     { sitE_CODE: "ATH_SP", domaiN_CODE: "ATHSP", facT_CODE: "TCS" },
-    // ];
+    const [isFetchingProfile, setIsFetchingProfile] = useState(false)
+    const fetchDebounceRed = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -174,6 +160,10 @@ export default function UserCreate() {
             setForm(prev => ({ ...prev, [name]: value }))
         }
         setErrors(prev => ({ ...prev, [name]: '' }))
+    }
+
+    const handleToggleActive = () => {
+        setForm(prev => ({ ...prev, active: !prev.active }))
     }
 
     const handleAppSelectChange = (appCode: string) => {
@@ -272,6 +262,74 @@ export default function UserCreate() {
 
     const filteredRoles = roles.filter(role => role.apP_CODE === form.apP_CODE)
 
+    const handleGetUserIdSuggestions = async (searchTerm: string): Promise<string[]> => {
+        try {
+            const suggestions = await UserApi.getUserIdsForAutocomplete(searchTerm, 10)
+            return suggestions
+        } catch (err) {
+            console.error('Error getting user ID suggestions:', err)
+            return []
+        }
+    }
+
+    const handleUserIdSelect = async (value: string) => {
+        setForm(prev => ({ ...prev, userid: value }))
+        setErrors(prev => ({ ...prev, userid: "" }))
+
+        if (isEditMode) return
+
+        setIsFetchingProfile(true)
+        try {
+            const p = await UserApi.getUserProfileByUserId(value)
+            if (p) {
+                setForm(prev => ({
+                    ...prev,
+                    fname: p.fname ?? "",
+                    lname: p.lname ?? "",
+                    org: p.org ?? "",
+                }))
+            }
+        } catch (e) {
+            console.error(e)
+            toast.error("Failed to fetch user profile.")
+        } finally {
+            setIsFetchingProfile(false)
+        }
+    }
+
+    useEffect(() => {
+        if (isEditMode) return
+        if (!form.userid?.trim()) return
+
+        if (fetchDebounceRed.current) clearTimeout(fetchDebounceRed.current)
+            fetchDebounceRed.current = setTimeout(async () => {
+                setIsFetchingProfile(true)
+                try {
+                    const p = await UserApi.getUserProfileByUserId(form.userid)
+                    if (p) {
+                        setForm(prev => ({
+                            ...prev,
+                            fname: p.fname ?? "",
+                            lname: p.lname ?? "",
+                            org: p.org ?? ""
+                        }))
+                    }
+                } catch (e) {
+                    console.error(e)
+                } finally {
+                    setIsFetchingProfile(false)
+                }
+            }, 500)
+
+        return () => {
+            if (fetchDebounceRed.current) clearTimeout(fetchDebounceRed.current)
+        } 
+    }, [form.userid, isEditMode])
+
+    const labelCls = "block text-sm font-medium text-gray-700 mb-1"
+    const inputCls = "mt-1 block w-full rounded-xl border border-gray-200 px-4 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] transition"
+    const errorCls = "text-red-500 text-xs mt-1"
+
     return (
         <SkeletonTheme baseColor="#e0e0e0" highlightColor="#f5f5f5">
             <main className="min-h-screen p-6">
@@ -313,21 +371,28 @@ export default function UserCreate() {
 
                 <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
                     {/* Dropdowns and Inputs */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
                         {initialLoading ? (
                             <>
+                                {/* <DropdownSkeleton />
                                 <DropdownSkeleton />
-                                <DropdownSkeleton />
                                 <InputSkeleton />
                                 <InputSkeleton />
                                 <InputSkeleton />
                                 <InputSkeleton />
-                                <CheckboxSkeleton />
+                                <CheckboxSkeleton /> */}
+                                <div className="md:col-span-6"><DropdownSkeleton /></div>
+                                <div className="md:col-span-6"><DropdownSkeleton /></div>
+                                <div className="md:col-span-8"><InputSkeleton /></div>
+                                <div className="md:col-span-4"><CheckboxSkeleton /></div>
+                                <div className="md:col-span-4"><InputSkeleton /></div>
+                                <div className="md:col-span-4"><InputSkeleton /></div>
+                                <div className="md:col-span-4"><InputSkeleton /></div>
                             </>
                         ) : (
                             <>
                                 {/* Application Select */}
-                                <div>
+                                {/* <div>
                                     <label htmlFor="appCode" className="block text-sm font-medium text-gray-700 mb-1">Application <span className="text-red-500">*</span></label>
                                     <AppTitleSelect
                                         selectedTitle={form.apP_CODE}
@@ -336,10 +401,23 @@ export default function UserCreate() {
                                         // disabled={isEditMode}
                                     />
                                     {errors.apP_CODE && <p className="text-red-500 text-xs mt-1">{errors.apP_CODE}</p>}
+                                </div> */}
+                                <div className="md:col-span-6">
+                                    <label htmlFor="appCode" className={labelCls}>
+                                        Application <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="cc-select">
+                                        <AppTitleSelect 
+                                            selectedTitle={form.apP_CODE}
+                                            setSelectedTitle={handleAppSelectChange}
+                                            applications={applications}
+                                        />
+                                    </div>
+                                    {errors.apP_CODE && <p className={errorCls}>{errors.apP_CODE}</p>}
                                 </div>
 
                                 {/* Role Select */}
-                                <div>
+                                {/* <div>
                                     <label htmlFor="roleCode" className="block text-sm font-medium text-gray-700 mb-1">Role <span className="text-red-500">*</span></label>
                                     <RoleTitleSelect
                                         selectedRole={form.rolE_CODE}
@@ -349,25 +427,68 @@ export default function UserCreate() {
                                         // disabled={isEditMode}
                                     />
                                     {errors.rolE_CODE && <p className="text-red-500 text-xs mt-1">{errors.rolE_CODE}</p>}
+                                </div> */}
+                                <div className="md:col-span-6">
+                                    <label htmlFor="roleCode" className={labelCls}>
+                                        Role <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="cc-select">
+                                        <RoleTitleSelect 
+                                            selectedRole={form.rolE_CODE}
+                                            setSelectedRole={handleRoleSelectChange}
+                                            roles={filteredRoles}
+                                            selectedAppCode={form.apP_CODE}                                    
+                                        />
+                                    </div>
+                                    {errors.rolE_CODE && <p className={errorCls}>{errors.rolE_CODE}</p>}
                                 </div>
 
-                                {/* User ID (AD User) */}
-                                <div>
+                                {/* User ID + Status */}
+                                {/* <div>
                                     <label htmlFor="userid" className="block text-sm font-medium text-gray-700 mb-1">USERID (AD User) <span className="text-red-500">*</span></label>
-                                    <input
-                                        type="text"
-                                        id="userid"
-                                        name="userid"
+                                    <UserIdAutoComplete 
                                         value={form.userid}
-                                        onChange={handleInputChange}
-                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] sm:text-sm"
+                                        onChange={(value) => {
+                                            setForm(prev => ({ ...prev, userid: value }))
+                                            setErrors(prev => ({ ...prev, userid: '' }))
+                                        }}
+                                        onSelect={handleUserIdSelect}
+                                        onGetSuggestions={handleGetUserIdSuggestions}
                                         disabled={isEditMode}
+                                        error={errors.userid}
                                     />
                                     {errors.userid && <p className="text-red-500 text-xs mt-1">{errors.userid}</p>}
+                                </div> */}
+                                <div className="md:col-span-8">
+                                    <label htmlFor="userid" className={labelCls}>
+                                        USERID (AD User) <span className="text-red-500">*</span>
+                                    </label>
+                                    <UserIdAutoComplete 
+                                        value={form.userid}
+                                        onChange={(value) => {
+                                            setForm((prev) => ({ ...prev, userid: value }))
+                                            setErrors((prev) => ({ ...prev, userid: '' }))
+                                        }}
+                                        onSelect={handleUserIdSelect}
+                                        onGetSuggestions={handleGetUserIdSuggestions}
+                                        disabled={isEditMode}
+                                        error={errors.userid}
+                                    />
+                                    {errors.userid && <p className={errorCls}>{errors.userid}</p>}
+                                </div>
+                                <div className="md:col-span-4">
+                                    <label htmlFor="active" className={labelCls}>Status</label>
+                                    <div className="mt-1 cc-toggle">
+                                        <StatusToggleButton 
+                                            active={!!form.active}
+                                            onClick={handleToggleActive}
+                                            disabled={loading || initialLoading || isFetchingProfile}
+                                        />
+                                    </div>
                                 </div>
 
                                 {/* First Name */}
-                                <div>
+                                {/* <div>
                                     <label htmlFor="fname" className="block text-sm font-medium text-gray-700 mb-1">FIRST NAME <span className="text-red-500">*</span></label>
                                     <input
                                         type="text"
@@ -376,12 +497,28 @@ export default function UserCreate() {
                                         value={form.fname}
                                         onChange={handleInputChange}
                                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] sm:text-sm"
+                                        disabled={isFetchingProfile}
                                     />
                                     {errors.fname && <p className="text-red-500 text-xs mt-1">{errors.fname}</p>}
+                                </div> */}
+                                <div className="md:col-span-4">
+                                    <label htmlFor="fname" className={labelCls}>
+                                        FIRST NAME <span className="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="fname" 
+                                        id="fname"
+                                        value={form.fname}
+                                        onChange={handleInputChange}
+                                        className={inputCls}
+                                        disabled={isFetchingProfile} 
+                                    />
+                                    {errors.fname && <p className={errorCls}>{errors.fname}</p>}
                                 </div>
 
                                 {/* Last Name */}
-                                <div>
+                                {/* <div>
                                     <label htmlFor="lname" className="block text-sm font-medium text-gray-700 mb-1">LAST NAME <span className="text-red-500">*</span></label>
                                     <input
                                         type="text"
@@ -390,12 +527,28 @@ export default function UserCreate() {
                                         value={form.lname}
                                         onChange={handleInputChange}
                                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] sm:text-sm"
+                                        disabled={isFetchingProfile}
                                     />
                                     {errors.lname && <p className="text-red-500 text-xs mt-1">{errors.lname}</p>}
+                                </div> */}
+                                <div className="md:col-span-4">
+                                    <label htmlFor="lname" className={labelCls}>
+                                        LAST NAME <span className="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="lname" 
+                                        id="lname"
+                                        value={form.lname}
+                                        onChange={handleInputChange}
+                                        className={inputCls}
+                                        disabled={isFetchingProfile} 
+                                    />
+                                    {errors.lname && <p className={errorCls}>{errors.lname}</p>}
                                 </div>
 
                                 {/* Organization */}
-                                <div>
+                                {/* <div>
                                     <label htmlFor="org" className="block text-sm font-medium text-gray-700 mb-1">ORG <span className="text-red-500">*</span></label>
                                     <input
                                         type="text"
@@ -404,14 +557,30 @@ export default function UserCreate() {
                                         value={form.org}
                                         onChange={handleInputChange}
                                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] sm:text-sm"
+                                        disabled={isFetchingProfile}
                                     />
                                     {errors.org && <p className="text-red-500 text-xs mt-1">{errors.org}</p>}
+                                </div> */}
+                                <div className="md:col-span-4">
+                                    <label htmlFor="org" className={labelCls}>
+                                        ORG <span className="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="org" 
+                                        id="org"
+                                        value={form.org}
+                                        onChange={handleInputChange}
+                                        className={inputCls}
+                                        disabled={isFetchingProfile} 
+                                    />
+                                    {errors.org && <p className={errorCls}>{errors.org}</p>}
                                 </div>
 
                                 {/* Active/Inactive Select */}
-                                <div>
-                                    <label htmlFor="active" className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                                    <select
+                                {/* <div>
+                                    <label htmlFor="active" className="block text-sm font-medium text-gray-700 mb-1">Status</label> */}
+                                    {/* <select
                                         id="active"
                                         name="active"
                                         value={form.active ? "true" : "false"}
@@ -420,8 +589,13 @@ export default function UserCreate() {
                                     >
                                         <option value="true">Active</option>
                                         <option value="false">Inactive</option>
-                                    </select>
-                                </div>
+                                    </select> */}
+                                    {/* <StatusToggleButton 
+                                        active={!!form.active}
+                                        onClick={handleToggleActive}
+                                        disabled={loading || initialLoading || isFetchingProfile}
+                                    />
+                                </div> */}
                             </>
                         )}
                     </div>
@@ -434,18 +608,18 @@ export default function UserCreate() {
                         ) : (
                             <div className="overflow-x-auto border border-gray-200 rounded-lg shadow-sm">
                                 <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
+                                    <thead className="bg-[var(--primary-color)]">
                                         <tr>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 {/* Select */}
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-white">
                                                 SITE_CODE
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-white">
                                                 DOMAIN_CODE
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-white">
                                                 FAC_CODE
                                             </th>
                                         </tr>
@@ -454,7 +628,7 @@ export default function UserCreate() {
                                         {allFacilities.map((facility, index) => (
                                             <tr key={index} className="hover:bg-gray-50">
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <input
+                                                    {/* <input
                                                         type="checkbox"
                                                         checked={form.facilities?.some(f =>
                                                             f.sitE_CODE === facility.sitE_CODE &&
@@ -462,7 +636,17 @@ export default function UserCreate() {
                                                             f.facT_CODE === facility.facT_CODE
                                                         )}
                                                         onChange={() => handleFacilityToggle(facility)}
-                                                        className="h-4 w-4 text-[var(--primary-color)] border-gray-300 rounded focus:ring-[var(--primary-color)]"
+                                                        className="w-5 h-5 border-2 border-[var(--primary-color)] bg-white checked:bg-[var(--primary-color)]
+                                                            checked:border-[var(--primary-color)] checked:text-white rounded-md focus:ring-2 focus:ring-blue-200
+                                                            focus:ring-offset-1 hover:border-[var(--primary-color)] transition-all duration-200 ease-in-out cursor-pointer"
+                                                    /> */}
+                                                    <CustomCheckbox 
+                                                        checked={form.facilities?.some(f =>
+                                                            f.sitE_CODE === facility.sitE_CODE &&
+                                                            f.domaiN_CODE === facility.domaiN_CODE &&
+                                                            f.facT_CODE === facility.facT_CODE
+                                                        )}
+                                                        onChange={() => handleFacilityToggle(facility)}
                                                     />
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

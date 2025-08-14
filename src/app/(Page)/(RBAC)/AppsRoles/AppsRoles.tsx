@@ -157,7 +157,7 @@ export default function AppsRoles() {
                 </div>
 
                 {/* Header */}
-                <div className="mb-8">
+                <div className="mb-8 relative z-20">
                     {loading ? (
                         <div className="flex justify-between items-center">
                             {/* Skeleton ฝั่งซ้าย */}
@@ -181,9 +181,13 @@ export default function AppsRoles() {
                                     <motion.button
                                         onClick={() => setIsCreateModalOpen(true)}
                                         className="p-3 bg-[var(--primary-color)] text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200"
-                                        whileHover={{ scale: 1.05, backgroundColor: "var(--primary-color-dark)", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
-                                        whileTap={{ scale: 0.98 }}
-                                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                                        whileHover={{ 
+                                            scale: 1.06,
+                                            rotate: 1, 
+                                            opacity: 0.95
+                                        }}
+                                        whileTap={{ scale: 0.95, rotate: -2 }}
+                                        transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
                                     >
                                         <Plus size={20} />
                                         {/* <span>Create New Application&apos;s Role</span> */}
@@ -192,9 +196,13 @@ export default function AppsRoles() {
                                     <motion.button
                                         onClick={handleExport}
                                         className="p-3 bg-gray-500 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200"
-                                        whileHover={{ scale: 1.05, backgroundColor: "#6B7280", boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)" }}
-                                        whileTap={{ scale: 0.98 }}
-                                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                                        whileHover={{ 
+                                            scale: 1.06,
+                                            rotate: 1, 
+                                            opacity: 0.95
+                                        }}
+                                        whileTap={{ scale: 0.95, rotate: -2 }}
+                                        transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
                                     >
                                         <AiFillFileExcel size={20} />
                                         {/* <span>Export Application&apos;s Role</span> */}
@@ -203,7 +211,7 @@ export default function AppsRoles() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-3 relative z-30">
                                 <div className="relative">
                                     <AppTitleSelect
                                         selectedTitle={selectedTitle}

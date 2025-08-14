@@ -231,15 +231,18 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                     {/* {Desktop View} */}
                     <div className="hidden xl:block">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-[var(--primary-color)] text-white">
+                        <div className="overflow-x-auto rounded-b-xl">
+                            <table className="w-full min-w-[1200px] border-separate border-spacing-0 text-sm">
+                                <thead className="sticky top-0 z-10 bg-gradient-to-r from-[var(--primary-color-dark)] to-[var(--primary-color)] text-white shadow-sm">
                                     <tr>
                                         {['APP Code', 'ROLE Code', 'Name', 'Description', 'Active',
                                             'Home URL', 'Created By', 'Create Date', 'Updated By',
                                             'Updated Date', 'Actions'
                                         ].map(header => (
-                                            <th key={header} className="px-3 py-3 text-left text-sm font-semibold whitespace-nowrap">
+                                            <th 
+                                                key={header} 
+                                                className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide whitespace-nowrap border-b border-white/10"
+                                            >
                                                 {header}
                                             </th>
                                         ))}
@@ -260,16 +263,29 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
                                         const updatedDate = getValue(appRole, ['updateD_DATETIME']) || ''
 
                                         return (
-                                            <tr key={`${roleCode || index}-${index}`} className="border-b border-gray-200 hover:bg-blue-50 transition-colors">
-                                                <td className="px-3 py-3 font-medium text-[var(--primary-color)] text-sm">{appCode || '-'}</td>
-                                                <td className="px-3 py-3 font-medium text-[var(--primary-color)] text-sm">{roleCode || '-'}</td>
-                                                <td className="px-3 py-3 text-sm whitespace-break-spaces">{name || '-'}</td>
-                                                <td className="px-3 py-3 text-sm">
-                                                    <div className="whitespace-pre-wrap" title={desc || ''}>
+                                            <tr key={`${roleCode || index}-${index}`} className="group odd:bg-white even:bg-slate-50/60 hover:bg-[var(--primary-color-light)]/10 transition-colors">
+
+                                                <td className="px-4 py-3 font-medium text-[var(--primary-color)] text-sm border-b border-gray-100">{appCode || '-'}</td>
+
+                                                <td className="px-4 py-3 font-mono text-sm text-slate-900 border-b border-gray-100">{roleCode || '-'}</td>
+                                                
+                                                {/* <td className="px-4 py-3 text-sm border-b border-gray-100">{name || '-'}</td> */}
+
+                                                <td className="px-4 py-3 border-b border-gray-100">
+                                                    <span className='inline-flex items-center rounded-full border border-slate-300 bg-white px-2 py-0.5 text-xs font-medium 
+                                                                    text-slate-700 group-hover:border-[var(--primary-color-light)]/60 group-hover:text-[var(--primary-color)]'
+                                                    >
+                                                        {name || '-'}
+                                                    </span>
+                                                </td>
+                                                
+                                                <td className="px-4 py-3 text-sm max-w-[220px] border-b border-gray-100">
+                                                    <div className="whitespace-pre-wrap break-words text-slate-700" title={desc || ''}>
                                                         {desc || '-'}
                                                     </div>
                                                 </td>
-                                                <td className="px-3 py-3">
+                                                
+                                                <td className="px-4 py-3 border-b border-gray-100">
                                                     <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
                                                         active
                                                             ? 'bg-green-100 text-green-800'
@@ -278,36 +294,42 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
                                                             {active ? 'Active' : 'Inactive'}
                                                         </span>
                                                 </td>
-                                                <td className="px-3 py-3 text-sm">
+
+                                                <td className="px-3 py-3 text-sm max-w-[220px] border-b border-gray-100">
                                                     {homeUrl ? (
                                                         homeUrl.startsWith('http://') || homeUrl.startsWith('https://') ? (
                                                             <a 
                                                                 href={homeUrl}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-[var(--primary-color)] hover:underline break-all whitespace-pre"
+                                                                className="text-[var(--primary-color)] hover:underline truncate block group-hover:text-[var(--primary-color-dark)]"
                                                                 title={homeUrl}    
                                                             >
-                                                                {homeUrl}
+                                                                {homeUrl.length > 30 ? `${homeUrl.substring(0, 30)}...` : homeUrl}
                                                             </a>
                                                         ) : (
-                                                            <div className="break-all whitespace-pre-wrap" title={homeUrl}>
-                                                                {homeUrl}
+                                                            <div className="truncate" title={homeUrl}>
+                                                                {homeUrl.length > 30 ? `${homeUrl.substring(0, 30)}...` : homeUrl}
                                                             </div>
                                                         )
                                                     ) : (
                                                         '-'
                                                     )}
                                                 </td>
-                                                <td className="px-3 py-3 text-sm">{createdBy || '-'}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm">
+
+                                                <td className="px-4 py-3 text-sm border-b border-gray-100">{createdBy || '-'}</td>
+
+                                                <td className="px-4 py-3 whitespace-nowrap text-sm border-b border-gray-100">
                                                     {formatDateTime(createdDate)}
                                                 </td>
-                                                <td className="px-3 py-3 text-sm">{updatedBy || '-'}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm">
+
+                                                <td className="px-4 py-3 text-sm border-b border-gray-100">{updatedBy || '-'}</td>
+
+                                                <td className="px-4 py-3 whitespace-nowrap text-sm border-b border-gray-100">
                                                     {formatDateTime(updatedDate)}
                                                 </td>
-                                                <td className="px-3 py-3">
+
+                                                <td className="px-4 py-3 border-b border-gray-100">
                                                     <div className="flex space-x-1">
                                                         <button
                                                             onClick={() => handleView(appRole)}
@@ -337,6 +359,7 @@ export default function AppsRolesTable({ refreshSignal, onRefresh, searchTerm, s
                                                         </button>
                                                     </div>
                                                 </td>
+
                                             </tr>
                                         )
                                     })}

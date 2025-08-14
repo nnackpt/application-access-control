@@ -157,10 +157,14 @@ export default function Applications() {
           ) : (
             <motion.button
               onClick={() => setIsCreateModalOpen(true)}
-              className={`p-3 bg-[var(--primary-color)] text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              className={`p-3 bg-[var(--primary-color)] text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              whileHover={{ 
+                  scale: 1.06,
+                  rotate: 1, 
+                  opacity: 0.95
+              }}
+              whileTap={{ scale: 0.95, rotate: -2 }}
+              transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
             >
               {/* {loading ? <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div> : <Plus size={20} />} */}
               <Plus size={20} />
@@ -172,10 +176,14 @@ export default function Applications() {
           ) : (
             <motion.button
               onClick={handleExport}
-              className={`p-3 bg-gray-500 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              className={`p-3 bg-gray-500 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              whileHover={{ 
+                  scale: 1.06,
+                  rotate: 1, 
+                  opacity: 0.95
+              }}
+              whileTap={{ scale: 0.95, rotate: -2 }}
+              transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
             >
               {/* {loading ? <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div> : <AiFillFileExcel size={20} />} */}
               <AiFillFileExcel size={20} />

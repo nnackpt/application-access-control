@@ -1,6 +1,7 @@
 "use client"
 
-import { motion, Variants } from "framer-motion"
+import { animate, motion, useMotionValue, useTransform, Variants } from "framer-motion"
+import { useEffect } from "react"
 
 interface StatsCardProps {
     title: string
@@ -26,23 +27,65 @@ const StatsCard: React.FC<StatsCardProps> = ({
     valueColor = "text-gray-900",
     // delay = 0
 }) => {
+    const isNumber = typeof value === "number" && Number.isFinite(value as number)
+    const mv = useMotionValue(0)
+    const displayed = useTransform(mv, (v) =>
+        Math.round(v).toLocaleString(undefined, { maximumFractionDigits: 0 })
+    )
+
+    useEffect(() => {
+        if (!isNumber) return
+        const controls = animate(mv, value as number, { duration: 0.6, ease: "easeOut" })
+        return () => controls.stop()
+    }, [isNumber, value, mv])
+
     return (
         <motion.div
-            className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
+            className={[
+                "relative overflow-hidden rounded-2xl p-5",
+                "bg-white/70 supports-[backdrop-filter]:bg-white/55 backdrop-blur",
+                "ring-1 ring-black/5 shadow-sm",
+                "hover:shadow-md",
+                "group"
+            ].join(" ")}
             variants={cardVariants}
             initial="hidden"
             animate="visible"
             transition={{ duration: 0.2 }}
             whileHover={{ scale: 1.05 }}
         >
+            {/* BG Glow */}
+            <div 
+                aria-hidden
+                className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full blur-2xl opacity-40"
+                style={{
+                    backgroundImage:
+                        "radial-gradient(120px 120px at 85% -20%, rgba(0,0,0,0.06) 0%, transparent 60%)"
+                }}
+            />
+
+            {/* Card Content */}
             <div className="flex items-center justify-between">
-                <div>
-                    <p className="text-sm font-medium text-gray-600">{title}</p>
-                    <p className={`text-2xl font-bold ${valueColor}`}>
-                        {value}
-                    </p>
+                <div className="min-w-0">
+                    <div className="text-xs font-medium text-slate-500 tracking-wide uppercase">
+                        {title}
+                    </div>
+
+                    <div className="mt-1 flex items-baseline gap-2">
+                        <p className={`text-2xl font-semibold ${valueColor}`}>
+                            {isNumber ? <motion.span className="tabular-nums">{displayed}</motion.span> : String(value)}
+                        </p>
+                    </div>
                 </div>
-                <div className={`p-3 rounded-lg ${bgColor}`}>
+
+                <div
+                    className={[
+                        "relative grid h-11 w-11 place-items-center shrink-0 rounded-xl text-white shadow-md",
+                        bgColor,
+                    ].join(" ")}
+                    aria-hidden
+                >
+                    <div className="absolute inset-0 rounded-xl bg-white/10 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
                     {icon ? (
                         icon
                     ) : (
@@ -50,6 +93,8 @@ const StatsCard: React.FC<StatsCardProps> = ({
                     )}
                 </div>
             </div>
+
+            <div className="mt-4 h-px bg-gradient-to-r from-transparent via-slate-200/70 to-transparent" />
         </motion.div>
     )
 }
